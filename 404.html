@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found | DreamyCrochet05</title>
+  <meta name="description" content="Oops! The page you were looking for seems to have wandered away. Find your way back to DreamyCrochet05.">
+
+  <!-- Fonts & Material Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN (same config as main site) -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#B58A6A',
+            'primary-container': '#FADADD',
+            'on-primary-container': '#4A3321',
+            secondary: '#E7D7FF',
+            cream: '#FFF8EE',
+            beige: '#F5E6D3',
+            darkbrown: '#4A3321',
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+            heading: ['"Playfair Display"', 'serif'],
+            handwritten: ['Caveat', 'cursive'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Reuse core design tokens */
+    :root {
+      --color-cream: #FFF8EE;
+      --color-beige: #F5E6D3;
+      --color-pink: #FADADD;
+      --color-warm-brown: #B58A6A;
+      --color-dark-brown: #4A3321;
+      --font-heading: 'Playfair Display', serif;
+      --font-handwritten: 'Caveat', cursive;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      min-height: 100%;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--color-cream);
+      color: var(--color-dark-brown);
+      overflow-x: hidden;
+    }
+
+    /* Floating petals */
+    @keyframes float-petal {
+      0%   { transform: translateY(100vh) rotate(0deg) translateX(0);   opacity: 0; }
+      5%   { opacity: 0.6; }
+      90%  { opacity: 0.6; }
+      100% { transform: translateY(-10vh) rotate(360deg) translateX(60px); opacity: 0; }
+    }
+
+    .petal {
+      position: fixed;
+      font-size: 1.4rem;
+      pointer-events: none;
+      animation: float-petal linear infinite;
+      z-index: 0;
+    }
+
+    /* 404 large text */
+    .error-number {
+      font-family: var(--font-heading);
+      font-size: clamp(6rem, 20vw, 14rem);
+      font-weight: 900;
+      font-style: italic;
+      background: linear-gradient(135deg, var(--color-warm-brown), var(--color-pink), var(--color-warm-brown));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      filter: drop-shadow(0 4px 16px rgba(181,138,106,0.2));
+    }
+
+    /* Soft spinning flower */
+    @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .spin-slow { animation: spin-slow 20s linear infinite; }
+
+    @keyframes spin-reverse { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+    .spin-reverse { animation: spin-reverse 15s linear infinite; }
+
+    /* Gentle bounce on the flower emoji */
+    @keyframes bounce-soft {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50%       { transform: translateY(-18px) scale(1.06); }
+    }
+    .bounce-soft { animation: bounce-soft 3s ease-in-out infinite; }
+
+    /* CTA button */
+    .home-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 36px;
+      border-radius: 9999px;
+      background-color: var(--color-warm-brown);
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      text-decoration: none;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, background-color 0.2s;
+      box-shadow: 0 8px 24px rgba(181, 138, 106, 0.35);
+      cursor: pointer;
+      border: none;
+    }
+    .home-btn:hover {
+      transform: translateY(-3px) scale(1.04);
+      box-shadow: 0 14px 32px rgba(181, 138, 106, 0.45);
+      background-color: #a07852;
+    }
+    .home-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* Fade in entire page */
+    @keyframes page-enter {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .page-enter { animation: page-enter 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+    /* Card glass */
+    .glass-card-404 {
+      background: rgba(255, 248, 238, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(181,138,106,0.12);
+      border-radius: 2.5rem;
+      box-shadow: 0 20px 60px -10px rgba(74,51,33,0.08), 0 4px 16px rgba(74,51,33,0.04);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--color-cream); }
+    ::-webkit-scrollbar-thumb { background: var(--color-warm-brown); border-radius: 4px; }
+  </style>
+</head>
+<body class="bg-cream text-darkbrown font-sans selection:bg-primary-container selection:text-on-primary-container">
+
+  <!-- Floating petals background -->
+  <div id="petals-container" aria-hidden="true"></div>
+
+  <!-- Ambient background glow blobs -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-primary-container/20 rounded-full blur-[80px]"></div>
+    <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/25 rounded-full blur-[80px]"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-beige/40 rounded-full blur-[60px]"></div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 py-16 text-center">
+    <div class="page-enter glass-card-404 px-8 py-12 md:px-16 md:py-16 max-w-xl w-full relative overflow-hidden">
+
+      <!-- Decorative spinning rings -->
+      <div class="absolute -top-12 -left-12 w-40 h-40 rounded-full border-2 border-primary-container/40 spin-slow pointer-events-none" aria-hidden="true"></div>
+      <div class="absolute -bottom-10 -right-10 w-32 h-32 rounded-full border-2 border-secondary/40 spin-reverse pointer-events-none" aria-hidden="true"></div>
+
+      <!-- Brand link -->
+      <a href="index.html" class="inline-block text-sm font-semibold text-primary/70 hover:text-primary transition mb-6 tracking-widest uppercase font-sans">
+        ← DreamyCrochet05
+      </a>
+
+      <!-- Big flower emoji -->
+      <div class="bounce-soft text-7xl md:text-8xl mb-4 block" role="img" aria-label="Wilting flower">🥀</div>
+
+      <!-- 404 gradient number -->
+      <div class="error-number mb-2" aria-hidden="true">404</div>
+
+      <!-- Heading -->
+      <h1 class="text-xl md:text-2xl font-heading font-bold text-darkbrown mt-4 leading-snug">
+        Oops! This page seems to have wandered away
+        <span class="inline-block ml-1">🌷</span>
+      </h1>
+
+      <!-- Handwritten sub-message -->
+      <p class="mt-3 text-base" style="font-family: var(--font-handwritten); font-size:1.25rem; color: var(--color-warm-brown); font-weight: 600;">
+        Maybe it's off picking wildflowers...
+      </p>
+
+      <!-- Description -->
+      <p class="mt-4 text-sm text-primary/70 leading-relaxed max-w-sm mx-auto font-sans">
+        The page you're looking for doesn't exist or may have been moved. Let's get you back to the handmade magic.
+      </p>
+
+      <!-- Decorative divider -->
+      <div class="flex items-center gap-3 my-7 max-w-xs mx-auto">
+        <div class="flex-1 h-px bg-primary/15"></div>
+        <span class="text-lg">🌸</span>
+        <div class="flex-1 h-px bg-primary/15"></div>
+      </div>
+
+      <!-- CTA Button -->
+      <a href="index.html" class="home-btn">
+        <span class="material-symbols-outlined text-xl" style="line-height:1">home</span>
+        Back to Home
+      </a>
+
+      <!-- Secondary link -->
+      <p class="mt-5 text-xs text-primary/50 font-sans">
+        Or browse our
+        <a href="index.html#best-sellers" class="underline underline-offset-2 hover:text-primary transition">handmade collection</a>
+      </p>
+    </div>
+
+    <!-- Bottom brand note -->
+    <p class="mt-8 text-xs text-primary/40 font-sans tracking-wide">
+      © 2025 DreamyCrochet05 · Handcrafted with ❤️
+    </p>
+  </main>
+
+  <script>
+    // Generate floating petals
+    (function () {
+      const container = document.getElementById('petals-container');
+      const petals = ['🌸', '🌷', '✨', '🌺', '🍃', '🌼'];
+      const count = 12;
+
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement('span');
+        el.className = 'petal';
+        el.textContent = petals[i % petals.length];
+        el.style.left = (Math.random() * 100) + 'vw';
+        el.style.animationDuration = (12 + Math.random() * 14) + 's';
+        el.style.animationDelay = (Math.random() * -20) + 's';
+        el.style.fontSize = (0.9 + Math.random() * 0.8) + 'rem';
+        el.style.opacity = '0';
+        container.appendChild(el);
+      }
+    })();
+  </script>
+</body>
+</html>

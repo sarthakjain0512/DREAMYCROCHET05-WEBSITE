@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DreamyCrochet05 | Premium Handmade Crochet Gifts & Decor</title>
+  <meta name="description" content="Enter a magical handmade flower boutique. DreamyCrochet05 offers premium cottagecore-style crochet bouquets, keychains, and room decor crafted stitch by stitch with love.">
+  
+  <!-- Fonts & Material Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Libraries (Three.js, OrbitControls, GSAP, ScrollTrigger, Confetti, Tailwind) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <!-- Lenis Smooth Scroll Library -->
+  <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.27/bundled/lenis.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  
+  <!-- Tailwind Custom Configuration to align with Stitch colors & fonts -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#B58A6A', // Warm Brown
+            'primary-container': '#FADADD', // Pastel Pink
+            'on-primary-container': '#4A3321', // Dark Brown
+            secondary: '#E7D7FF', // Lavender
+            cream: '#FFF8EE',
+            beige: '#F5E6D3',
+            darkbrown: '#4A3321',
+            // Stitch palette equivalents
+            'cozy-surface': '#fdfcf9',
+            'cozy-surface-low': '#f7f5f0',
+            'cozy-accent': '#8b735b',
+            'cozy-text-dark': '#4a3f35',
+            'cozy-text-muted': '#7c7267'
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+            heading: ['"Playfair Display"', 'serif'],
+            body: ['Inter', 'sans-serif'],
+            handwritten: ['Caveat', 'cursive'],
+          },
+          borderRadius: {
+            'cozy': '1.5rem',
+            'cozy-sm': '0.75rem',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-cream text-darkbrown font-sans selection:bg-primary-container selection:text-on-primary-container">
+
+  <!-- Mouse Follow Glow Element -->
+  <div id="mouse-follow-glow" class="mouse-follow-glow pointer-events-none fixed -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full blur-[100px] bg-gradient-to-r from-primary-container/30 to-secondary/30 opacity-0 transition-opacity duration-700 z-0"></div>
+
+  <!-- Premium Handcrafted Cursor Companion -->
+  <div id="cursor-companion" class="cursor-companion" aria-hidden="true">
+    <div class="yarn-ball-svg-wrapper">
+      <svg viewBox="0 0 100 100" width="100%" height="100%">
+        <defs>
+          <radialGradient id="yarnGradient" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#FFF8EE" />
+            <stop offset="50%" stop-color="#FADADD" />
+            <stop offset="100%" stop-color="#B58A6A" />
+          </radialGradient>
+        </defs>
+        <circle cx="50" cy="50" r="42" fill="url(#yarnGradient)" />
+        <path d="M22,45 Q50,15 78,45" fill="none" stroke="#FFF8EE" stroke-width="4.5" stroke-linecap="round" opacity="0.9" />
+        <path d="M25,32 Q50,68 75,32" fill="none" stroke="#FFF8EE" stroke-width="4.5" stroke-linecap="round" opacity="0.9" />
+        <path d="M32,22 Q68,50 32,78" fill="none" stroke="#FFF8EE" stroke-width="4.5" stroke-linecap="round" opacity="0.9" />
+        <path d="M48,15 Q25,50 48,85" fill="none" stroke="#FFF8EE" stroke-width="4.5" stroke-linecap="round" opacity="0.9" />
+        <path d="M15,48 Q50,80 85,48" fill="none" stroke="#FFF8EE" stroke-width="4.5" stroke-linecap="round" opacity="0.9" />
+      </svg>
+    </div>
+    <div class="flower-svg-wrapper">
+      <svg viewBox="0 0 100 100" width="100%" height="100%">
+        <!-- 5 Petals -->
+        <g stroke="#B58A6A" stroke-width="3" stroke-linecap="round">
+          <circle cx="50" cy="28" r="16" fill="#FADADD" />
+          <circle cx="70" cy="42" r="16" fill="#E7D7FF" />
+          <circle cx="62" cy="66" r="16" fill="#FADADD" />
+          <circle cx="38" cy="66" r="16" fill="#E7D7FF" />
+          <circle cx="30" cy="42" r="16" fill="#FADADD" />
+        </g>
+        <!-- Center Bud -->
+        <circle cx="50" cy="50" r="10" fill="#FFF8EE" stroke="#B58A6A" stroke-width="3" />
+      </svg>
+    </div>
+  </div>
+
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="relative mb-6 animate-float-slow">
+      <div class="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white dark:border-primary/30 shadow-[0_15px_35px_rgba(74,51,33,0.15)] relative">
+        <img src="logo.jpg" alt="DreamyCrochet05 Logo" class="w-full h-full object-cover">
+        <!-- Overlay soft light -->
+        <div class="absolute inset-0 bg-gradient-to-tr from-primary-container/10 to-secondary/15 pointer-events-none"></div>
+      </div>
+      <!-- Soft aura background glow -->
+      <div class="absolute -inset-2 rounded-full bg-gradient-to-r from-primary-container via-secondary to-primary opacity-30 blur-md -z-10 animate-pulse"></div>
+    </div>
+    <h1 class="loader-logo italic font-heading !mt-0">DreamyCrochet05</h1>
+    <p class="text-xs tracking-widest text-primary uppercase mt-2">Winding yarn and love...</p>
+    <!-- Enhanced loading dots -->
+    <div class="flex gap-2 mt-4">
+      <span class="w-2.5 h-2.5 rounded-full bg-primary-container animate-bounce" style="animation-delay: 0.1s"></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-primary animate-bounce" style="animation-delay: 0.2s"></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-secondary animate-bounce" style="animation-delay: 0.3s"></span>
+    </div>
+  </div>
+
+  <!-- Main Boutique Site Page wrapper -->
+  <div id="main-boutique" class="relative z-30 min-h-screen">
+    
+    <!-- Premium Navigation Header -->
+    <header class="sticky top-0 w-full z-50 bg-cream/70 dark:bg-black/40 backdrop-blur-md border-b border-primary/10 transition-all duration-300">
+      <div class="flex justify-between items-center w-full px-6 md:px-16 py-4 max-w-7xl mx-auto">
+        <a href="#" class="text-2xl font-bold font-heading italic text-primary dark:text-primary-container hover:opacity-80 transition duration-300">
+          DreamyCrochet05
+        </a>
+        <nav class="hidden md:flex gap-8">
+          <a href="#best-sellers" class="text-darkbrown dark:text-beige hover:text-primary transition font-medium text-sm">Shop Our Collections</a>
+          <a href="#why-choose-us" class="text-darkbrown dark:text-beige hover:text-primary transition font-medium text-sm">Why Choose Us</a>
+          <a href="#custom-order-section" class="text-darkbrown dark:text-beige hover:text-primary transition font-medium text-sm">Custom Order</a>
+          <a href="#handmade-process" class="text-darkbrown dark:text-beige hover:text-primary transition font-medium text-sm">Process</a>
+          <a href="#founder" class="text-darkbrown dark:text-beige hover:text-primary transition font-medium text-sm">Our Story</a>
+        </nav>
+        
+        <div class="flex items-center gap-3">
+          <!-- Music Toggle -->
+          <button id="music-toggle" class="p-2 rounded-full hover:bg-beige/40 text-darkbrown dark:text-beige transition clickable active:scale-90" title="Toggle Music">
+            <span id="music-icon" class="material-symbols-outlined text-xl">music_off</span>
+          </button>
+
+          <!-- Wishlist Badge -->
+          <button id="header-wishlist-btn" class="p-2 rounded-full hover:bg-beige/40 text-darkbrown dark:text-beige transition clickable relative active:scale-90" title="Wishlist">
+            <span class="material-symbols-outlined text-xl">favorite</span>
+            <span id="wishlist-counter" class="absolute -top-1 -right-1 bg-primary-container text-on-primary-container text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center border border-white" style="display:none;">0</span>
+          </button>
+
+          <!-- Mobile Hamburger Button -->
+          <button id="mobile-menu-btn" class="md:hidden p-2 rounded-full hover:bg-beige/40 text-darkbrown dark:text-beige transition clickable active:scale-90" title="Menu" aria-label="Open navigation menu" aria-expanded="false">
+            <span id="mobile-menu-icon" class="material-symbols-outlined text-xl">menu</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobile-nav-overlay" class="mobile-nav-overlay" aria-hidden="true"></div>
+    <nav id="mobile-nav-drawer" class="mobile-nav-drawer" aria-label="Mobile navigation">
+      <div class="flex items-center justify-between mb-8">
+        <span class="text-xl font-heading font-bold italic text-primary">DreamyCrochet05</span>
+        <button id="mobile-menu-close-btn" class="p-2 rounded-full hover:bg-beige/40 text-darkbrown transition clickable active:scale-90" aria-label="Close menu">
+          <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+      </div>
+      <div class="flex flex-col gap-1">
+        <a href="#best-sellers" class="mobile-nav-link">🛍️&nbsp; Shop</a>
+        <a href="#why-choose-us" class="mobile-nav-link">🌸&nbsp; Why Choose Us</a>
+        <a href="#custom-order-section" class="mobile-nav-link">✏️&nbsp; Custom Order</a>
+        <a href="#handmade-process" class="mobile-nav-link">🧶&nbsp; Process</a>
+        <a href="#founder" class="mobile-nav-link">💛&nbsp; Our Story</a>
+      </div>
+      <div class="mt-8 pt-6 border-t border-primary/10 text-center">
+        <p class="text-xs text-primary/50 font-handwritten text-lg">Made with love, stitch by stitch ✨</p>
+      </div>
+    </nav>
+
+    <!-- Section 1: Hero Welcome & Quick Recommendation Quiz Intro -->
+    <section class="py-16 md:py-24 px-6 max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12 relative">
+      <div class="flex-1 space-y-8 z-10">
+        <span class="inline-block px-4 py-1.5 rounded-full bg-primary-container/60 text-on-primary-container font-semibold text-xs tracking-wider uppercase">Handcrafted Masterpieces</span>
+        
+        <h1 id="main-hero-title" class="text-4xl md:text-6xl font-heading font-bold text-darkbrown leading-tight">
+          Flowers That Never Fade.
+          <br>
+          <span class="text-primary dark:text-primary-container bg-gradient-to-r from-primary-container/50 to-secondary/40 dark:from-primary/30 dark:to-secondary/20 px-6 py-2 rounded-2xl filter drop-shadow-sm inline-block mt-3 border border-primary/10 shadow-sm text-2xl md:text-4xl font-serif">
+            Memories That Make Forever.
+          </span>
+        </h1>
+
+        <!-- Premium Subtitle: Emotional Hindi-English Message -->
+        <div id="hero-subtitle-block" class="hero-subtitle-container relative p-5 max-w-lg bg-beige/15 dark:bg-black/10 border border-primary/5 rounded-2xl shadow-sm">
+          <!-- Soft glow backdrop -->
+          <div class="hero-subtitle-glow"></div>
+
+          <!-- Floating decorative elements -->
+          <span class="hero-deco hero-deco-heart" aria-hidden="true">❤️</span>
+          <span class="hero-deco hero-deco-flower" aria-hidden="true">🌷</span>
+          <span class="hero-deco hero-deco-sparkle1" aria-hidden="true">✨</span>
+          <span class="hero-deco hero-deco-sparkle2" aria-hidden="true">✨</span>
+
+          <!-- Line 1: Hindi-English emotional quote -->
+          <p id="hero-subtitle-line1" class="hero-subtitle-line1 font-body font-semibold leading-relaxed">
+            Har stitch mein thoda sa waqt, thodi si mehnat aur bahut saara pyaar chhupa hai.&nbsp;❤️
+          </p>
+
+          <!-- Line 2: Brand tagline -->
+          <p id="hero-subtitle-line2" class="hero-subtitle-line2 font-body font-medium mt-2 tracking-wide text-xs">
+            Handmade by Mom&nbsp;•&nbsp;Made to be Remembered&nbsp;🌷
+          </p>
+        </div>
+
+        <p class="text-sm md:text-base text-primary/80 leading-relaxed max-w-md">
+          Bring warmth to your hostel rooms, offices, and study desks. Find the perfect customized gift for your friends and aesthetic-loving companions.
+        </p>
+
+        <div class="flex flex-wrap gap-4 pt-2">
+          <a href="#best-sellers" class="px-8 py-3 rounded-full bg-primary text-white hover:bg-primary/95 hover:scale-105 active:scale-95 duration-300 font-semibold clickable shadow-md text-sm flex items-center justify-center">
+            Shop Collection
+          </a>
+          <button id="start-quiz-btn" class="px-6 py-3 rounded-full bg-primary-container text-on-primary-container hover:shadow-lg hover:scale-105 active:scale-95 duration-300 font-semibold clickable shadow-md text-sm">
+            Take Gift Quiz 🌸
+          </button>
+        </div>
+      </div>
+
+      <div id="hero-bouquet-container" class="flex-1 w-full relative z-10">
+        <div class="absolute inset-0 bg-primary-container/20 rounded-3xl blur-[40px] -z-10"></div>
+        <!-- Floating Particles around bouquet -->
+        <div class="absolute inset-0 pointer-events-none overflow-hidden z-20">
+          <span class="absolute text-sm animate-float-slow" style="top: 10%; left: 15%;">✨</span>
+          <span class="absolute text-xs animate-float-medium" style="bottom: 20%; right: 15%;">🌸</span>
+          <span class="absolute text-xs animate-float-fast" style="top: 60%; left: 5%;">✨</span>
+          <span class="absolute text-sm animate-float-slow" style="top: 30%; right: 5%;">🌸</span>
+        </div>
+        <img id="hero-bouquet-img" src="photoes/hero_cover.png" alt="Crochet bouquet presentation" class="w-full h-auto rounded-3xl object-cover shadow-xl border-4 border-white transform-gpu">
+      </div>
+    </section>
+
+    <!-- Section 2: Shop Our Collections with Card Layout System -->
+    <section id="best-sellers" class="py-24 px-6 max-w-7xl mx-auto reveal-section">
+      <div class="text-center mb-10 relative">
+        <span class="text-font-handwritten text-4xl text-primary block mb-2">Shop Our Collections</span>
+        <h2 class="text-3xl md:text-4xl font-heading font-bold text-darkbrown">Our Beloved Classics</h2>
+        <p class="text-sm text-primary/70 mt-2">Finely detailed, premium pieces made with absolute care.</p>
+      </div>
+
+      <!-- Layout Controls & Upload Button Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-10 px-1">
+        <!-- Layout Toggle Buttons -->
+        <div class="flex items-center gap-2 bg-white/60 backdrop-blur-sm border border-primary/10 rounded-2xl p-1.5 shadow-sm">
+          <button id="layout-1col" class="layout-btn active-layout p-2 rounded-xl transition-all" title="Single Column">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="5" rx="2"/><rect x="3" y="11" width="18" height="5" rx="2"/><rect x="3" y="18" width="18" height="3" rx="1.5"/></svg>
+          </button>
+          <button id="layout-2col" class="layout-btn p-2 rounded-xl transition-all" title="2 Columns">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="18" rx="2"/><rect x="13" y="3" width="8" height="18" rx="2"/></svg>
+          </button>
+          <button id="layout-3col" class="layout-btn p-2 rounded-xl transition-all" title="3 Columns">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><rect x="2" y="3" width="6" height="18" rx="1.5"/><rect x="9" y="3" width="6" height="18" rx="1.5"/><rect x="16" y="3" width="6" height="18" rx="1.5"/></svg>
+          </button>
+          <button id="layout-list" class="layout-btn p-2 rounded-xl transition-all" title="List View">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="2" rx="1"/><rect x="3" y="11" width="18" height="2" rx="1"/><rect x="3" y="17" width="18" height="2" rx="1"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Products Grid (dynamic layout via JS) -->
+      <div id="products-grid" class="grid grid-cols-1 md:grid-cols-3 gap-10 transition-all duration-500">
+
+        <!-- Card 1: Pastel Tulips -->
+        <div class="product-card-container glass-card rounded-cozy p-4 relative group flex flex-col h-full cursor-pointer" data-product-name="Pastel Tulips">
+          <div class="relative overflow-hidden rounded-cozy-sm mb-6 aspect-[4/3] image-container">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuASmYaUEqtiY2wH3jiCgJSFQYGyJM8BYwkgd4vITCkMeXBwumXyg8otUSXlDZcHr0ticf5nPN_Uuv5ZQCbXK5YuU5ySXM3V7cwAgH3GL6fHLJgiTzzx_d3y92WHJo6mYNi8QV6jsOuHUqoLabccynhPombFczjW2m0y1ujUtl-rba6TJ3BX1ZQzeCttbwyJq1fL17n6wtPctDJVX2fCHCgLNXfUGllvz1RWswUXxiGX4cWdkOyi4UU15cd7jhuqfeeuHDF_wq3Vtjs" alt="Pastel Tulips" class="w-full h-full object-contain bg-beige/30 group-hover:scale-105 duration-500">
+            <button class="wishlist-heart-btn absolute top-4 right-4 bg-white/80 backdrop-blur-sm p-2 rounded-full text-primary hover:bg-white transition-colors duration-200 clickable" data-product-name="Pastel Tulips">
+              <span class="material-symbols-outlined text-xl">favorite</span>
+            </button>
+            <span class="absolute bottom-4 left-4 px-3 py-1 rounded-full bg-white/90 text-xs font-semibold text-darkbrown">Best Seller</span>
+          </div>
+          <div class="flex-grow flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-start mb-2 gap-2">
+                <h3 class="font-serif text-xl font-bold text-darkbrown line-clamp-1">Pastel Tulips</h3>
+                <span class="text-primary font-semibold shrink-0">₹350</span>
+              </div>
+              <p class="text-primary/70 text-sm leading-relaxed mb-3 line-clamp-2">A gentle touch of spring that blooms forever.</p>
+            </div>
+            <div class="mt-auto">
+              <span class="inline-block px-3 py-1 text-xs rounded-full bg-primary-container text-on-primary-container font-semibold">Bouquet</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Sunny Sunflower -->
+        <div class="product-card-container glass-card rounded-cozy p-4 relative group flex flex-col h-full cursor-pointer" data-product-name="Sunny Sunflower">
+          <div class="relative overflow-hidden rounded-cozy-sm mb-6 aspect-[4/3] image-container">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiVZ-eOCmlOjwt7GPfBrywqnFIFVUwYFQWZ9GAIhw-DNiz66dJJNAYvy0i-wnZL5ej2W7DIAQ-nyk5okomL5Otc21LSGDj8QKBh__dbYiWkmyad4YNYb9dSD4ax92a4pue9_HQp7JScwzkybuqoxOadiaI3jxgdqnFEWGDBT19qG64Vks7QaAk_ROe3zrheOwJCupdbPJSpDZF8uXTLWH5WsEtIUE2dB8XfM_a_t4caw7P18bFtyQ2vaRAcUmc38UgUPeiQSB_nro" alt="Sunny Sunflower" class="w-full h-full object-contain bg-beige/30 group-hover:scale-105 duration-500">
+            <button class="wishlist-heart-btn absolute top-4 right-4 bg-white/80 backdrop-blur-sm p-2 rounded-full text-primary hover:bg-white transition-colors duration-200 clickable" data-product-name="Sunny Sunflower">
+              <span class="material-symbols-outlined text-xl">favorite</span>
+            </button>
+            <span class="absolute bottom-4 left-4 px-3 py-1 rounded-full bg-white/90 text-xs font-semibold text-darkbrown">Cozy Vibe</span>
+          </div>
+          <div class="flex-grow flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-start mb-2 gap-2">
+                <h3 class="font-serif text-xl font-bold text-darkbrown line-clamp-1">Sunny Sunflower</h3>
+                <span class="text-primary font-semibold shrink-0">₹280</span>
+              </div>
+              <p class="text-primary/70 text-sm leading-relaxed mb-3 line-clamp-2">Brighten up study desks and hosteling corners.</p>
+            </div>
+            <div class="mt-auto">
+              <span class="inline-block px-3 py-1 text-xs rounded-full bg-primary-container text-on-primary-container font-semibold">Single Stem</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Cozy Plushies -->
+        <div class="product-card-container glass-card rounded-cozy p-4 relative group flex flex-col h-full cursor-pointer" data-product-name="Cozy Plushies">
+          <div class="relative overflow-hidden rounded-cozy-sm mb-6 aspect-[4/3] image-container">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuARR88LBW3NDWz5nd3y8nZwPYAfvrWSOw2BPY4xpERv-Z5xHGx_S_C8NsGyEhUJvZkmYGFKsTm2Rj7Pf9uXMFxQZKpN-tcYRS3xK-Rqnailc-56fhBrP-IPEWfFPfLopND0sKlbC8n7dl24KL3bxTKXd-CEpF4i-8REMoZtcf1gfT2vWfmsDNij_zi2nxMRWJ5xLk5ObsLWYUNLMjLMU7gM-cHJaNxO3MND5fibBeIG2wV-XHW2dM2Th4DZ7md-eqBTYfGG70LBj2U" alt="Cozy Plushies" class="w-full h-full object-contain bg-beige/30 group-hover:scale-105 duration-500">
+            <button class="wishlist-heart-btn absolute top-4 right-4 bg-white/80 backdrop-blur-sm p-2 rounded-full text-primary hover:bg-white transition-colors duration-200 clickable" data-product-name="Cozy Plushies">
+              <span class="material-symbols-outlined text-xl">favorite</span>
+            </button>
+            <span class="absolute bottom-4 left-4 px-3 py-1 rounded-full bg-white/90 text-xs font-semibold text-darkbrown">Mini Art</span>
+          </div>
+          <div class="flex-grow flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-start mb-2 gap-2">
+                <h3 class="font-serif text-xl font-bold text-darkbrown line-clamp-1">Cozy Plushies</h3>
+                <span class="text-primary font-semibold shrink-0">From ₹150</span>
+              </div>
+              <p class="text-primary/70 text-sm leading-relaxed mb-3 line-clamp-2">Hypoallergenic cotton knit tiny companions.</p>
+            </div>
+            <div class="mt-auto">
+              <span class="inline-block px-3 py-1 text-xs rounded-full bg-primary-container text-on-primary-container font-semibold">Amigurumi</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4: Rose Bouquet -->
+        <div class="product-card-container glass-card rounded-cozy p-4 relative group flex flex-col h-full cursor-pointer" data-product-name="Rose Bouquet">
+          <div class="relative overflow-hidden rounded-cozy-sm mb-6 aspect-[4/3] image-container">
+            <img src="photoes/crochet_rose.png" alt="Crochet Rose Bouquet" class="w-full h-full object-contain bg-beige/30 group-hover:scale-105 duration-500" onerror="this.onerror=null; this.src='/images/product-placeholder.webp';">
+            <button class="wishlist-heart-btn absolute top-4 right-4 bg-white/80 backdrop-blur-sm p-2 rounded-full text-primary hover:bg-white transition-colors duration-200 clickable" data-product-name="Rose Bouquet">
+              <span class="material-symbols-outlined text-xl">favorite</span>
+            </button>
+            <span class="absolute bottom-4 left-4 px-3 py-1 rounded-full bg-white/90 text-xs font-semibold text-darkbrown">New 🌹</span>
+          </div>
+          <div class="flex-grow flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-start mb-2 gap-2">
+                <h3 class="font-serif text-xl font-bold text-darkbrown line-clamp-1">Rose Bouquet</h3>
+                <span class="text-primary font-semibold shrink-0">₹400</span>
+              </div>
+              <p class="text-primary/70 text-sm leading-relaxed mb-3 line-clamp-2">A timeless symbol of love, handstitched petal by petal.</p>
+            </div>
+            <div class="mt-auto">
+              <span class="inline-block px-3 py-1 text-xs rounded-full bg-primary-container text-on-primary-container font-semibold">Bouquet</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 5: Keychain Set -->
+        <div class="product-card-container glass-card rounded-cozy p-4 relative group flex flex-col h-full cursor-pointer" data-product-name="Keychain Set">
+          <div class="relative overflow-hidden rounded-cozy-sm mb-6 aspect-[4/3] image-container">
+            <div class="w-full h-full bg-gradient-to-br from-primary-container/60 via-secondary/40 to-beige flex items-center justify-center">
+              <span class="text-7xl">🔑</span>
+            </div>
+            <button class="wishlist-heart-btn absolute top-4 right-4 bg-white/80 backdrop-blur-sm p-2 rounded-full text-primary hover:bg-white transition-colors duration-200 clickable" data-product-name="Keychain Set">
+              <span class="material-symbols-outlined text-xl">favorite</span>
+            </button>
+            <span class="absolute bottom-4 left-4 px-3 py-1 rounded-full bg-white/90 text-xs font-semibold text-darkbrown">Popular 🌸</span>
+          </div>
+          <div class="flex-grow flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-start mb-2 gap-2">
+                <h3 class="font-serif text-xl font-bold text-darkbrown line-clamp-1">Keychain Set</h3>
+                <span class="text-primary font-semibold shrink-0">₹120</span>
+              </div>
+              <p class="text-primary/70 text-sm leading-relaxed mb-3 line-clamp-2">Adorable mini crochet keychains, perfect for gifting.</p>
+            </div>
+            <div class="mt-auto">
+              <span class="inline-block px-3 py-1 text-xs rounded-full bg-primary-container text-on-primary-container font-semibold">Accessory</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 6: Custom Order -->
+        <div class="product-card-container glass-card rounded-cozy p-4 relative group flex flex-col h-full cursor-pointer" data-product-name="Custom Order">
+          <div class="relative overflow-hidden rounded-cozy-sm mb-6 aspect-[4/3] image-container">
+            <div class="w-full h-full bg-gradient-to-br from-secondary/50 via-primary-container/40 to-beige flex flex-col items-center justify-center gap-3">
+              <span class="text-6xl">🎁</span>
+              <span class="text-sm font-semibold text-primary px-3 text-center">Your dream design, made by Mom</span>
+            </div>
+            <button class="wishlist-heart-btn absolute top-4 right-4 bg-white/80 backdrop-blur-sm p-2 rounded-full text-primary hover:bg-white transition-colors duration-200 clickable" data-product-name="Custom Order">
+              <span class="material-symbols-outlined text-xl">favorite</span>
+            </button>
+            <span class="absolute bottom-4 left-4 px-3 py-1 rounded-full bg-white/90 text-xs font-semibold text-darkbrown">Made-to-Order ✨</span>
+          </div>
+          <div class="flex-grow flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-start mb-2 gap-2">
+                <h3 class="font-serif text-xl font-bold text-darkbrown line-clamp-1">Custom Order</h3>
+                <span class="text-primary font-semibold shrink-0">Ask Us</span>
+              </div>
+              <p class="text-primary/70 text-sm leading-relaxed mb-3 line-clamp-2">Design your own crochet gift — any flower, any color, any size.</p>
+            </div>
+            <div class="mt-auto">
+              <span class="inline-block px-3 py-1 text-xs rounded-full bg-primary-container text-on-primary-container font-semibold">Custom</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic uploaded cards injected here by JS -->
+        <div id="custom-products-container"></div>
+
+        <!-- "Add Your Product" Upload Card -->
+        <button id="add-product-card-btn" class="upload-card-btn glass-card rounded-3xl p-3 relative group overflow-hidden cursor-pointer border-2 border-dashed border-primary/30 hover:border-primary/60 flex flex-col items-center justify-center min-h-[420px] transition-all duration-300 hover:bg-primary-container/10 clickable" onclick="document.getElementById('upload-product-modal').classList.remove('hidden'); setTimeout(()=>document.getElementById('upload-product-modal').classList.add('active'),50)">
+          <div class="flex flex-col items-center gap-4 text-center px-6">
+            <div class="w-20 h-20 rounded-full bg-primary-container/40 flex items-center justify-center group-hover:scale-110 group-hover:bg-primary-container/60 transition-all duration-300">
+              <span class="material-symbols-outlined text-4xl text-primary">add_photo_alternate</span>
+            </div>
+            <div>
+              <p class="font-heading font-bold text-xl text-darkbrown mb-1">Add Your Product</p>
+              <p class="text-sm text-primary/60">Upload a photo &amp; add product details</p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-2 mt-2">
+              <span class="px-3 py-1 text-xs rounded-full bg-primary-container/50 text-on-primary-container">📸 Photo Upload</span>
+              <span class="px-3 py-1 text-xs rounded-full bg-secondary/50 text-darkbrown">💾 Auto-Saved</span>
+            </div>
+          </div>
+        </button>
+
+      </div>
+    </section>
+
+
+
+
+    <!-- Section 3: Why Crochet Flowers? Comparison Infographic -->
+    <section id="why-crochet" class="py-24 bg-beige/30 dark:bg-black/30 border-y border-primary/5 reveal-section">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-heading font-bold text-darkbrown">Why Crochet Flowers?</h2>
+          <p class="text-sm text-primary/70 mt-2">Everlasting blooms vs ephemeral petals</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="glass-card p-8 rounded-3xl text-center space-y-4">
+            <div class="w-16 h-16 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center mx-auto shadow-md">
+              <span class="material-symbols-outlined text-3xl">all_inclusive</span>
+            </div>
+            <h3 class="font-heading font-bold text-xl">Never Fade</h3>
+            <p class="text-sm text-primary/80 leading-relaxed">
+              Real flowers wither in a week. Our yarn bouquets capture memory forever, remaining bright and beautiful.
+            </p>
+          </div>
+
+          <div class="glass-card p-8 rounded-3xl text-center space-y-4">
+            <div class="w-16 h-16 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center mx-auto shadow-md">
+              <span class="material-symbols-outlined text-3xl">volunteer_activism</span>
+            </div>
+            <h3 class="font-heading font-bold text-xl">Crafted with Love</h3>
+            <p class="text-sm text-primary/80 leading-relaxed">
+              Every single flower is handmade stitch by stitch, expressing warm human connection that mass-produced gifts lack.
+            </p>
+          </div>
+
+          <div class="glass-card p-8 rounded-3xl text-center space-y-4">
+            <div class="w-16 h-16 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center mx-auto shadow-md">
+              <span class="material-symbols-outlined text-3xl">palette</span>
+            </div>
+            <h3 class="font-heading font-bold text-xl">Endless Customization</h3>
+            <p class="text-sm text-primary/80 leading-relaxed">
+              Mix and match colors, wrapper papers, ribbons, and flower types to symbolize exactly what your heart wants to say.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Why Choose DreamyCrochet05? -->
+    <section id="why-choose-us" class="py-24 bg-gradient-to-b from-cream via-beige/10 to-cream dark:from-black/20 dark:to-darkbrown/20 border-y border-primary/5 reveal-section relative overflow-hidden">
+      <!-- Subtle Floating Sparkles and Cottagecore Doodles -->
+      <div class="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-30 select-none">
+        <span class="absolute text-xl animate-float-slow" style="top: 15%; left: 8%;">✨</span>
+        <span class="absolute text-2xl animate-float-medium" style="bottom: 20%; right: 12%;">🌸</span>
+        <span class="absolute text-lg animate-float-fast" style="top: 25%; right: 6%;">✨</span>
+        <span class="absolute text-xl animate-float-slow" style="bottom: 15%; left: 14%;">🧶</span>
+        <span class="absolute text-sm animate-float-medium" style="top: 70%; left: 5%;">✨</span>
+        <span class="absolute text-lg animate-float-fast" style="bottom: 75%; right: 20%;">🌸</span>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-6 relative z-10">
+        <!-- Section Header -->
+        <div class="text-center mb-16">
+          <span class="text-font-handwritten text-4xl text-primary block mb-2 font-bold">Crafted for You</span>
+          <h2 class="text-3xl md:text-4xl font-heading font-bold text-darkbrown">Why Choose DreamyCrochet05?</h2>
+          <p class="text-sm text-primary/70 mt-2 max-w-2xl mx-auto">Handmade crochet creations crafted with love, care, and premium quality for every special moment.</p>
+        </div>
+
+        <!-- Cards Container -->
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          <!-- Card 1: Handmade -->
+          <div class="why-choose-card glass-card p-6 rounded-3xl text-center relative group flex flex-col justify-between items-center overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-2">
+            <div class="relative w-16 h-16 mb-6 flex items-center justify-center">
+              <!-- Glow backdrop -->
+              <div class="absolute inset-0 bg-primary-container/40 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+              <!-- Icon -->
+              <div class="floating-icon text-primary dark:text-primary-container group-hover:scale-110 group-hover:rotate-6 duration-300 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-scissors"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="9.8" y1="8.2" x2="21" y2="19.4"/><line x1="14.8" y1="14.8" x2="21" y2="8.6"/><line x1="9.8" y1="15.8" x2="12" y2="13.6"/></svg>
+              </div>
+            </div>
+            <h3 class="font-heading font-bold text-xl mb-3 group-hover:text-primary transition duration-300">Handmade</h3>
+            <p class="text-xs text-primary/80 leading-relaxed">
+              Every crochet creation is carefully handcrafted with attention to every stitch, making each piece unique.
+            </p>
+          </div>
+
+          <!-- Card 2: Customized Gifts -->
+          <div class="why-choose-card glass-card p-6 rounded-3xl text-center relative group flex flex-col justify-between items-center overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-2">
+            <div class="relative w-16 h-16 mb-6 flex items-center justify-center">
+              <!-- Glow backdrop -->
+              <div class="absolute inset-0 bg-primary-container/40 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+              <!-- Icon -->
+              <div class="floating-icon text-primary dark:text-primary-container group-hover:scale-110 group-hover:rotate-6 duration-300 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gift"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.75 4.75 0 0 1 12 8"/><path d="M16.5 8a2.5 2.5 0 0 0 0-5A4.75 4.75 0 0 0 12 8"/></svg>
+              </div>
+            </div>
+            <h3 class="font-heading font-bold text-xl mb-3 group-hover:text-primary transition duration-300">Customized Gifts</h3>
+            <p class="text-xs text-primary/80 leading-relaxed">
+              Choose your favorite flower, color, or design and we'll create a personalized crochet gift just for you.
+            </p>
+          </div>
+
+          <!-- Card 3: Made by Mom -->
+          <div class="why-choose-card glass-card p-6 rounded-3xl text-center relative group flex flex-col justify-between items-center overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-2">
+            <div class="relative w-16 h-16 mb-6 flex items-center justify-center">
+              <!-- Glow backdrop -->
+              <div class="absolute inset-0 bg-primary-container/40 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+              <!-- Icon -->
+              <div class="floating-icon text-primary dark:text-primary-container group-hover:scale-110 group-hover:rotate-6 duration-300 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+              </div>
+            </div>
+            <h3 class="font-heading font-bold text-xl mb-3 group-hover:text-primary transition duration-300">Made by Mom</h3>
+            <p class="text-xs text-primary/80 leading-relaxed">
+              Lovingly handmade by Mom with patience, passion, and years of crochet experience.
+            </p>
+          </div>
+
+          <!-- Card 4: Best Prices -->
+          <div class="why-choose-card glass-card p-6 rounded-3xl text-center relative group flex flex-col justify-between items-center overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-2">
+            <div class="relative w-16 h-16 mb-6 flex items-center justify-center">
+              <!-- Glow backdrop -->
+              <div class="absolute inset-0 bg-primary-container/40 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+              <!-- Icon -->
+              <div class="floating-icon text-primary dark:text-primary-container group-hover:scale-110 group-hover:rotate-6 duration-300 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-coins"><circle cx="8" cy="8" r="6"/><circle cx="18" cy="18" r="6"/><line x1="12" y1="12" x2="12" y2="12.01"/><line x1="8" y1="14" x2="8" y2="14.01"/><line x1="16" y1="14" x2="16" y2="14.01"/><line x1="12" y1="16" x2="12" y2="16.01"/><line x1="14" y1="8" x2="14" y2="8.01"/><line x1="18" y1="10" x2="18" y2="10.01"/><line x1="14" y1="12" x2="14" y2="12.01"/></svg>
+              </div>
+            </div>
+            <h3 class="font-heading font-bold text-xl mb-3 group-hover:text-primary transition duration-300">Best Prices</h3>
+            <p class="text-xs text-primary/80 leading-relaxed">
+              Premium handmade crochet products at affordable prices without compromising on quality.
+            </p>
+          </div>
+
+          <!-- Card 5: Premium Quality -->
+          <div class="why-choose-card glass-card p-6 rounded-3xl text-center relative group flex flex-col justify-between items-center overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-2">
+            <div class="relative w-16 h-16 mb-6 flex items-center justify-center">
+              <!-- Glow backdrop -->
+              <div class="absolute inset-0 bg-primary-container/40 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+              <!-- Icon -->
+              <div class="floating-icon text-primary dark:text-primary-container group-hover:scale-110 group-hover:rotate-6 duration-300 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z"/><path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5Z"/><path d="m19 17 1 2.5 2.5.5-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1Z"/></svg>
+              </div>
+            </div>
+            <h3 class="font-heading font-bold text-xl mb-3 group-hover:text-primary transition duration-300">Premium Quality</h3>
+            <p class="text-xs text-primary/80 leading-relaxed">
+              Made using soft, durable yarn with neat finishing, ensuring long-lasting beauty and craftsmanship.
+            </p>
+          </div>
+        </div>
+
+        <!-- Bottom Section -->
+        <div class="text-center mt-16 space-y-6">
+          <p class="font-handwritten text-2xl md:text-3xl text-primary font-bold tracking-wide italic">
+            "Handmade with Love &bull; Crafted with Care &bull; Made to be Remembered ❤️"
+          </p>
+          <div>
+            <a href="#custom-order-section" class="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-primary text-white font-semibold hover:bg-primary/95 hover:scale-105 active:scale-95 transition-all duration-300 shadow-md clickable text-sm">
+              🌸 Request a Custom Order
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 6: Handmade Process (Timeline Storytelling) -->
+    <section id="handmade-process" class="py-24 px-6 max-w-7xl mx-auto reveal-section">
+      <div class="text-center mb-20">
+        <span class="text-font-handwritten text-4xl text-primary block mb-2">Made with Devotion</span>
+        <h2 class="text-3xl md:text-4xl font-heading font-bold text-darkbrown">Stitch by Stitch Journey</h2>
+        <p class="text-sm text-primary/70 mt-2">Witness how raw yarn becomes a memory-holding art piece</p>
+      </div>
+
+      <div class="timeline-container">
+        <!-- Connecting Threads Line -->
+        <svg class="timeline-line-svg">
+          <line x1="2" y1="0" x2="2" y2="1000" class="timeline-path"/>
+        </svg>
+
+        <!-- Step 1 -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content glass-card p-6">
+            <h4 class="font-heading font-bold text-xl text-primary mb-2">1. Yarn Selection</h4>
+            <p class="text-sm text-primary/80 leading-relaxed">
+              We source the softest, premium organic cotton yarns. Free from chemicals, durable, and featuring rich pastel dyes.
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content glass-card p-6">
+            <h4 class="font-heading font-bold text-xl text-primary mb-2">2. Hand Crocheting</h4>
+            <p class="text-sm text-primary/80 leading-relaxed">
+              Using fine needle points, our crafters stitch each petal carefully. It takes hours of focus to form consistent stitches.
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content glass-card p-6">
+            <h4 class="font-heading font-bold text-xl text-primary mb-2">3. Details & Assembly</h4>
+            <p class="text-sm text-primary/80 leading-relaxed">
+              We wire the stems for flexible structural balance, matching petals together to build complete, lifelike blossoms.
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content glass-card p-6">
+            <h4 class="font-heading font-bold text-xl text-primary mb-2">4. Elegant Wrap</h4>
+            <p class="text-sm text-primary/80 leading-relaxed">
+              Finally, we hand-wrap the collection in classic craft papers, tieing silk ribbons and attaching handwritten notes of joy.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION: BRING YOUR DREAM TO LIFE (Custom Order CTA) ===== -->
+    <section id="custom-order-section" class="py-24 px-6 relative overflow-hidden reveal-section">
+      <!-- Layered Background Blobs -->
+      <div class="absolute inset-0 -z-10">
+        <div class="absolute top-0 left-1/4 w-96 h-96 bg-primary-container/30 rounded-full blur-[80px] animate-float-slow"></div>
+        <div class="absolute bottom-0 right-1/4 w-80 h-80 bg-secondary/25 rounded-full blur-[80px] animate-float-medium"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-beige/40 rounded-full blur-[120px] -z-10"></div>
+      </div>
+
+      <div class="max-w-6xl mx-auto">
+        <!-- Section Header -->
+        <div class="text-center mb-16 space-y-4">
+          <span class="inline-block px-5 py-2 rounded-full bg-primary-container/70 text-on-primary-container text-xs font-bold tracking-widest uppercase border border-primary/10">✨ Made Just For You</span>
+          <h2 class="text-4xl md:text-6xl font-heading font-bold text-darkbrown leading-tight">
+            ✨ Bring Your <span class="text-primary italic">Dream</span> To Life
+          </h2>
+          <p class="text-base md:text-lg text-primary/80 leading-relaxed max-w-2xl mx-auto font-medium">
+            Seen a crochet design on Pinterest, Instagram, Google, or anywhere else?<br>
+            <span class="text-darkbrown font-semibold">Upload your inspiration and we'll recreate it with love.</span>
+          </p>
+        </div>
+
+        <!-- 3-step How It Works -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+          <div class="glass-card p-8 rounded-3xl text-center group hover:scale-105 transition-transform duration-300 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-24 h-24 bg-primary-container/20 rounded-full blur-2xl"></div>
+            <div class="w-16 h-16 rounded-full bg-primary-container flex items-center justify-center mx-auto mb-5 text-3xl shadow-md group-hover:scale-110 transition-transform duration-300">📸</div>
+            <h3 class="font-heading font-bold text-xl text-darkbrown mb-3">1. Share Your Vision</h3>
+            <p class="text-sm text-primary/80 leading-relaxed">Found a design you love? Upload up to 5 inspiration photos from anywhere on the internet.</p>
+          </div>
+          <div class="glass-card p-8 rounded-3xl text-center group hover:scale-105 transition-transform duration-300 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-24 h-24 bg-secondary/20 rounded-full blur-2xl"></div>
+            <div class="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mx-auto mb-5 text-3xl shadow-md group-hover:scale-110 transition-transform duration-300">🧶</div>
+            <h3 class="font-heading font-bold text-xl text-darkbrown mb-3">2. We Craft It</h3>
+            <p class="text-sm text-primary/80 leading-relaxed">Mom handcrafts your design stitch by stitch using premium organic cotton yarn.</p>
+          </div>
+          <div class="glass-card p-8 rounded-3xl text-center group hover:scale-105 transition-transform duration-300 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-24 h-24 bg-primary-container/20 rounded-full blur-2xl"></div>
+            <div class="w-16 h-16 rounded-full bg-primary-container flex items-center justify-center mx-auto mb-5 text-3xl shadow-md group-hover:scale-110 transition-transform duration-300">💌</div>
+            <h3 class="font-heading font-bold text-xl text-darkbrown mb-3">3. We Reach Out</h3>
+            <p class="text-sm text-primary/80 leading-relaxed">We personally contact you via Instagram, WhatsApp or Email within 24 hours to discuss details.</p>
+          </div>
+        </div>
+
+        <!-- CTA Card -->
+        <div class="relative glass-card rounded-[2rem] p-10 md:p-14 text-center overflow-hidden border border-primary/10 shadow-xl">
+          <!-- Decorative elements -->
+          <div class="absolute top-4 left-6 text-3xl animate-float-slow select-none">🌸</div>
+          <div class="absolute top-4 right-6 text-3xl animate-float-medium select-none">✨</div>
+          <div class="absolute bottom-4 left-8 text-2xl animate-float-fast select-none">🌷</div>
+          <div class="absolute bottom-4 right-8 text-3xl animate-float-slow select-none">💖</div>
+          <div class="absolute inset-0 bg-gradient-to-br from-primary-container/15 via-transparent to-secondary/10 rounded-[2rem] -z-10"></div>
+
+          <span class="font-handwritten text-5xl text-primary block mb-3">Your dream, handmade</span>
+          <h3 class="text-2xl md:text-3xl font-heading font-bold text-darkbrown mb-4">Any flower. Any color. Any occasion.</h3>
+          <p class="text-sm text-primary/70 mb-8 max-w-xl mx-auto leading-relaxed">
+            No matter the occasion — birthday, anniversary, graduation or just because — we'll create something you'll treasure forever.
+          </p>
+          <button id="open-inquiry-btn" class="inline-flex items-center gap-3 px-10 py-4 rounded-full bg-primary text-white font-bold text-base hover:bg-primary/90 hover:scale-105 active:scale-95 duration-300 shadow-lg clickable">
+            <span class="material-symbols-outlined text-xl">auto_awesome</span>
+            Submit Your Inspiration
+          </button>
+          <p class="text-xs text-primary/50 mt-4 font-medium">No payment required · Free to submit · 24hr response time</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 9: Same-Day Delivery Banner (TMU Special Route Animation) -->
+    <section id="delivery-section" class="py-24 bg-primary-container/20 dark:bg-black/20 border-y border-primary/5 reveal-section">
+      <div class="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-12">
+        <div class="flex-1 space-y-6">
+          <span class="inline-block px-4 py-1.5 rounded-full bg-white text-primary font-bold text-xs tracking-wider uppercase shadow-sm">Fast Delivery</span>
+          <h2 class="text-3xl md:text-4xl font-heading font-bold text-darkbrown">Same-Day Delivery in TMU</h2>
+          <p class="text-sm text-primary/80 leading-relaxed">
+            Need a quick, high-quality gift for a friend or classmate? We offer same-day hand-delivery across TMU Hostels and campus locations. Perfect for birthdays, exams, or sudden thank yous.
+          </p>
+        </div>
+
+        <div class="flex-1 w-full flex items-center justify-center relative bg-white dark:bg-darkbrown p-6 rounded-3xl shadow-md border border-primary/10">
+          <!-- Animated Delivery Path -->
+          <svg class="delivery-route-svg" viewBox="0 0 600 200">
+            <!-- Dotted path -->
+            <path d="M 50 150 Q 200 50 350 150 T 550 100" class="delivery-path-bg"/>
+            <path d="M 50 150 Q 200 50 350 150 T 550 100" class="delivery-path-active" stroke-dasharray="1000" stroke-dashoffset="1000"/>
+            
+            <!-- Nodes -->
+            <circle cx="50" cy="150" r="10" fill="#B58A6A" />
+            <text x="50" y="180" text-anchor="middle" font-size="12" font-weight="bold" fill="#4A3321">Dreamy Hub</text>
+            
+            <circle cx="550" cy="100" r="10" fill="#FADADD" />
+            <text x="550" y="130" text-anchor="middle" font-size="12" font-weight="bold" fill="#4A3321">TMU Hostels</text>
+
+            <!-- Scooter Delivery vehicle following path -->
+            <g class="delivery-truck">
+              <rect x="-16" y="-10" width="32" height="20" rx="4" fill="#B58A6A" />
+              <!-- Scooter details -->
+              <circle cx="-8" cy="10" r="5" fill="#4A3321" />
+              <circle cx="8" cy="10" r="5" fill="#4A3321" />
+              <polygon points="12,-5 16,5 8,5" fill="#FADADD" />
+              <text x="0" y="4" font-size="10" fill="#FFF8EE" text-anchor="middle" font-weight="bold">🌸</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 11: Founder Story -->
+    <section id="founder" class="py-24 bg-primary-container/10 dark:bg-black/10 border-t border-primary/5 reveal-section">
+      <div class="max-w-5xl mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
+        <div class="w-full md:w-2/5 flex justify-center">
+          <div id="founder-story-image-card" class="polaroid-card transform rotate-2 hover:rotate-0 transition duration-300 shadow-2xl overflow-hidden relative">
+            <div class="story-mask absolute inset-0 bg-cream dark:bg-darkbrown z-20 pointer-events-none"></div>
+            <div class="image-container w-64 h-64 overflow-hidden">
+              <img src="photoes/hands_crocheting_flower.png.jpeg" alt="Hands Crocheting Flower" class="w-full h-full object-cover" loading="lazy" onload="this.parentElement.classList.add('loaded')">
+            </div>
+            <div class="text-center mt-3">
+              <p class="font-handwritten text-2xl font-bold">Hands That Create Magic</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="w-full md:w-3/5 space-y-6">
+          <span class="text-font-handwritten text-4xl text-primary block">Stitched with Passion</span>
+          <h2 class="text-3xl font-heading font-bold text-darkbrown">The Story Behind DreamyCrochet05</h2>
+
+          <div class="space-y-3">
+            <h4 class="font-heading font-bold text-xl text-darkbrown">The Hands Behind Every Stitch</h4>
+            <p class="text-sm md:text-base text-primary/80 leading-relaxed">
+              Every crochet piece at DreamyCrochet05 is lovingly handmade by my mother. What started as a passion for creating beautiful things has grown into a small dream of spreading happiness through handmade gifts. Each stitch carries care, dedication, and the warmth of home.
+            </p>
+            <p class="text-xs text-primary font-bold tracking-wider uppercase">
+              Crafted by Mom. Gifted with Love.
+            </p>
+          </div>
+          <p class="text-xs text-primary/60 font-semibold italic">Founded in TMU Campus, 2024</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 12: Premium Instagram Promotion -->
+    <section id="instagram-promo" class="py-24 bg-cream dark:bg-black/20 border-t border-primary/5 reveal-section relative overflow-hidden">
+      <!-- Background elements like soft gradients or blur circles -->
+      <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-container/20 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+      <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/15 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+
+      <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <!-- Left Column: Premium Interactive Frame with floating doodles/sparkles -->
+        <div class="relative flex justify-center items-center py-8">
+          <!-- Floating decorative items around the frame -->
+          <div class="absolute inset-0 pointer-events-none z-10 select-none">
+            <!-- Sparkles -->
+            <span class="absolute text-xl animate-float-slow" style="top: 10%; left: 15%;">✨</span>
+            <span class="absolute text-2xl animate-float-medium" style="bottom: 12%; right: 10%;">🌟</span>
+            <span class="absolute text-xl animate-float-fast" style="top: 80%; left: 8%;">✨</span>
+            <!-- Hearts -->
+            <span class="absolute text-2xl animate-float-medium text-pink-300" style="top: 5%; right: 18%;">💖</span>
+            <span class="absolute text-3xl animate-float-slow text-pink-400" style="bottom: 25%; left: 5%;">💕</span>
+            <span class="absolute text-xl animate-float-fast text-red-300" style="top: 45%; right: 4%;">❤️</span>
+            <!-- Crochet doodles -->
+            <span class="absolute text-3xl animate-float-slow" style="top: 30%; left: -2%;">🧶</span>
+            <span class="absolute text-2xl animate-float-medium" style="bottom: 5%; left: 25%;">🌸</span>
+            <span class="absolute text-3xl animate-float-fast" style="top: 50%; left: 88%;">🌷</span>
+          </div>
+
+          <!-- The Premium Frame -->
+          <div id="instagram-frame" class="instagram-frame-wrapper relative group bg-white/40 dark:bg-darkbrown/40 p-4 rounded-[32px] shadow-[0_20px_50px_rgba(74,51,33,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/60 dark:border-primary/20 backdrop-blur-md max-w-[340px] w-full transform duration-500 ease-out animate-float-slow select-none clickable">
+            
+            <!-- Mock Instagram Header Bar -->
+            <div class="flex items-center justify-between pb-3 border-b border-primary/10 mb-3 text-xs font-semibold text-primary dark:text-beige">
+              <div class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-red-400"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-green-400"></span>
+              </div>
+              <div class="italic text-[10px] tracking-wide opacity-80 flex items-center gap-1">
+                <span class="material-symbols-outlined text-[10px]">lock</span> instagram.com
+              </div>
+              <div class="w-8"></div>
+            </div>
+
+            <!-- Profile Image Container -->
+            <div class="relative overflow-hidden rounded-2xl bg-cream dark:bg-black/10 border border-primary/5 shadow-inner image-container">
+              <img src="photoes/instagram_screenshot.png" alt="Instagram Profile Screenshot" class="w-full h-auto object-cover max-h-[440px] transform group-hover:scale-[1.02] duration-700" loading="lazy" onload="this.parentElement.classList.add('loaded')">
+              
+              <!-- Aesthetic light overlay -->
+              <div class="absolute inset-0 bg-gradient-to-tr from-primary-container/10 via-transparent to-secondary/15 pointer-events-none"></div>
+            </div>
+            
+            <!-- Sparkles Glow Effect -->
+            <div class="absolute -inset-1 bg-gradient-to-r from-primary-container via-secondary to-primary rounded-[32px] opacity-0 group-hover:opacity-25 blur-lg transition duration-700 -z-10"></div>
+          </div>
+        </div>
+
+        <!-- Right Column: Content -->
+        <div class="space-y-8 lg:pr-6">
+          <div class="space-y-4">
+            <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-primary-container/50 dark:bg-primary-container/20 text-on-primary-container dark:text-primary-container font-semibold text-xs tracking-wider uppercase">
+              🌷 Join Our Crochet Family
+            </span>
+            <h2 class="text-4xl md:text-5xl font-heading font-bold text-darkbrown dark:text-beige leading-tight">
+              Follow DreamyCrochet05 for More Handmade Magic
+            </h2>
+            <p class="text-sm md:text-base text-primary/80 dark:text-beige/80 leading-relaxed font-medium">
+              Discover handmade crochet flowers, bouquets, keychains, plushies, and custom gifts crafted with love. Follow us for new launches, behind-the-scenes creations, aesthetic crochet inspiration, and exclusive offers.
+            </p>
+          </div>
+
+          <!-- Features Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="flex items-center gap-3 p-3 rounded-2xl bg-white/50 dark:bg-darkbrown/30 border border-primary/10">
+              <span class="text-xl">✨</span>
+              <span class="text-xs md:text-sm font-semibold text-darkbrown dark:text-beige">Handmade with Love</span>
+            </div>
+            <div class="flex items-center gap-3 p-3 rounded-2xl bg-white/50 dark:bg-darkbrown/30 border border-primary/10">
+              <span class="text-xl">🌸</span>
+              <span class="text-xs md:text-sm font-semibold text-darkbrown dark:text-beige">New Crochet Designs Weekly</span>
+            </div>
+            <div class="flex items-center gap-3 p-3 rounded-2xl bg-white/50 dark:bg-darkbrown/30 border border-primary/10">
+              <span class="text-xl">🎁</span>
+              <span class="text-xs md:text-sm font-semibold text-darkbrown dark:text-beige">Custom Orders Available</span>
+            </div>
+            <div class="flex items-center gap-3 p-3 rounded-2xl bg-white/50 dark:bg-darkbrown/30 border border-primary/10">
+              <span class="text-xl">🚚</span>
+              <span class="text-xs md:text-sm font-semibold text-darkbrown dark:text-beige">Same-Day Delivery in TMU</span>
+            </div>
+          </div>
+
+          <!-- Follower Growth CTA -->
+          <div class="p-4.5 rounded-2xl bg-primary-container/30 dark:bg-primary-container/10 border-l-4 border-primary-container">
+            <p class="text-xs md:text-sm font-medium text-darkbrown dark:text-beige leading-relaxed italic">
+              "Be part of our growing crochet community and never miss a new handmade creation. Follow @dreamycrochet05 today 💕"
+            </p>
+          </div>
+
+          <!-- Buttons -->
+          <div class="flex flex-wrap items-center gap-4 pt-2">
+            <a href="https://www.instagram.com/dreamycrochet05/" target="_blank" class="px-8 py-3.5 rounded-full bg-primary text-white hover:bg-primary/90 hover:scale-105 active:scale-95 duration-300 font-semibold clickable shadow-md text-sm flex items-center gap-2 group instagram-glow-btn">
+              <span>Follow on Instagram</span>
+              <svg class="w-4 h-4 transform group-hover:translate-x-1 duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+              </svg>
+            </a>
+            <a href="https://dreamycrochet05.smartbiz.in/" target="_blank" class="px-8 py-3.5 rounded-full border border-primary/30 text-primary dark:text-beige hover:bg-primary/5 hover:scale-105 active:scale-95 duration-300 font-semibold clickable text-sm inline-flex items-center justify-center">
+              Visit Website
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="bg-beige dark:bg-darkbrown py-12 px-6 border-t border-primary/10">
+      <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+        <div>
+          <div class="flex items-center gap-3">
+            <h4 class="font-heading italic font-bold text-2xl text-primary">DreamyCrochet05</h4>
+            <svg class="footer-sway-flower w-6 h-6 text-primary-container" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3zm0 14a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3zm7-7a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3zM5 9a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3zm7 0a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/>
+            </svg>
+          </div>
+          <p class="text-xs text-primary/70 mt-1">World-class premium handmade flower boutique.</p>
+        </div>
+        <div class="flex gap-8 text-sm font-semibold">
+          <a href="https://www.instagram.com/dreamycrochet05/" target="_blank" class="hover:text-primary transition">Instagram</a>
+          <a href="https://www.instagram.com/dreamycrochet05/" target="_blank" class="hover:text-primary transition">Contact</a>
+        </div>
+        <div>
+          <p class="text-xs text-primary/70">&copy; 2026 DreamyCrochet05. Crafted with Love. 🌸</p>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- MODAL: Personalized Gift Quiz -->
+  <div id="quiz-modal" class="modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+    <div class="modal-content bg-cream dark:bg-darkbrown w-full max-w-lg rounded-3xl p-8 shadow-2xl relative border border-primary/15">
+      
+      <!-- Close -->
+      <button id="close-quiz-btn" class="absolute top-4 right-4 w-10 h-10 rounded-full hover:bg-beige/40 flex items-center justify-center text-darkbrown dark:text-beige transition clickable">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+
+      <div id="quiz-slide-container">
+        <!-- Slide 1: Who is it for -->
+        <div class="quiz-slide">
+          <h3 class="text-2xl font-heading font-bold mb-6 text-darkbrown">1. Who is this gift for?</h3>
+          <div class="space-y-4">
+            <label class="flex items-center gap-3 p-4 rounded-2xl border border-primary/10 hover:bg-primary-container/20 cursor-pointer transition clickable">
+              <input type="radio" name="quiz-q1" value="friend" class="text-primary focus:ring-primary border-primary/20">
+              A close friend or hostel roommate
+            </label>
+            <label class="flex items-center gap-3 p-4 rounded-2xl border border-primary/10 hover:bg-primary-container/20 cursor-pointer transition clickable">
+              <input type="radio" name="quiz-q1" value="partner" class="text-primary focus:ring-primary border-primary/20">
+              A romantic partner
+            </label>
+            <label class="flex items-center gap-3 p-4 rounded-2xl border border-primary/10 hover:bg-primary-container/20 cursor-pointer transition clickable">
+              <input type="radio" name="quiz-q1" value="self" class="text-primary focus:ring-primary border-primary/20">
+              Myself (Room / Study desk decor)
+            </label>
+          </div>
+        </div>
+
+        <!-- Slide 2: Vibe/Occasion -->
+        <div class="quiz-slide" style="display:none;">
+          <h3 class="text-2xl font-heading font-bold mb-6 text-darkbrown">2. What is their vibe?</h3>
+          <div class="space-y-4">
+            <label class="flex items-center gap-3 p-4 rounded-2xl border border-primary/10 hover:bg-primary-container/20 cursor-pointer transition clickable">
+              <input type="radio" name="quiz-q2" value="pastel" class="text-primary focus:ring-primary border-primary/20">
+              Soft, pastel, cottagecore aesthetic
+            </label>
+            <label class="flex items-center gap-3 p-4 rounded-2xl border border-primary/10 hover:bg-primary-container/20 cursor-pointer transition clickable">
+              <input type="radio" name="quiz-q2" value="bright" class="text-primary focus:ring-primary border-primary/20">
+              Bright, joyful, energizing sunshine
+            </label>
+            <label class="flex items-center gap-3 p-4 rounded-2xl border border-primary/10 hover:bg-primary-container/20 cursor-pointer transition clickable">
+              <input type="radio" name="quiz-q2" value="cozy" class="text-primary focus:ring-primary border-primary/20">
+              Cute, cozy, fluffy companion plushies
+            </label>
+          </div>
+        </div>
+
+        <!-- Slide 3: Results -->
+        <div class="quiz-slide" style="display:none;">
+          <div id="quiz-result" class="text-center space-y-6">
+            <span class="text-font-handwritten text-4xl text-primary block">Your Perfect Match</span>
+            <h3 id="quiz-result-name" class="text-2xl font-heading font-bold text-darkbrown">Pastel Tulips Bouquet</h3>
+            <img id="quiz-result-img" src="" alt="Recommended flower" class="w-48 h-48 object-cover rounded-3xl mx-auto border-4 border-white shadow-md">
+            <p class="text-sm text-primary/70 leading-relaxed max-w-sm mx-auto">
+              This choice matches their aesthetic completely, adding the perfect everlasting cozy detail.
+            </p>
+            <div class="pt-4 flex gap-4 justify-center">
+              <button id="quiz-reset-btn" class="px-6 py-2.5 rounded-full border border-primary text-primary font-bold text-xs hover:bg-primary-container/20 transition duration-300 clickable">
+                Retake Quiz
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation footer -->
+      <div class="flex justify-between items-center mt-8 border-t border-primary/10 pt-4">
+        <button id="quiz-prev-btn" class="px-5 py-2 text-xs font-bold text-primary hover:underline transition clickable" style="display:none;">Back</button>
+        <button id="quiz-next-btn" class="px-6 py-2.5 rounded-full bg-primary text-white text-xs font-bold tracking-wider hover:bg-primary/95 transition duration-300 ml-auto clickable">Next</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL: Wishlist / Favorites -->
+  <div id="wishlist-modal" class="modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+    <div class="modal-content bg-cream dark:bg-darkbrown w-full max-w-md rounded-3xl shadow-2xl relative border border-primary/15 overflow-hidden flex flex-col max-h-[85vh]">
+      
+      <!-- Sticky Header -->
+      <div class="sticky top-0 bg-cream/95 dark:bg-darkbrown/95 backdrop-blur-sm border-b border-primary/10 px-6 pt-6 pb-4 z-10 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <span class="text-xl">🌸</span>
+          <div>
+            <h3 class="text-lg font-heading font-bold text-darkbrown">My Favorites</h3>
+            <p class="text-[10px] text-primary/60">Your saved handcrafted products</p>
+          </div>
+        </div>
+        <button id="close-wishlist-modal-btn" class="w-9 h-9 rounded-full hover:bg-beige/60 flex items-center justify-center text-darkbrown dark:text-beige transition clickable">
+          <span class="material-symbols-outlined text-lg">close</span>
+        </button>
+      </div>
+
+      <!-- Scrollable Favorites List -->
+      <div id="wishlist-items-container" class="p-6 overflow-y-auto flex-1 space-y-4 max-h-[60vh]" data-lenis-prevent>
+        <!-- Injected dynamically via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Product Quick View -->
+  <div id="quick-view-modal" class="modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+    <div class="modal-content bg-cream dark:bg-darkbrown w-full max-w-2xl rounded-3xl p-6 md:p-8 shadow-2xl relative border border-primary/15 flex flex-col md:flex-row gap-8">
+      
+      <!-- Close -->
+      <button id="qv-close-btn" class="absolute top-4 right-4 w-10 h-10 rounded-full hover:bg-beige/40 flex items-center justify-center text-darkbrown dark:text-beige transition clickable">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+
+      <div class="w-full md:w-1/2">
+        <img id="qv-img" src="" alt="Product view" class="w-full h-72 md:h-full object-contain bg-beige/30 rounded-2xl shadow-sm border border-primary/5" onerror="this.onerror=null; this.src='/images/product-placeholder.webp';">
+      </div>
+
+      <div class="w-full md:w-1/2 flex flex-col justify-between space-y-6">
+        <div class="space-y-4">
+          <span id="qv-type" class="inline-block px-3 py-1 rounded-full bg-primary-container text-on-primary-container text-xs font-semibold">Bouquet</span>
+          <h3 id="qv-title" class="text-3xl font-heading font-bold text-darkbrown">Product Name</h3>
+          <span id="qv-price" class="text-2xl font-bold text-primary block">$0.00</span>
+          <p id="qv-desc" class="text-sm text-primary/80 leading-relaxed">
+            Detailed description of the handmade craftsmanship.
+          </p>
+        </div>
+
+        <div class="space-y-3 pt-4 border-t border-primary/10">
+          <div class="flex items-center gap-2 text-xs text-primary/80 font-semibold">
+            <span class="material-symbols-outlined text-sm">nature_people</span> 100% organic cotton yarn
+          </div>
+          
+          <div class="space-y-2.5 pt-2">
+            <!-- Request Custom Order -->
+            <button id="qv-custom-order-btn" class="w-full py-3 rounded-full bg-primary-container text-on-primary-container font-semibold hover:shadow-md transition duration-300 clickable text-sm flex items-center justify-center gap-2">
+              <span class="material-symbols-outlined text-sm">auto_awesome</span> Request Custom Order
+            </button>
+            
+            <div>
+              <!-- DM on Instagram -->
+              <a id="qv-insta-btn" href="https://www.instagram.com/dreamycrochet05/" target="_blank" class="w-full py-2.5 px-3 rounded-full border border-primary/20 text-primary font-semibold hover:bg-primary-container/20 text-center transition duration-300 clickable text-sm flex items-center justify-center gap-1.5">
+                🌸 DM on Instagram
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- ===== ADMIN LOGIN OVERLAY ===== -->
+  <!-- Hidden premium login page — only accessible at /dreamycrochet05-admin -->
+  <div id="admin-login-overlay" class="modal-overlay fixed inset-0 z-[100] flex items-center justify-center p-4 hidden" style="background: linear-gradient(135deg, #FFF8EE 0%, #FADADD 50%, #F5E6D3 100%);">
+    <div class="modal-content bg-white/80 backdrop-blur-xl w-full max-w-md rounded-[2rem] shadow-[0_30px_80px_rgba(181,138,106,0.18)] relative border border-primary/10" style="padding: 2.5rem;">
+      
+      <!-- Close button — returns to homepage -->
+      <button id="admin-login-close" class="absolute top-4 right-4 w-10 h-10 rounded-full hover:bg-beige/60 flex items-center justify-center text-darkbrown/60 hover:text-darkbrown transition clickable">
+        <span class="material-symbols-outlined text-xl">close</span>
+      </button>
+
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <!-- Animated lock icon with glow -->
+        <div class="relative w-20 h-20 mx-auto mb-4">
+          <div class="absolute inset-0 rounded-full bg-gradient-to-br from-primary-container to-secondary animate-pulse opacity-60"></div>
+          <div class="relative w-20 h-20 rounded-full bg-white flex items-center justify-center shadow-lg border border-primary/10">
+            <span class="material-symbols-outlined text-primary text-4xl" style="font-variation-settings: 'FILL' 1;">lock</span>
+          </div>
+        </div>
+        <h3 class="text-2xl font-heading font-bold text-darkbrown">DreamyCrochet05</h3>
+        <p class="text-sm text-primary font-semibold mt-0.5">Owner Portal</p>
+        <div class="flex items-center justify-center gap-1.5 mt-2">
+          <div class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></div>
+          <p class="text-xs text-primary/60 font-medium">Secure Connection · Authorized Entry Only</p>
+        </div>
+      </div>
+
+      <!-- Login Form -->
+      <form id="admin-login-form" class="space-y-4" autocomplete="off">
+        
+        <!-- Email Field -->
+        <div>
+          <label for="admin-email" class="block text-xs font-bold text-darkbrown/80 mb-1.5 uppercase tracking-wider">Email Address</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-primary/50 text-lg">mail</span>
+            <input 
+              type="email" 
+              id="admin-email" 
+              name="admin-email"
+              placeholder="Enter admin email" 
+              autocomplete="username"
+              class="w-full pl-10 pr-4 py-3.5 rounded-2xl border border-primary/20 bg-white/70 text-darkbrown placeholder-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary/40 transition text-sm"
+            >
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div>
+          <label for="admin-password" class="block text-xs font-bold text-darkbrown/80 mb-1.5 uppercase tracking-wider">Password</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-primary/50 text-lg">key</span>
+            <input 
+              type="password" 
+              id="admin-password"
+              name="admin-password"
+              placeholder="Enter secure password" 
+              autocomplete="current-password"
+              class="w-full pl-10 pr-12 py-3.5 rounded-2xl border border-primary/20 bg-white/70 text-darkbrown placeholder-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary/40 transition text-sm"
+            >
+            <button type="button" id="admin-password-toggle" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-primary/50 hover:text-primary transition clickable" title="Show/Hide Password">
+              <span class="material-symbols-outlined text-lg">visibility</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Error message area (shown by JS on failed login) -->
+        <div id="admin-login-error" class="hidden items-center gap-2 px-4 py-3 rounded-2xl bg-red-50 border border-red-100 text-red-600 text-xs font-semibold">
+          <span class="material-symbols-outlined text-sm">error</span>
+          <span id="admin-login-error-msg">Invalid email or password. Please try again.</span>
+        </div>
+
+        <!-- Submit Button -->
+        <button 
+          type="submit" 
+          id="admin-login-submit"
+          class="w-full py-4 rounded-2xl bg-primary text-white font-bold text-sm hover:bg-primary/90 hover:shadow-lg hover:scale-[1.02] active:scale-95 duration-300 shadow-md clickable flex items-center justify-center gap-2 mt-2"
+        >
+          <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+          <span id="admin-login-btn-text">Access Owner Portal</span>
+        </button>
+      </form>
+
+      <!-- Footer note -->
+      <p class="text-center text-[10px] text-primary/40 mt-6 font-medium">🔒 256-bit JWT Encrypted Session · DreamyCrochet05 © 2026</p>
+    </div>
+  </div>
+
+  <!-- ===== ADMIN DASHBOARD OVERLAY ===== -->
+  <div id="admin-dashboard-overlay" class="fixed inset-0 z-[90] bg-cream dark:bg-darkbrown flex flex-col md:flex-row hidden overflow-hidden">
+    <!-- Sidebar -->
+    <aside class="w-full md:w-64 bg-beige/60 dark:bg-black/20 border-b md:border-b-0 md:border-r border-primary/10 p-6 flex flex-col justify-between">
+      <div>
+        <!-- Brand + Admin email display -->
+        <div class="flex items-center gap-3 mb-8">
+          <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">admin_panel_settings</span>
+          </div>
+          <div class="overflow-hidden">
+            <h4 class="font-heading italic font-bold text-lg text-primary leading-tight">DreamyCrochet05</h4>
+            <!-- Admin email shown after login — populated by JS fetchAdminProfile() -->
+            <span id="admin-email-display" class="text-[10px] text-primary/50 truncate block max-w-[150px]" title="Logged in admin email">Owner Portal</span>
+          </div>
+        </div>
+        
+        <nav class="flex flex-col gap-2">
+          <button data-tab="overview" class="admin-tab-btn active flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold text-darkbrown/80 hover:bg-primary-container/30 transition clickable">
+            <span class="material-symbols-outlined text-lg">dashboard</span> Dashboard Overview
+          </button>
+          <button data-tab="products" class="admin-tab-btn flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold text-darkbrown/80 hover:bg-primary-container/30 transition clickable">
+            <span class="material-symbols-outlined text-lg">grid_view</span> Manage Products
+          </button>
+          <button data-tab="orders" class="admin-tab-btn flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold text-darkbrown/80 hover:bg-primary-container/30 transition clickable">
+            <span class="material-symbols-outlined text-lg">mail</span> Custom Orders
+          </button>
+          <button data-tab="homepage" class="admin-tab-btn flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold text-darkbrown/80 hover:bg-primary-container/30 transition clickable">
+            <span class="material-symbols-outlined text-lg">home_max</span> Homepage Settings
+          </button>
+        </nav>
+      </div>
+      
+      <div class="pt-6 border-t border-primary/10 mt-6 md:mt-0">
+        <button id="admin-logout-btn" class="w-full py-3 rounded-2xl border border-red-200 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 font-bold text-xs tracking-wider uppercase transition clickable flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-sm">logout</span> Log Out Portal
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Panel -->
+    <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+      
+      <!-- Tab: Overview -->
+      <section id="tab-overview" class="admin-tab-content space-y-8">
+        <div>
+          <h2 class="text-3xl font-heading font-bold text-darkbrown">Portal Dashboard</h2>
+          <p class="text-sm text-primary/70">DreamyCrochet05 boutique real-time analytics.</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div class="glass-card p-6 rounded-3xl flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-primary text-xl font-bold font-sans">🌸</div>
+            <div>
+              <span class="text-xs text-primary/60 block uppercase font-bold tracking-wider">Catalog Items</span>
+              <span id="stat-products-count" class="text-2xl font-bold text-darkbrown">0</span>
+            </div>
+          </div>
+          <div class="glass-card p-6 rounded-3xl flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-secondary flex items-center justify-center text-primary text-xl font-bold font-sans">🎁</div>
+            <div>
+              <span class="text-xs text-primary/60 block uppercase font-bold tracking-wider">Custom Requests</span>
+              <span id="stat-orders-count" class="text-2xl font-bold text-darkbrown">0</span>
+            </div>
+          </div>
+          <div class="glass-card p-6 rounded-3xl flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-beige flex items-center justify-center text-primary text-xl font-bold font-sans">✨</div>
+            <div>
+              <span class="text-xs text-primary/60 block uppercase font-bold tracking-wider">Session Status</span>
+              <span class="text-xs px-2.5 py-1 bg-green-100 text-green-700 font-bold rounded-full inline-block mt-1 uppercase">Secure JWT</span>
+            </div>
+          </div>
+        </div>
+        <!-- Recent actions or welcome notes -->
+        <div class="glass-card p-8 rounded-3xl space-y-4">
+          <h3 class="font-heading font-bold text-xl">Welcome back, Owner!</h3>
+          <p class="text-sm text-primary/80 leading-relaxed">
+            From this hidden admin dashboard, you can fully manage your boutique. Any new product addition, pricing adjustment, or homepage update will take effect instantly for your visitors. Customer custom order requests are listed under the "Custom Orders" tab.
+          </p>
+        </div>
+      </section>
+
+      <!-- Tab: Manage Products -->
+      <section id="tab-products" class="admin-tab-content hidden space-y-6">
+        <div class="flex justify-between items-center">
+          <div>
+            <h2 class="text-3xl font-heading font-bold text-darkbrown">Boutique Catalog</h2>
+            <p class="text-sm text-primary/70">Modify prices, details, categories, and upload creations.</p>
+          </div>
+          <button id="admin-add-product-btn" class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-white font-semibold text-sm hover:bg-primary/90 hover:scale-105 active:scale-95 duration-300 shadow-md clickable">
+            <span class="material-symbols-outlined text-lg">add</span> Add New Product
+          </button>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[10px] text-primary/60 uppercase font-bold tracking-wider">Total Products</span>
+            <span id="prod-stat-total" class="text-2xl font-bold text-darkbrown mt-1">0</span>
+          </div>
+          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[10px] text-primary/60 uppercase font-bold tracking-wider">Featured ⭐</span>
+            <span id="prod-stat-featured" class="text-2xl font-bold text-darkbrown mt-1">0</span>
+          </div>
+          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[10px] text-primary/60 uppercase font-bold tracking-wider">Visible 👁</span>
+            <span id="prod-stat-visible" class="text-2xl font-bold text-darkbrown mt-1">0</span>
+          </div>
+          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[10px] text-primary/60 uppercase font-bold tracking-wider">Hidden 🚫</span>
+            <span id="prod-stat-hidden" class="text-2xl font-bold text-darkbrown mt-1">0</span>
+          </div>
+          <div class="glass-card p-4 rounded-2xl col-span-2 md:col-span-1 flex flex-col justify-between">
+            <span class="text-[10px] text-primary/60 uppercase font-bold tracking-wider">Total Views 📊</span>
+            <span id="prod-stat-views" class="text-2xl font-bold text-darkbrown mt-1">0</span>
+          </div>
+        </div>
+
+        <!-- Search, Filter & Sort Bar -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-between items-center bg-beige/20 p-4 rounded-2xl border border-primary/10">
+          <div class="relative w-full sm:w-72">
+            <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-primary/50 text-lg">search</span>
+            <input type="text" id="admin-search-products" placeholder="Search catalog..." class="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-primary/20 bg-white/60 text-darkbrown placeholder-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary/40 transition text-sm">
+          </div>
+          <div class="flex gap-2 w-full sm:w-auto">
+            <select id="admin-filter-category" class="flex-1 sm:flex-none px-4 py-2.5 rounded-2xl border border-primary/20 bg-white/60 text-darkbrown focus:outline-none focus:ring-2 focus:ring-primary/25 transition text-sm clickable">
+              <option value="all">All Categories</option>
+              <option value="Bouquet">Bouquet</option>
+              <option value="Single Stem">Single Stem</option>
+              <option value="Keychain">Keychain</option>
+              <option value="Amigurumi">Amigurumi</option>
+              <option value="Custom">Custom</option>
+              <option value="Others">Others</option>
+            </select>
+            <select id="admin-sort-by" class="flex-1 sm:flex-none px-4 py-2.5 rounded-2xl border border-primary/20 bg-white/60 text-darkbrown focus:outline-none focus:ring-2 focus:ring-primary/25 transition text-sm clickable">
+              <option value="newest">Newest First</option>
+              <option value="views">Most Viewed</option>
+              <option value="alphabetical">Alphabetical</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-3xl overflow-hidden border border-primary/10">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-sm">
+              <thead>
+                <tr class="bg-beige/40 dark:bg-black/10 border-b border-primary/10 text-primary uppercase text-xs font-bold tracking-wider">
+                  <th class="p-4 pl-6">Product</th>
+                  <th class="p-4">Category</th>
+                  <th class="p-4">Price</th>
+                  <th class="p-4">Label</th>
+                  <th class="p-4 text-center">Views</th>
+                  <th class="p-4 text-center">Featured</th>
+                  <th class="p-4 text-center">Visible</th>
+                  <th class="p-4 pr-6 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-products-table-body" class="divide-y divide-primary/5">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab: Custom Orders — Premium Inquiry Management -->
+      <section id="tab-orders" class="admin-tab-content hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-3xl font-heading font-bold text-darkbrown">Custom Order Inquiries</h2>
+            <p class="text-sm text-primary/70">Manage all customer crochet inspiration requests with full status control.</p>
+          </div>
+          <button id="admin-refresh-orders-btn" class="flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 text-primary text-xs font-semibold hover:bg-primary-container/20 transition clickable">
+            <span class="material-symbols-outlined text-sm">refresh</span> Refresh
+          </button>
+        </div>
+
+        <!-- Analytics Stats Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4" id="orders-analytics-row">
+          <div class="glass-card p-4 rounded-2xl flex flex-col gap-1">
+            <span class="text-[10px] text-primary/60 uppercase font-bold tracking-wider">📩 Total</span>
+            <span id="o-stat-total" class="text-2xl font-bold text-darkbrown mt-1">0</span>
+          </div>
+          <div class="glass-card p-4 rounded-2xl flex flex-col gap-1">
+            <span class="text-[10px] text-primary/60 uppercase font-bold tracking-wider">🟡 New</span>
+            <span id="o-stat-new" class="text-2xl font-bold text-yellow-600 mt-1">0</span>
+          </div>
+          <div class="glass-card p-4 rounded-2xl flex flex-col gap-1">
+            <span class="text-[10px] text-primary/60 uppercase font-bold tracking-wider">🔵 Contacted</span>
+            <span id="o-stat-contacted" class="text-2xl font-bold text-blue-600 mt-1">0</span>
+          </div>
+          <div class="glass-card p-4 rounded-2xl flex flex-col gap-1">
+            <span class="text-[10px] text-primary/60 uppercase font-bold tracking-wider">🟣 Accepted</span>
+            <span id="o-stat-accepted" class="text-2xl font-bold text-purple-600 mt-1">0</span>
+          </div>
+          <div class="glass-card p-4 rounded-2xl flex flex-col gap-1">
+            <span class="text-[10px] text-primary/60 uppercase font-bold tracking-wider">✅ Completed</span>
+            <span id="o-stat-completed" class="text-2xl font-bold text-green-600 mt-1">0</span>
+          </div>
+          <div class="glass-card p-4 rounded-2xl flex flex-col gap-1">
+            <span class="text-[10px] text-primary/60 uppercase font-bold tracking-wider">📈 This Month</span>
+            <span id="o-stat-month" class="text-2xl font-bold text-darkbrown mt-1">0</span>
+          </div>
+        </div>
+
+        <!-- Most Requested Occasion Banner -->
+        <div class="glass-card p-4 rounded-2xl flex items-center gap-3 border border-primary/10">
+          <span class="text-2xl">🔥</span>
+          <div>
+            <span class="text-xs text-primary/60 block uppercase font-bold tracking-wider">Most Requested Occasion</span>
+            <span id="o-stat-occasion" class="font-bold text-darkbrown">—</span>
+          </div>
+        </div>
+
+        <!-- Orders Cards Grid -->
+        <div id="admin-orders-cards-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <!-- Injected via JS -->
+        </div>
+      </section>
+
+      <!-- Tab: Homepage Settings -->
+      <section id="tab-homepage" class="admin-tab-content hidden space-y-6">
+        <div>
+          <h2 class="text-3xl font-heading font-bold text-darkbrown">Homepage Content Settings</h2>
+          <p class="text-sm text-primary/70">Update the welcome screen text, emotional subtitle, and featured boutique cover image.</p>
+        </div>
+        <form id="admin-homepage-form" class="glass-card p-6 md:p-8 rounded-3xl space-y-6 max-w-2xl border border-primary/10">
+          <div>
+            <label for="settings-hero-title" class="block text-sm font-semibold text-darkbrown mb-2">Hero Main Title</label>
+            <input type="text" id="settings-hero-title" class="w-full px-4 py-3 rounded-2xl border border-primary/20 bg-white/60 text-darkbrown focus:outline-none focus:ring-2 focus:ring-primary/30 transition text-sm">
+          </div>
+          <div>
+            <label for="settings-subtitle-line1" class="block text-sm font-semibold text-darkbrown mb-2">Hero Subtitle Line 1 (Hindi-English message)</label>
+            <input type="text" id="settings-subtitle-line1" class="w-full px-4 py-3 rounded-2xl border border-primary/20 bg-white/60 text-darkbrown focus:outline-none focus:ring-2 focus:ring-primary/30 transition text-sm">
+          </div>
+          <div>
+            <label for="settings-subtitle-line2" class="block text-sm font-semibold text-darkbrown mb-2">Hero Subtitle Line 2 (Tagline)</label>
+            <input type="text" id="settings-subtitle-line2" class="w-full px-4 py-3 rounded-2xl border border-primary/20 bg-white/60 text-darkbrown focus:outline-none focus:ring-2 focus:ring-primary/30 transition text-sm">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-darkbrown mb-2">Hero Boutique Cover Photo</label>
+            <div id="settings-image-dropzone" class="relative rounded-2xl border-2 border-dashed border-primary/30 bg-beige/30 hover:bg-primary-container/10 transition-all duration-300 cursor-pointer overflow-hidden min-h-[150px] flex flex-col items-center justify-center gap-3 text-center p-4">
+              <input type="file" id="settings-hero-image-input" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10">
+              <div id="settings-img-placeholder" class="flex flex-col items-center gap-1 pointer-events-none">
+                <span class="material-symbols-outlined text-4xl text-primary/40">image</span>
+                <p class="font-semibold text-primary/70 text-xs">Click or drag image to update Cover Photo</p>
+              </div>
+              <img id="settings-hero-image-preview" src="" alt="Cover Preview" class="hidden w-full h-40 object-cover rounded-xl">
+            </div>
+          </div>
+          <button type="submit" class="px-8 py-3.5 rounded-full bg-primary text-white font-bold text-sm hover:bg-primary/90 hover:scale-105 active:scale-95 duration-300 shadow-md clickable flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-lg">save</span> Save Homepage Settings
+          </button>
+        </form>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ===== CUSTOMER INQUIRY FORM MODAL (Multi-Image, Premium) ===== -->
+  <div id="custom-order-modal" class="modal-overlay fixed inset-0 z-[60] flex items-center justify-center p-4 hidden">
+    <div class="modal-content bg-cream w-full max-w-2xl rounded-3xl shadow-2xl relative border border-primary/15 overflow-y-auto max-h-[90vh]" data-lenis-prevent>
+      
+      <!-- Sticky Header -->
+      <div class="sticky top-0 bg-cream/95 backdrop-blur-md border-b border-primary/10 px-8 pt-7 pb-5 z-10">
+        <button id="close-custom-order-modal" class="absolute top-4 right-4 w-10 h-10 rounded-full hover:bg-beige/60 flex items-center justify-center text-darkbrown transition clickable" type="button">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-container to-secondary flex items-center justify-center shadow-sm">
+            <span class="text-2xl">🌷</span>
+          </div>
+          <div>
+            <h3 class="text-xl font-heading font-bold text-darkbrown">Submit Your Crochet Inspiration</h3>
+            <p class="text-xs text-primary/60 mt-0.5">Upload up to 5 photos · We'll contact you within 24 hours</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORM -->
+      <form id="custom-order-form" class="px-8 py-6 space-y-6" novalidate>
+
+        <!-- ── Row 1: Full Name ── -->
+        <div>
+          <label for="order-name" class="block text-sm font-semibold text-darkbrown mb-2">Full Name <span class="text-red-400">*</span></label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-primary/40 text-lg">person</span>
+            <input type="text" id="order-name" placeholder="e.g. Aditi Sharma" class="w-full pl-10 pr-4 py-3 rounded-2xl border border-primary/20 bg-white/60 text-darkbrown placeholder-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/30 transition text-sm">
+          </div>
+        </div>
+
+        <!-- ── Row 2: Email + Phone ── -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="order-email" class="block text-sm font-semibold text-darkbrown mb-2">Email Address <span class="text-red-400">*</span></label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-primary/40 text-lg">mail</span>
+              <input type="email" id="order-email" placeholder="aditi@gmail.com" class="w-full pl-10 pr-4 py-3 rounded-2xl border border-primary/20 bg-white/60 text-darkbrown placeholder-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/30 transition text-sm">
+            </div>
+          </div>
+          <div>
+            <label for="order-phone" class="block text-sm font-semibold text-darkbrown mb-2">Phone Number <span class="text-red-400">*</span></label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-primary/40 text-lg">phone</span>
+              <input type="tel" id="order-phone" placeholder="+91 98765 43210" class="w-full pl-10 pr-4 py-3 rounded-2xl border border-primary/20 bg-white/60 text-darkbrown placeholder-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/30 transition text-sm">
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Row 3: Instagram + Occasion ── -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="order-instagram" class="block text-sm font-semibold text-darkbrown mb-2">Instagram <span class="font-normal text-primary/40">(optional)</span></label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-primary/40 text-lg">photo_camera</span>
+              <input type="text" id="order-instagram" placeholder="@your_username" class="w-full pl-10 pr-4 py-3 rounded-2xl border border-primary/20 bg-white/60 text-darkbrown placeholder-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/30 transition text-sm">
+            </div>
+          </div>
+          <div>
+            <label for="order-occasion" class="block text-sm font-semibold text-darkbrown mb-2">Occasion <span class="text-red-400">*</span></label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-primary/40 text-lg">celebration</span>
+              <select id="order-occasion" class="w-full pl-10 pr-4 py-3 rounded-2xl border border-primary/20 bg-white/60 text-darkbrown focus:outline-none focus:ring-2 focus:ring-primary/30 transition text-sm appearance-none clickable">
+                <option value="" disabled selected>Select an occasion...</option>
+                <option value="Birthday">🎂 Birthday</option>
+                <option value="Anniversary">💍 Anniversary</option>
+                <option value="Graduation">🎓 Graduation</option>
+                <option value="Friendship">🤝 Friendship</option>
+                <option value="Mother's Day">🌹 Mother's Day</option>
+                <option value="Valentine's Day">💝 Valentine's Day</option>
+                <option value="Room Decor">🏠 Room Decor</option>
+                <option value="Baby Shower">👶 Baby Shower</option>
+                <option value="Proposal">💍 Proposal</option>
+                <option value="Custom Gift">🎁 Custom Gift</option>
+                <option value="Other">✨ Other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Row 4: Message ── -->
+        <div>
+          <label for="order-message" class="block text-sm font-semibold text-darkbrown mb-2">Message <span class="text-red-400">*</span></label>
+          <textarea id="order-message" rows="4" placeholder="Tell us your idea, favorite colors, flower types, bouquet size or anything you'd like us to create." class="w-full px-4 py-3 rounded-2xl border border-primary/20 bg-white/60 text-darkbrown placeholder-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/30 transition text-sm resize-none"></textarea>
+        </div>
+
+        <!-- ── Row 5: Reference Images (Up to 5, Drag & Drop) ── -->
+        <div>
+          <label class="block text-sm font-semibold text-darkbrown mb-1">Reference Images <span class="font-normal text-primary/40">(up to 5 photos)</span></label>
+          <p class="text-xs text-primary/50 mb-3 italic">Found something on Pinterest, Instagram, or Google? Upload your inspiration and we'll recreate it with love 🌷</p>
+          
+          <!-- Drop Zone -->
+          <div id="inquiry-dropzone" class="relative rounded-2xl border-2 border-dashed border-primary/30 bg-beige/20 hover:bg-primary-container/10 hover:border-primary/50 transition-all duration-300 cursor-pointer min-h-[130px] flex flex-col items-center justify-center gap-2 text-center p-6 mb-4">
+            <input type="file" id="inquiry-images-input" accept="image/jpeg,image/jpg,image/png,image/webp" multiple class="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10">
+            <div id="inquiry-placeholder" class="flex flex-col items-center gap-2 pointer-events-none">
+              <span class="material-symbols-outlined text-5xl text-primary/30">cloud_upload</span>
+              <p class="font-semibold text-primary/60 text-sm">Click, drag & drop or take a photo</p>
+              <div class="flex gap-2 flex-wrap justify-center">
+                <span class="px-2 py-0.5 text-[10px] rounded-full bg-primary-container/40 text-on-primary-container">📸 Camera</span>
+                <span class="px-2 py-0.5 text-[10px] rounded-full bg-secondary/40 text-darkbrown">🖼️ Gallery</span>
+                <span class="px-2 py-0.5 text-[10px] rounded-full bg-beige text-darkbrown">🗂️ Drag & Drop</span>
+              </div>
+              <p class="text-[10px] text-primary/30">JPG · JPEG · PNG · WEBP · Max 10MB each</p>
+            </div>
+          </div>
+          
+          <!-- Uploaded Image Previews Grid -->
+          <div id="inquiry-images-preview" class="grid grid-cols-5 gap-2"></div>
+          <p id="inquiry-img-count" class="text-xs text-primary/50 mt-2 text-right">0 / 5 images</p>
+        </div>
+
+        <!-- ── Spam Prevention: Honeypot field (hidden) ── -->
+        <input type="text" name="website" style="display:none;" tabindex="-1" autocomplete="off">
+
+        <!-- Inquiry Upload Progress Bar (hidden by default) -->
+        <div id="inquiry-upload-progress-container" class="hidden space-y-2 bg-beige/40 p-4 rounded-2xl border border-primary/10 transition-all duration-300">
+          <div class="flex justify-between text-xs font-bold text-darkbrown">
+            <span id="inquiry-upload-progress-status">Uploading reference photos...</span>
+            <span id="inquiry-upload-progress-percent">0%</span>
+          </div>
+          <div class="w-full bg-primary/20 rounded-full h-2 overflow-hidden">
+            <div id="inquiry-upload-progress-bar" class="bg-primary h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <!-- ── Submit ── -->
+        <button type="submit" id="inquiry-submit-btn" class="w-full py-4 rounded-2xl bg-primary text-white font-bold text-sm hover:bg-primary/90 hover:scale-[1.02] active:scale-95 duration-300 shadow-lg clickable flex items-center justify-center gap-3">
+          <span class="material-symbols-outlined text-xl">send</span>
+          <span id="inquiry-submit-text">Send My Inspiration 🌷</span>
+        </button>
+        <p class="text-[10px] text-primary/40 text-center">By submitting, you agree we will contact you via Instagram / WhatsApp / Email.</p>
+      </form>
+
+      <!-- ── SUCCESS SCREEN (shown after submit) ── -->
+      <div id="custom-order-success" class="hidden px-8 py-14 text-center space-y-8">
+        <!-- Animated heart icon -->
+        <div class="relative w-28 h-28 mx-auto">
+          <div class="absolute inset-0 rounded-full bg-gradient-to-br from-primary-container to-secondary animate-pulse opacity-60"></div>
+          <div class="relative w-28 h-28 rounded-full bg-white flex items-center justify-center shadow-xl text-5xl">
+            ❤️
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <h3 class="text-3xl font-heading font-bold text-darkbrown">Thank You! 🌷</h3>
+          <p class="text-lg font-semibold text-primary">We've received your inspiration.</p>
+          <p class="text-sm text-primary/70 leading-relaxed max-w-md mx-auto">
+            We'll personally contact you through Instagram, WhatsApp or Email within 24 hours.<br>
+            <span class="font-semibold text-darkbrown">Thank you for supporting handmade. 🧶</span>
+          </p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <button id="success-close-btn" class="px-8 py-3 rounded-full bg-primary text-white font-bold text-sm hover:bg-primary/90 hover:scale-105 active:scale-95 duration-300 shadow-md clickable" type="button">
+            Continue Browsing
+          </button>
+          <a href="https://www.instagram.com/dreamycrochet05/" target="_blank" class="px-8 py-3 rounded-full border-2 border-primary/30 text-primary font-bold text-sm hover:bg-primary-container/20 hover:scale-105 duration-300 clickable flex items-center justify-center gap-2">
+            📸 Follow on Instagram
+          </a>
+          <a href="https://www.instagram.com/dreamycrochet05/" target="_blank" class="px-8 py-3 rounded-full border-2 border-pink-200 text-pink-600 font-bold text-sm hover:bg-pink-50 hover:scale-105 duration-300 clickable flex items-center justify-center gap-2">
+            💬 Chat on Instagram
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ORDER DETAILS MODAL (Admin View) ===== -->
+  <div id="order-details-modal" class="modal-overlay fixed inset-0 z-[95] flex items-center justify-center p-4 hidden">
+    <div class="modal-content bg-cream w-full max-w-2xl rounded-3xl shadow-2xl relative border border-primary/15 overflow-y-auto max-h-[90vh]" data-lenis-prevent>
+      <div class="sticky top-0 bg-cream/95 backdrop-blur-md border-b border-primary/10 px-7 pt-6 pb-4 z-10 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">📋</span>
+          <div>
+            <h3 class="text-lg font-heading font-bold text-darkbrown">Inquiry Details</h3>
+            <p id="odm-date" class="text-xs text-primary/50">—</p>
+          </div>
+        </div>
+        <button id="close-order-details-modal" class="w-9 h-9 rounded-full hover:bg-beige/60 flex items-center justify-center text-darkbrown transition clickable">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="px-7 py-6 space-y-6">
+        <!-- Reference Images Gallery -->
+        <div id="odm-images-section">
+          <h4 class="text-xs uppercase font-bold text-primary/60 tracking-wider mb-3">Reference Images</h4>
+          <div id="odm-images-grid" class="grid grid-cols-3 gap-3"></div>
+        </div>
+
+        <!-- Customer Info -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <h4 class="text-xs uppercase font-bold text-primary/60 tracking-wider mb-3">Customer Details</h4>
+            <div class="space-y-2">
+              <p id="odm-name" class="text-lg font-bold text-darkbrown">—</p>
+              <a id="odm-email-link" href="#" class="text-sm text-primary hover:underline flex items-center gap-1"><span class="material-symbols-outlined text-sm">mail</span><span id="odm-email">—</span></a>
+              <a id="odm-phone-link" href="#" class="text-sm text-primary hover:underline flex items-center gap-1"><span class="material-symbols-outlined text-sm">phone</span><span id="odm-phone">—</span></a>
+              <a id="odm-instagram-link" href="#" target="_blank" class="text-sm text-pink-500 hover:underline flex items-center gap-1"><span class="material-symbols-outlined text-sm">photo_camera</span><span id="odm-instagram">—</span></a>
+            </div>
+          </div>
+          <div>
+            <h4 class="text-xs uppercase font-bold text-primary/60 tracking-wider mb-3">Order Info</h4>
+            <div class="space-y-2">
+              <p class="text-sm"><span class="font-semibold">Occasion:</span> <span id="odm-occasion" class="text-primary font-bold">—</span></p>
+              <p class="text-sm"><span class="font-semibold">Status:</span> <span id="odm-status" class="px-2 py-0.5 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700">New</span></p>
+              <p class="text-sm"><span class="font-semibold">Images Uploaded:</span> <span id="odm-img-count">0</span></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Message -->
+        <div>
+          <h4 class="text-xs uppercase font-bold text-primary/60 tracking-wider mb-3">Customer Message</h4>
+          <div class="bg-beige/30 rounded-2xl p-4 border border-primary/10">
+            <p id="odm-message" class="text-sm text-darkbrown leading-relaxed whitespace-pre-wrap">—</p>
+          </div>
+        </div>
+
+        <!-- Quick Action Buttons -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 border-t border-primary/10 pt-5">
+          <a id="odm-insta-btn" href="#" target="_blank" class="flex flex-col items-center gap-1.5 p-3 rounded-2xl border border-primary/10 hover:bg-primary-container/20 transition clickable text-center">
+            <span class="text-xl">📸</span>
+            <span class="text-[10px] font-bold text-darkbrown">Instagram</span>
+          </a>
+          <a id="odm-call-btn" href="#" class="flex flex-col items-center gap-1.5 p-3 rounded-2xl border border-primary/10 hover:bg-primary-container/20 transition clickable text-center">
+            <span class="text-xl">📞</span>
+            <span class="text-[10px] font-bold text-darkbrown">Call</span>
+          </a>
+          <button id="odm-copy-email-btn" class="flex flex-col items-center gap-1.5 p-3 rounded-2xl border border-primary/10 hover:bg-primary-container/20 transition clickable text-center">
+            <span class="text-xl">📧</span>
+            <span class="text-[10px] font-bold text-darkbrown">Copy Email</span>
+          </button>
+          <button id="odm-complete-btn" class="flex flex-col items-center gap-1.5 p-3 rounded-2xl border border-green-200 text-green-700 hover:bg-green-50 transition clickable text-center">
+            <span class="text-xl">✅</span>
+            <span class="text-[10px] font-bold">Complete</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PRODUCT UPLOAD MODAL ===== -->
+  <div id="upload-product-modal" class="modal-overlay fixed inset-0 z-[100] flex items-center justify-center p-4 hidden">
+    <div class="modal-content upload-modal-content bg-cream w-full max-w-lg rounded-3xl shadow-2xl relative border border-primary/15 overflow-y-auto max-h-[90vh]" data-lenis-prevent>
+
+      <!-- Header -->
+      <div class="sticky top-0 bg-cream/95 backdrop-blur-sm border-b border-primary/10 px-8 pt-8 pb-4 z-10">
+        <button id="close-upload-modal-btn" class="absolute top-4 right-4 w-10 h-10 rounded-full hover:bg-beige/60 flex items-center justify-center text-darkbrown transition clickable" onclick="document.getElementById('upload-product-modal').classList.remove('active'); setTimeout(()=>document.getElementById('upload-product-modal').classList.add('hidden'),400)">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-xl">add_photo_alternate</span>
+          </div>
+          <div>
+            <h3 class="text-xl font-heading font-bold text-darkbrown">Add New Product</h3>
+            <p class="text-xs text-primary/60">Upload your crochet creation</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-8 py-6 space-y-5">
+
+        <!-- Photo Upload Zone -->
+        <div>
+          <label class="block text-sm font-semibold text-darkbrown mb-2">Product Images * <span class="text-xs font-normal text-primary/60">(Drag/Drop allowed)</span></label>
+          <div id="upload-drop-zone" class="upload-drop-zone relative rounded-2xl border-2 border-dashed border-primary/30 bg-beige/30 hover:bg-primary-container/10 hover:border-primary/50 transition-all duration-300 cursor-pointer overflow-hidden min-h-[150px] flex flex-col items-center justify-center gap-2 text-center p-4 mb-3">
+            <input type="file" id="upload-photo-input" accept="image/*" multiple class="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10">
+            <div id="upload-placeholder" class="flex flex-col items-center gap-1.5 pointer-events-none">
+              <span class="material-symbols-outlined text-4xl text-primary/40">cloud_upload</span>
+              <p class="font-semibold text-primary/70 text-sm">Click or drag multiple photos here</p>
+              <p class="text-xs text-primary/40">JPG, PNG, WEBP (Max 100 images)</p>
+            </div>
+          </div>
+          
+          <!-- Grid to display uploaded image thumbnails with action buttons -->
+          <div id="admin-image-previews" class="grid grid-cols-3 gap-3 max-h-[260px] overflow-y-auto pr-1 mb-2"></div>
+        </div>
+
+        <!-- Product Name -->
+        <div>
+          <label for="upload-name" class="block text-sm font-semibold text-darkbrown mb-2">Product Name *</label>
+          <input type="text" id="upload-name" placeholder="e.g. Pink Tulip Bouquet" class="w-full px-4 py-3 rounded-2xl border border-primary/20 bg-white/60 text-darkbrown placeholder-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition text-sm">
+        </div>
+
+        <!-- Price -->
+        <div>
+          <label for="upload-price" class="block text-sm font-semibold text-darkbrown mb-2">Price</label>
+          <input type="text" id="upload-price" placeholder="e.g. ₹250" class="w-full px-4 py-3 rounded-2xl border border-primary/20 bg-white/60 text-darkbrown placeholder-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition text-sm">
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label for="upload-desc" class="block text-sm font-semibold text-darkbrown mb-2">Description</label>
+          <textarea id="upload-desc" rows="2" placeholder="A brief description of your creation..." class="w-full px-4 py-3 rounded-2xl border border-primary/20 bg-white/60 text-darkbrown placeholder-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition text-sm resize-none"></textarea>
+        </div>
+
+        <!-- Category Badge -->
+        <div>
+          <label for="upload-badge" class="block text-sm font-semibold text-darkbrown mb-2">Category / Badge</label>
+          <div class="flex flex-wrap gap-2 mb-2" id="badge-presets">
+            <button type="button" class="badge-preset px-3 py-1 text-xs rounded-full border border-primary/20 text-primary hover:bg-primary-container/40 transition clickable" data-badge="Bouquet">Bouquet</button>
+            <button type="button" class="badge-preset px-3 py-1 text-xs rounded-full border border-primary/20 text-primary hover:bg-primary-container/40 transition clickable" data-badge="Single Stem">Single Stem</button>
+            <button type="button" class="badge-preset px-3 py-1 text-xs rounded-full border border-primary/20 text-primary hover:bg-primary-container/40 transition clickable" data-badge="Keychain">Keychain</button>
+            <button type="button" class="badge-preset px-3 py-1 text-xs rounded-full border border-primary/20 text-primary hover:bg-primary-container/40 transition clickable" data-badge="Amigurumi">Amigurumi</button>
+            <button type="button" class="badge-preset px-3 py-1 text-xs rounded-full border border-primary/20 text-primary hover:bg-primary-container/40 transition clickable" data-badge="Custom">Custom</button>
+          </div>
+          <input type="text" id="upload-badge" placeholder="Or type your own category..." class="w-full px-4 py-3 rounded-2xl border border-primary/20 bg-white/60 text-darkbrown placeholder-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition text-sm">
+        </div>
+
+        <!-- Label (top-left badge on card image) -->
+        <div>
+          <label for="upload-label" class="block text-sm font-semibold text-darkbrown mb-2">Card Label <span class="text-primary/40 font-normal">(optional)</span></label>
+          <input type="text" id="upload-label" placeholder='e.g. "New Arrival 🌸"' class="w-full px-4 py-3 rounded-2xl border border-primary/20 bg-white/60 text-darkbrown placeholder-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition text-sm">
+        </div>
+
+        <!-- Instagram Link -->
+        <div>
+          <label for="upload-instagram" class="block text-sm font-semibold text-darkbrown mb-2">Instagram Link <span class="text-primary/40 font-normal">(optional)</span></label>
+          <input type="text" id="upload-instagram" placeholder="e.g. https://www.instagram.com/p/..." class="w-full px-4 py-3 rounded-2xl border border-primary/20 bg-white/60 text-darkbrown placeholder-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition text-sm">
+        </div>
+
+        <!-- Toggles Grid (Featured and Visibility) -->
+        <div class="grid grid-cols-2 gap-4 bg-beige/30 p-4 rounded-2xl border border-primary/10">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-semibold text-darkbrown flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-primary text-lg">star</span> Featured
+            </span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="upload-featured" class="sr-only peer">
+              <div class="w-11 h-6 bg-primary/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+            </label>
+          </div>
+          <div class="flex items-center justify-between border-l border-primary/10 pl-4">
+            <span class="text-sm font-semibold text-darkbrown flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-primary text-lg">visibility</span> Visible
+            </span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="upload-visible" checked class="sr-only peer">
+              <div class="w-11 h-6 bg-primary/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Upload Progress Bar (hidden by default) -->
+        <div id="admin-upload-progress-container" class="hidden space-y-2 bg-beige/40 p-4 rounded-2xl border border-primary/10 transition-all duration-300">
+          <div class="flex justify-between text-xs font-bold text-darkbrown">
+            <span id="admin-upload-progress-status">Uploading to Cloudinary...</span>
+            <span id="admin-upload-progress-percent">0%</span>
+          </div>
+          <div class="w-full bg-primary/20 rounded-full h-2 overflow-hidden">
+            <div id="admin-upload-progress-bar" class="bg-primary h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <button id="upload-submit-btn" class="w-full py-3.5 rounded-2xl bg-primary text-white font-bold text-sm hover:bg-primary/90 hover:scale-[1.02] active:scale-95 duration-300 shadow-md clickable flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-lg">check_circle</span>
+          Save Product Card
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LIGHTBOX MODAL (VIEW REFERENCE PHOTOS) ===== -->
+  <div id="lightbox-modal" class="modal-overlay fixed inset-0 z-[110] flex items-center justify-center p-4 hidden">
+    <div class="relative max-w-4xl max-h-[90vh] overflow-hidden rounded-3xl shadow-2xl bg-black/80 flex items-center justify-center border border-white/10">
+      <button id="close-lightbox" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/40 hover:bg-black/60 flex items-center justify-center text-white transition clickable">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+      <img id="lightbox-img" src="" alt="Full size preview" class="max-w-full max-h-[85vh] object-contain">
+    </div>
+  </div>
+
+  <!-- ===== PREMIUM FULLSCREEN GALLERY MODAL ===== -->
+  <div id="gallery-modal" class="modal-overlay fixed inset-0 z-[80] flex flex-col items-center justify-between p-4 md:p-8 hidden" style="background: rgba(0, 0, 0, 0.85);" tabindex="-1">
+    <!-- Top Bar: Close & Count -->
+    <div class="w-full max-w-5xl flex justify-between items-center z-10 select-none">
+      <div class="gallery-info text-white font-medium flex flex-col gap-0.5">
+        <h4 id="gallery-product-title" class="font-serif text-lg md:text-xl text-beige">Product Name</h4>
+        <span id="gallery-counter" class="text-xs text-white/60 tracking-wider">1 / 5</span>
+      </div>
+      <button id="gallery-close-btn" class="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/10 hover:bg-white/20 text-white flex items-center justify-center transition clickable" title="Close Gallery">
+        <span class="material-symbols-outlined text-2xl">close</span>
+      </button>
+    </div>
+
+    <!-- Center: Main Image & Navigation -->
+    <div class="relative w-full max-w-5xl flex-1 flex items-center justify-center min-h-0 py-4">
+      <!-- Left Arrow -->
+      <button id="gallery-prev-btn" class="absolute left-2 md:left-4 z-10 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/10 hover:bg-white/20 text-white flex items-center justify-center transition clickable" title="Previous Image">
+        <span class="material-symbols-outlined text-2xl">arrow_back_ios_new</span>
+      </button>
+
+      <!-- Main Image Container -->
+      <div id="gallery-image-container" class="relative w-full h-full max-h-[60vh] md:max-h-[70vh] flex items-center justify-center overflow-hidden rounded-2xl select-none">
+        <img id="gallery-main-img" src="" alt="Gallery Image" class="max-w-full max-h-full object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.5)]" onerror="this.onerror=null; this.src='/images/product-placeholder.webp';">
+      </div>
+
+      <!-- Right Arrow -->
+      <button id="gallery-next-btn" class="absolute right-2 md:right-4 z-10 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/10 hover:bg-white/20 text-white flex items-center justify-center transition clickable" title="Next Image">
+        <span class="material-symbols-outlined text-2xl">arrow_forward_ios</span>
+      </button>
+    </div>
+
+    <!-- Bottom: Horizontal Scrolling Thumbnail Strip -->
+    <div class="w-full max-w-3xl z-10 select-none pb-2">
+      <div id="gallery-thumbnails" class="flex gap-2 justify-start md:justify-center overflow-x-auto py-2 px-4 no-scrollbar">
+        <!-- Thumbnails injected via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll-to-Top Button -->
+  <button id="scroll-to-top-btn" class="scroll-to-top-btn" title="Back to top" aria-label="Scroll to top">
+    <span class="material-symbols-outlined text-xl">keyboard_arrow_up</span>
+  </button>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Custom Scripts -->
+  <script src="config/apiConfig.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
