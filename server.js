@@ -5,27 +5,43 @@ const path = require('path');
 const connectDB = require('./config/db');
 const fs = require('fs');
 
-// Dynamically generate/update client-side API configuration file based on environment variables
+// ===============================
+// Generate client-side API config
+// ===============================
 const configDir = path.join(__dirname, 'config');
+
 if (!fs.existsSync(configDir)) {
   fs.mkdirSync(configDir);
 }
+
 const apiConfigPath = path.join(configDir, 'apiConfig.js');
-const apiBaseUrl = process.env.API_BASE_URL || '';
-fs.writeFileSync(apiConfigPath, `// DreamyCrochet05 - Dynamically generated API Configuration
+
+const apiBaseUrl =
+  process.env.API_BASE_URL ||
+  process.env.RENDER_EXTERNAL_URL ||
+  `http://localhost:${process.env.PORT || 8000}`;
+
+fs.writeFileSync(
+  apiConfigPath,
+  `// DreamyCrochet05 - Auto Generated API Configuration
+
 const API_BASE_URL = "${apiBaseUrl}";
 
 if (!API_BASE_URL) {
   console.warn("⚠️ [apiConfig] API_BASE_URL is not configured! API requests might fail.");
 }
-`, 'utf-8');
-console.log(`⚙️ Generated config/apiConfig.js with API_BASE_URL: "${apiBaseUrl}"`);
+`,
+  'utf8'
+);
 
+console.log("✅ Generated API Config:", apiBaseUrl);
 
 // Models & Defaults for Seeding
 const Product = require('./models/Product');
 const Setting = require('./models/Setting');
 const { DEFAULT_PRODUCTS, DEFAULT_SETTINGS } = require('./utils/localDbHelper');
+
+
 
 const app = express();
 const PORT = process.env.PORT || 8000;
