@@ -62,7 +62,9 @@ app.get('*', (req, res) => {
 
 // Connect database and seed defaults on success
 const startServer = async () => {
+  console.log('🚀 Starting server initialization...');
   const isMongoConnected = await connectDB();
+  console.log('🔗 MongoDB connection status:', isMongoConnected ? 'connected' : 'failed');
   if (isMongoConnected) {
     try {
       // Seed default products
@@ -104,9 +106,12 @@ const startServer = async () => {
     }
   }
 
+  console.log('🔧 Starting Express server...');
   app.listen(PORT, () => {
     console.log(`🚀 DreamyCrochet05 Production Backend running at http://localhost:${PORT}`);
   });
 };
+
+
 
 startServer();

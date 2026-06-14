@@ -7,13 +7,15 @@ const mongoose = require('mongoose');
  * This ensures the server starts even when the Atlas connection is unreachable.
  */
 const connectDB = async () => {
+  console.log('🔧 Attempting to connect to MongoDB...');
+  const connectOptions = { useNewUrlParser: true, useUnifiedTopology: true, serverSelectionTimeoutMS: 5000 };
   const primaryUri = process.env.MONGO_URI;
   const fallbackUri = 'mongodb://127.0.0.1:27017/dreamycrochet';
 
   // Try primary first (if defined)
   if (primaryUri) {
     try {
-      await mongoose.connect(primaryUri);
+      await mongoose.connect(primaryUri, connectOptions);
       console.log(`✅ MongoDB Connected Successfully – ${primaryUri}`);
       return true;
     } catch (err) {
@@ -24,7 +26,7 @@ const connectDB = async () => {
 
   // Attempt fallback
   try {
-    await mongoose.connect(fallbackUri);
+    await mongoose.connect(fallbackUri, connectOptions);
     console.log(`✅ MongoDB Connected via fallback – ${fallbackUri}`);
     return true;
   } catch (err) {
@@ -33,6 +35,7 @@ const connectDB = async () => {
     console.error('   Ensure at least one URI is reachable.');
     return false;
   }
+
 };
 
 module.exports = connectDB;
