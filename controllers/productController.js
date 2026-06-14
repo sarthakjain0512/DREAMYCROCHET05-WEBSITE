@@ -63,7 +63,7 @@ const getProducts = async (req, res) => {
     const isAdminRequest = !!req.adminRequested;
 
     if (isMongoDBConnected()) {
-      const query = isAdminRequest ? {} : { isVisible: true };
+      const query = isAdminRequest ? {} : { isVisible: { $ne: false } };
       const products = await Product.find(query).sort({ featured: -1, createdAt: -1 });
       return res.status(200).json(products.map(mapProduct));
     } else {
@@ -120,7 +120,7 @@ const getProductStats = async (req, res) => {
     } else {
       const db = getLocalDB();
       const mapped = db.products.map(mapProduct);
-      
+
       const total = mapped.length;
       const featured = mapped.filter(p => p.featured).length;
       const visible = mapped.filter(p => p.isVisible).length;
@@ -359,8 +359,8 @@ const editProduct = async (req, res) => {
         }
       } else {
         const db = getLocalDB();
-        const existing = db.products.find(p => 
-          (p.id || p._id) !== id && 
+        const existing = db.products.find(p =>
+          (p.id || p._id) !== id &&
           (p.title || p.name || '').toLowerCase().trim() === title.toLowerCase().trim()
         );
         if (existing) {
@@ -401,7 +401,7 @@ const editProduct = async (req, res) => {
           }
         }
       }
-      
+
       let coverIdx = parseInt(coverImageIndex, 10);
       if (isNaN(coverIdx) || coverIdx < 0 || coverIdx >= imageUrls.length) {
         coverIdx = 0;
@@ -438,7 +438,7 @@ const editProduct = async (req, res) => {
         if (featured !== undefined) product.featured = featured === 'true' || featured === true;
         if (isVisible !== undefined) product.isVisible = !(isVisible === 'false' || isVisible === false);
         if (instagramLink !== undefined) product.instagramLink = instagramLink.trim();
-        
+
         product.images = imageUrls;
         product.coverImage = coverImg;
 
@@ -457,7 +457,7 @@ const editProduct = async (req, res) => {
         if (featured !== undefined) product.featured = featured === 'true' || featured === true;
         if (isVisible !== undefined) product.isVisible = !(isVisible === 'false' || isVisible === false);
         if (instagramLink !== undefined) product.instagramLink = instagramLink.trim();
-        
+
         product.images = imageUrls;
         product.img = coverImg;
         product.updatedAt = new Date();
@@ -478,7 +478,7 @@ const editProduct = async (req, res) => {
     // ── Safe Delete Logic: Delete old images that are no longer in the product gallery ──
     const oldImages = oldProductObj.images || [];
     const getPId = (v) => (v && typeof v === 'object' ? v.public_id : null);
-    
+
     const newPublicIds = imageUrls.map(img => getPId(img)).filter(Boolean);
     const deletedImages = oldImages.filter(img => {
       const oldPid = getPId(img);
