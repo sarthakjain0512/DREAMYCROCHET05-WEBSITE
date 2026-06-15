@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
       toast.classList.add('show');
     }, 10);
     
-    // remove after 3s
+    // remove after 3sc
     setTimeout(() => {
       toast.classList.replace('show', 'hide');
       setTimeout(() => {
