@@ -16,9 +16,19 @@ module.exports = (req, res, next) => {
   }
   // Ensure price is a positive number (or numeric string > 0)
   const priceNum = Number(price);
-  if (isNaN(priceNum) || priceNum <= 0) {
-    return res.status(400).json({ error: 'Product price must be a positive number' });
-  }
+  // Accept prices like ₹250, Rs.250, ₹ 250 or just 250
+const cleanedPrice = String(price).replace(/[^\d.]/g, '');
+
+const priceNum = Number(cleanedPrice);
+
+if (isNaN(priceNum) || priceNum <= 0) {
+  return res.status(400).json({
+    error: 'Product price must be a positive number'
+  });
+}
+
+// Store the cleaned numeric value
+req.body.price = priceNum;
   // category optional but ensure if provided it's a string
   if (category && typeof category !== 'string') {
     return res.status(400).json({ error: 'Product category must be a string' });
