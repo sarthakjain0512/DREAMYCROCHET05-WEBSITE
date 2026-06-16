@@ -511,7 +511,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <img src="${p.img}" alt="${p.name}" class="w-16 h-16 object-contain bg-beige/30 rounded-xl border border-primary/5 shrink-0" onerror="this.onerror=null; this.src='/images/product-placeholder.webp';">
           <div class="flex-grow min-w-0">
             <h4 class="font-serif text-sm font-bold text-darkbrown dark:text-beige truncate">${p.name}</h4>
-            <p class="text-xs text-primary font-semibold">${p.price}</p>
+            <p class="text-xs text-primary font-semibold">₹${p.price}</p>
           </div>
           <div class="flex items-center gap-2 shrink-0">
             <button class="view-wishlist-item-btn w-8 h-8 rounded-full hover:bg-beige/80 dark:hover:bg-beige/20 text-darkbrown dark:text-beige flex items-center justify-center transition clickable" title="View details">
@@ -1174,7 +1174,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div>
           <div class="flex justify-between items-start mb-2 gap-2">
             <h3 class="font-serif text-xl font-bold text-darkbrown line-clamp-1">${p.name}</h3>
-            <span class="text-primary font-semibold shrink-0">${p.price}</span>
+            <span class="text-primary font-semibold shrink-0">₹${p.price}</span>
           </div>
           <p class="text-primary/70 text-sm leading-relaxed mb-3 line-clamp-2">${p.desc}</p>
         </div>
@@ -1635,7 +1635,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </td>
         <td class="p-4 text-primary font-medium">${p.badge}</td>
-        <td class="p-4 font-bold text-darkbrown">${p.price}</td>
+        <td class="p-4 font-bold text-darkbrown">₹${p.price}</td>
         <td class="p-4 text-xs text-primary/70">${p.label || '<span class="text-primary/30">N/A</span>'}</td>
         <td class="p-4 text-xs text-primary/80 font-bold text-center">${p.viewCount || 0}</td>
         <td class="p-4 text-center">
