@@ -213,9 +213,9 @@ const addProduct = async (req, res) => {
     if (!title || !title.trim()) {
       return res.status(400).json({ error: 'Product title is required' });
     }
-    if (!price || !price.trim()) {
-      return res.status(400).json({ error: 'Product price is required' });
-    }
+    if (price === undefined || price === null || price === '') {
+    return res.status(400).json({ error: 'Product price is required' });
+}
 
     // Duplicate check
     if (isMongoDBConnected()) {
@@ -283,7 +283,7 @@ const addProduct = async (req, res) => {
           title: title.trim(),
           description: description?.trim() || '',
           category: category || 'Others',
-          price: price.trim(),
+          price: String(price).trim(),
           images: imageUrls,
           coverImage: coverImg,
           label: label?.trim() || '',
@@ -301,7 +301,7 @@ const addProduct = async (req, res) => {
           name: title.trim(),
           desc: description?.trim() || '',
           badge: category || 'Others',
-          price: price.trim(),
+          price: String(price).trim(),
           images: imageUrls,
           img: coverImg,
           label: label?.trim() || '',
@@ -433,7 +433,8 @@ const editProduct = async (req, res) => {
         if (title) product.title = title.trim();
         if (description !== undefined) product.description = description.trim();
         if (category) product.category = category;
-        if (price) product.price = price.trim();
+        if (price !== undefined)
+    product.price = String(price).trim();
         if (label !== undefined) product.label = label.trim();
         if (featured !== undefined) product.featured = featured === 'true' || featured === true;
         if (isVisible !== undefined) product.isVisible = !(isVisible === 'false' || isVisible === false);
@@ -452,7 +453,8 @@ const editProduct = async (req, res) => {
         if (title) product.name = title.trim();
         if (description !== undefined) product.desc = description.trim();
         if (category) product.badge = category;
-        if (price) product.price = price.trim();
+        if (price !== undefined)
+    product.price = String(price).trim();
         if (label !== undefined) product.label = label.trim();
         if (featured !== undefined) product.featured = featured === 'true' || featured === true;
         if (isVisible !== undefined) product.isVisible = !(isVisible === 'false' || isVisible === false);
