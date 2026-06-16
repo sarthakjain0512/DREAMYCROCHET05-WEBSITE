@@ -2570,8 +2570,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('open-inquiry-btn')?.addEventListener('click', openCustomOrderModal);
 
   // FORM SUBMIT — multipart/form-data
+  console.log("CUSTOM ORDER SCRIPT LOADED");
+
   customOrderForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
+    console.log("FORM SUBMITTED");
 
     // Honeypot spam check
     const honeypot = customOrderForm.querySelector('input[name="website"]');
@@ -2614,6 +2617,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       // Build FormData (multipart/form-data for images)
+      console.log("customerName:", customerName);
+console.log("email:", email);
+console.log("phone:", phone);
+console.log("occasion:", occasion);
+console.log("message:", message);
+console.log("images:", inquiryImageFiles);
       const formData = new FormData();
       formData.append('customerName', customerName);
       formData.append('email', email);

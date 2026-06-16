@@ -42,6 +42,10 @@ const VALID_STATUSES = ['New', 'Contacted', 'Accepted', 'Making', 'Ready', 'Comp
 // Public endpoint — allows customers to submit inquiry with inspiration images.
 // ─────────────────────────────────────────────────────────────────────────────
 const submitCustomOrder = async (req, res) => {
+  console.log("========== CUSTOM ORDER ==========");
+console.log("BODY:", req.body);
+console.log("FILES:", req.files);
+console.log("==================================");
   const uploadedCloudinaryImages = [];
   try {
     const { customerName, email, phone, instagramUsername, occasion, message } = req.body;

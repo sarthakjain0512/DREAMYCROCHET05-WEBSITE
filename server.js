@@ -19,22 +19,26 @@ const apiConfigPath = path.join(configDir, 'apiConfig.js');
 const apiBaseUrl =
   process.env.API_BASE_URL ||
   process.env.RENDER_EXTERNAL_URL ||
-  `http://localhost:${process.env.PORT || 8000}`;
+  (process.env.NODE_ENV === 'production' ? '' : `http://localhost:${process.env.PORT || 8000}`);
+
+
+
 
 fs.writeFileSync(
   apiConfigPath,
   `// DreamyCrochet05 - Auto Generated API Configuration
 
-const API_BASE_URL = "${apiBaseUrl}";
+// API_BASE_URL is derived from env at server start.
+// Client-side requests use API_BASE_URL (or fall back to relative host when unset).
 
-if (!API_BASE_URL) {
-  console.warn("⚠️ [apiConfig] API_BASE_URL is not configured! API requests might fail.");
-}
+const API_BASE_URL = "${apiBaseUrl}";
 `,
   'utf8'
 );
 
-console.log("✅ Generated API Config:", apiBaseUrl);
+
+
+
 
 // Models & Defaults for Seeding
 const Product = require('./models/Product');
@@ -78,9 +82,13 @@ app.get('*', (req, res) => {
 
 // Connect database and seed defaults on success
 const startServer = async () => {
-  console.log('🚀 Starting server initialization...');
   const isMongoConnected = await connectDB();
-  console.log('🔗 MongoDB connection status:', isMongoConnected ? 'connected' : 'failed');
+  console.log('Mongo Connected');
+
+
+
+
+
   if (isMongoConnected) {
     try {
       // Seed default products
@@ -108,24 +116,24 @@ const startServer = async () => {
             label: p.label || ''
           };
         }));
-        console.log('🌱 Seeded default products in MongoDB Atlas with image collections.');
+
       }
 
       // Seed default settings
       const settingsCount = await Setting.countDocuments();
       if (settingsCount === 0) {
         await Setting.create(DEFAULT_SETTINGS);
-        console.log('🌱 Seeded default homepage settings in MongoDB Atlas.');
+
       }
     } catch (e) {
       console.error('❌ Seeding error:', e.message);
     }
   }
 
-  console.log('🔧 Starting Express server...');
-  app.listen(PORT, () => {
-    console.log(`🚀 DreamyCrochet05 Production Backend running at http://localhost:${PORT}`);
-  });
+
+app.listen(PORT, () => {
+  console.log('Server Started');
+});
 };
 
 

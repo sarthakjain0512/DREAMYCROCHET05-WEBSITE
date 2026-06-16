@@ -1,7 +1,6 @@
 // DreamyCrochet05 - Auto Generated API Configuration
 
-const API_BASE_URL = "https://dreamycrochet05-website.onrender.com";
+// API_BASE_URL is derived from env at server start.
+// Client-side requests use API_BASE_URL (or fall back to relative host when unset).
 
-if (!API_BASE_URL) {
-  console.warn("⚠️ [apiConfig] API_BASE_URL is not configured! API requests might fail.");
-}
+const API_BASE_URL = "http://localhost:8000";

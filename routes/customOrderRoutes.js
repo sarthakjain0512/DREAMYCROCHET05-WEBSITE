@@ -42,9 +42,17 @@ const rateLimiter = require('../middleware/rateLimiter');
 // Apply rate limiting (max 5 requests per minute) and validation before upload
 router.post(
   '/',
-  rateLimiter({ windowMs: 60 * 1000, maxRequests: 5, message: 'Too many order submissions, please try later.' }),
-  validateCustomOrder,
+  (req, res, next) => {
+    console.log("🔥 ROUTE HIT");
+    next();
+  },
+  rateLimiter({
+    windowMs: 60 * 1000,
+    maxRequests: 5,
+    message: 'Too many order submissions, please try later.'
+  }),
   uploadCustomOrderImages,
+  validateCustomOrder,
   submitCustomOrder
 );
 

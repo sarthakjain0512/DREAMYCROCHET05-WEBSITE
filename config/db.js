@@ -1,41 +1,40 @@
 const mongoose = require('mongoose');
 
 /**
- * Connect to MongoDB.
- *
- * Attempts the primary URI (`process.env.MONGO_URI`). If the connection fails, it falls back to a local MongoDB instance.
- * This ensures the server starts even when the Atlas connection is unreachable.
+ * Connect to MongoDB
  */
 const connectDB = async () => {
   console.log('🔧 Attempting to connect to MongoDB...');
-  const connectOptions = { useNewUrlParser: true, useUnifiedTopology: true, serverSelectionTimeoutMS: 5000 };
+
+  const connectOptions = {
+    serverSelectionTimeoutMS: 5000
+  };
+
   const primaryUri = process.env.MONGO_URI;
   const fallbackUri = 'mongodb://127.0.0.1:27017/dreamycrochet';
 
-  // Try primary first (if defined)
+  // Primary (MongoDB Atlas)
   if (primaryUri) {
     try {
       await mongoose.connect(primaryUri, connectOptions);
-      console.log(`✅ MongoDB Connected Successfully – ${primaryUri}`);
+      console.log('✅ MongoDB Connected Successfully');
       return true;
     } catch (err) {
-      console.warn('⚠️ Primary MongoDB connection failed, attempting fallback...');
-      console.error('   Error:', err.message);
+      console.warn('⚠️ Primary MongoDB connection failed, trying local MongoDB...');
+      console.error(err.message);
     }
   }
 
-  // Attempt fallback
+  // Local fallback
   try {
     await mongoose.connect(fallbackUri, connectOptions);
-    console.log(`✅ MongoDB Connected via fallback – ${fallbackUri}`);
+    console.log('✅ Local MongoDB Connected');
     return true;
   } catch (err) {
-    console.error('❌ MongoDB Connection Error (both primary and fallback):', err.message);
-    console.error('   Attempted URIs:', primaryUri || 'none', 'and', fallbackUri);
-    console.error('   Ensure at least one URI is reachable.');
+    console.error('❌ MongoDB Connection Failed');
+    console.error(err.message);
     return false;
   }
-
 };
 
 module.exports = connectDB;
