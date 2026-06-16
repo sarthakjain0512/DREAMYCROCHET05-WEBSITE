@@ -14,8 +14,6 @@ module.exports = (req, res, next) => {
   if (!price) {
     return res.status(400).json({ error: 'Product price is required' });
   }
-  // Ensure price is a positive number (or numeric string > 0)
-  const priceNum = Number(price);
   // Accept prices like ₹250, Rs.250, ₹ 250 or just 250
 const cleanedPrice = String(price).replace(/[^\d.]/g, '');
 
@@ -44,7 +42,7 @@ req.body.price = priceNum;
   }
   // Attach trimmed values back to req.body for downstream handlers
   req.body.title = title;
-  req.body.price = price;
+req.body.price = priceNum;
   if (category) req.body.category = category;
   req.body.description = description;
   next();
