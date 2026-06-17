@@ -14,7 +14,7 @@
 // 📌 Gmail App Password (NOT your regular password):
 //   Google Account → Security → 2-Step Verification → App Passwords
 // ─────────────────────────────────────────────────────────────────────────────
-
+const axios = require("axios");
 const nodemailer = require('nodemailer');
 const path = require('path');
 const fs = require('fs');
@@ -161,55 +161,60 @@ async function sendInquiryEmail(order, imageUrls = []) {
 
     console.log("🚀 sendInquiryEmail() called");
 
-    const subject = '🌷 New Crochet Inquiry — DreamyCrochet05';
+    const htmlBody = buildEmailHTML(order, imageUrls);
 
-  
-  const htmlBody = buildEmailHTML(order, imageUrls);
+    try {
 
-  if (!emailEnabled || !transporter) {
-    return logToFile(order, imageUrls);
-  }
+        const response = await axios.post(
+            "https://api.brevo.com/v3/smtp/email",
+            {
+                sender: {
+                    name: "DreamyCrochet05",
+                    email: "exploringindia0512@gmail.com"
+                },
 
-  const mailOptions = {
-    from: `"DreamyCrochet05 Inquiries" <${emailAddress}>`,
-    to: emailAddress,
-    subject,
-    html: htmlBody
-  };
+                to: [
+                    {
+                        email: "exploringindia0512@gmail.com",
+                        name: "DreamyCrochet05"
+                    }
+                ],
 
-  try {
+                subject: "🌷 New Crochet Inquiry — DreamyCrochet05",
 
-    console.log("📨 About to send email...");
+                htmlContent: htmlBody
+            },
 
-    const info = await transporter.sendMail(mailOptions);
+            {
+                headers: {
+                    "accept": "application/json",
+                    "api-key": process.env.BREVO_API_KEY,
+                    "content-type": "application/json"
+                }
+            }
+        );
 
-    console.log("==================================");
-    console.log("EMAIL SENT");
-    console.log(info);
-    console.log("Accepted:", info.accepted);
-console.log("Rejected:", info.rejected);
-console.log("Message ID:", info.messageId);
-    console.log("==================================");
+        console.log("==================================");
+        console.log("✅ EMAIL SENT USING BREVO API");
+        console.log(response.data);
+        console.log("==================================");
+
+    }
+
+    catch(err){
+
+        console.log("❌ BREVO EMAIL FAILED");
+
+        console.error(err.response?.data || err.message);
+
+        logToFile(order,imageUrls);
+
+    }
 
 }
 
-catch(err){
 
-    console.log("❌ EMAIL FAILED");
 
-    console.error(err);
-
-    console.error("Message:", err.message);
-
-    console.error("Code:", err.code);
-
-    console.error("Response:", err.response);
-
-    logToFile(order,imageUrls);
-
-}
-
-}
 
 // ─── Local Fallback Logger ────────────────────────────────────────────────────
 function logToFile(order, imageUrls = []) {
