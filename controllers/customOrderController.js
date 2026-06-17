@@ -130,10 +130,12 @@ console.log("==================================");
     // ── Send email notification to admin ──────────────────────────────────────
     // Passes the mapped plain urls to the email service
     const mappedOrder = mapOrder(newOrder);
-    sendInquiryEmail(mappedOrder, mappedOrder.referenceImages).catch(err => {
-      console.error('Email notification failed (non-fatal):', err);
-    });
-
+    try {
+  await sendInquiryEmail(mappedOrder, mappedOrder.referenceImages);
+  console.log("✅ sendInquiryEmail() finished");
+} catch (err) {
+  console.error("❌ sendInquiryEmail() failed:", err);
+}
     return res.status(201).json({
       success: true,
       message: 'Inquiry submitted successfully! We will contact you within 24 hours.',

@@ -157,7 +157,11 @@ function buildEmailHTML(order, imageUrls) {
  */
 async function sendInquiryEmail(order, imageUrls = []) {
 
-  const subject = '🌷 New Crochet Inquiry — DreamyCrochet05';
+    console.log("🚀 sendInquiryEmail() called");
+
+    const subject = '🌷 New Crochet Inquiry — DreamyCrochet05';
+
+  
   const htmlBody = buildEmailHTML(order, imageUrls);
 
   if (!emailEnabled || !transporter) {
@@ -173,25 +177,33 @@ async function sendInquiryEmail(order, imageUrls = []) {
 
   try {
 
+    console.log("📨 About to send email...");
+
     const info = await transporter.sendMail(mailOptions);
 
     console.log("==================================");
     console.log("EMAIL SENT");
     console.log(info);
+    console.log("Accepted:", info.accepted);
+console.log("Rejected:", info.rejected);
+console.log("Message ID:", info.messageId);
     console.log("==================================");
 
-    console.log(`📧 Inquiry email sent successfully: ${info.messageId}`);
+}
 
-} catch (err) {
+catch(err){
 
-    console.error("EMAIL ERROR:");
-    console.error("EMAIL ERROR:", {
-  message: err.message,
-  code: err.code,
-  response: err.response
-});
+    console.log("❌ EMAIL FAILED");
 
-    logToFile(order, imageUrls);
+    console.error(err);
+
+    console.error("Message:", err.message);
+
+    console.error("Code:", err.code);
+    
+    console.error("Response:", err.response);
+
+    logToFile(order,imageUrls);
 
 }
 
