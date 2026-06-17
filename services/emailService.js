@@ -28,31 +28,14 @@ const emailPassword = process.env.EMAIL_PASSWORD;
 
 if (emailAddress && emailPassword && !emailAddress.includes('your_email@gmail.com') && !emailPassword.includes('your_gmail_app_password')) {
   transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-
+  service: "gmail",
   auth: {
     user: emailAddress,
     pass: emailPassword
-  },
-
-  connectionTimeout: 30000,
-  greetingTimeout: 30000,
-  socketTimeout: 30000,
-
-  tls: {
-    rejectUnauthorized: false
   }
 });
 
-transporter.verify((error) => {
-  if (error) {
-    console.error("❌ SMTP Verify Error:", error);
-  } else {
-    console.log("✅ SMTP Server Ready");
-  }
-});
+
   emailEnabled = true;
   console.log('📧 [EmailService] Gmail Nodemailer configured successfully.');
 } else {
