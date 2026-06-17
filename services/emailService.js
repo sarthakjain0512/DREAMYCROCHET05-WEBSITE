@@ -28,12 +28,31 @@ const emailPassword = process.env.EMAIL_PASSWORD;
 
 if (emailAddress && emailPassword && !emailAddress.includes('your_email@gmail.com') && !emailPassword.includes('your_gmail_app_password')) {
   transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: emailAddress,
-      pass: emailPassword
-    }
-  });
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+
+  auth: {
+    user: emailAddress,
+    pass: emailPassword
+  },
+
+  connectionTimeout: 30000,
+  greetingTimeout: 30000,
+  socketTimeout: 30000,
+
+  tls: {
+    rejectUnauthorized: false
+  }
+});
+
+transporter.verify((error) => {
+  if (error) {
+    console.error("❌ SMTP Verify Error:", error);
+  } else {
+    console.log("✅ SMTP Server Ready");
+  }
+});
   emailEnabled = true;
   console.log('📧 [EmailService] Gmail Nodemailer configured successfully.');
 } else {
@@ -154,30 +173,45 @@ function buildEmailHTML(order, imageUrls) {
  * @param {string[]} imageUrls - Array of Cloudinary image URLs for reference images
  */
 async function sendInquiryEmail(order, imageUrls = []) {
+
   const subject = '🌷 New Crochet Inquiry — DreamyCrochet05';
   const htmlBody = buildEmailHTML(order, imageUrls);
 
-  if (emailEnabled && transporter) {
-    // ── Send via Nodemailer Gmail ─────────────────────────────────────────────
-    const mailOptions = {
-      from: `"DreamyCrochet05 Inquiries" <${emailAddress}>`,
-      to: emailAddress, // Send to yourself
-      subject,
-      html: htmlBody
-    };
-
-    try {
-      const info = await transporter.sendMail(mailOptions);
-      console.log(`📧 [EmailService] Inquiry email sent successfully: ${info.messageId}`);
-    } catch (err) {
-      console.error(`❌ [EmailService] Failed to send email: ${err.message}`);
-      // Don't throw — log locally as fallback
-      logToFile(order, imageUrls);
-    }
-  } else {
-    // ── Fallback: Log to local file ───────────────────────────────────────────
-    logToFile(order, imageUrls);
+  if (!emailEnabled || !transporter) {
+    return logToFile(order, imageUrls);
   }
+
+  const mailOptions = {
+    from: `"DreamyCrochet05 Inquiries" <${emailAddress}>`,
+    to: emailAddress,
+    subject,
+    html: htmlBody
+  };
+
+  try {
+
+    const info = await transporter.sendMail(mailOptions);
+
+    console.log("==================================");
+    console.log("EMAIL SENT");
+    console.log(info);
+    console.log("==================================");
+
+    console.log(`📧 Inquiry email sent successfully: ${info.messageId}`);
+
+} catch (err) {
+
+    console.error("EMAIL ERROR:");
+    console.error("EMAIL ERROR:", {
+  message: err.message,
+  code: err.code,
+  response: err.response
+});
+
+    logToFile(order, imageUrls);
+
+}
+
 }
 
 // ─── Local Fallback Logger ────────────────────────────────────────────────────

@@ -19,7 +19,7 @@ if (process.env.EMAIL && process.env.EMAIL_PASSWORD) {
   useEmail = true;
   console.log('📧 Nodemailer Gmail configuration loaded successfully.');
 } else {
-  console.log('⚠️ Gmail configuration missing. Custom order emails will be logged locally to "inbox_logs.txt".');
+  //console.log('⚠️ Gmail configuration missing. Custom order emails will be logged locally to "inbox_logs.txt".');
 }
 
 const mapOrderToFrontend = (o) => {
