@@ -39,7 +39,7 @@ if (emailAddress && emailPassword && !emailAddress.includes('your_email@gmail.co
 
 
   emailEnabled = true;
-  console.log('📧 [EmailService] Gmail Nodemailer configured successfully.');
+  console.log('📧 [EmailService] Brevo SMTP configured successfully.');
 } else {
   console.log('⚠️  [EmailService] EMAIL/EMAIL_USER or EMAIL_PASSWORD not configured in .env — emails will be logged locally to inbox_logs.txt.');
 }
