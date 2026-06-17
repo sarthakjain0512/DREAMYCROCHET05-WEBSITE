@@ -28,7 +28,9 @@ const emailPassword = process.env.EMAIL_PASSWORD;
 
 if (emailAddress && emailPassword && !emailAddress.includes('your_email@gmail.com') && !emailPassword.includes('your_gmail_app_password')) {
   transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp-relay.brevo.com",
+  port: 587,
+  secure: false,
   auth: {
     user: emailAddress,
     pass: emailPassword
@@ -200,7 +202,7 @@ catch(err){
     console.error("Message:", err.message);
 
     console.error("Code:", err.code);
-    
+
     console.error("Response:", err.response);
 
     logToFile(order,imageUrls);
