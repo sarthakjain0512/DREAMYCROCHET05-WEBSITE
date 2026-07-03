@@ -1688,3 +1688,20 @@ tbody tr:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
+/* ================================================
+   QUICK VIEW MAIN IMAGE DESKTOP HOVER ZOOM STYLES
+   ================================================ */
+@media (hover: hover) and (pointer: fine) {
+  #qv-img {
+    cursor: zoom-in;
+    will-change: transform;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #qv-img {
+    transform: none !important;
+    transition: none !important;
+  }
+}
+

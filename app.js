@@ -2755,6 +2755,35 @@ console.log("images:", inquiryImageFiles);
 
     const primaryImgUrl = allImages[0] || '/images/product-placeholder.webp';
     qvImg.src = primaryImgUrl;
+    qvImg.style.transform = 'scale(1)';
+    qvImg.style.transformOrigin = 'center center';
+
+    // Desktop Hover Zoom Controller for Main Image
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      qvImg.onmouseenter = () => {
+        qvImg.style.transition = 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
+      };
+
+      qvImg.onmousemove = (e) => {
+        const rect = qvImg.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        qvImg.style.transformOrigin = `${x}% ${y}%`;
+        qvImg.style.transform = 'scale(1.8)';
+      };
+
+      qvImg.onmouseleave = () => {
+        qvImg.style.transition = 'transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)';
+        qvImg.style.transform = 'scale(1)';
+        setTimeout(() => {
+          qvImg.style.transformOrigin = 'center center';
+        }, 350);
+      };
+    } else {
+      qvImg.onmouseenter = null;
+      qvImg.onmousemove = null;
+      qvImg.onmouseleave = null;
+    }
 
     if (qvThumbnailsContainer) {
       qvThumbnailsContainer.innerHTML = '';
@@ -2773,6 +2802,8 @@ console.log("images:", inquiryImageFiles);
             qvThumbnailsContainer.querySelectorAll('.qv-thumb-item').forEach(t => t.classList.remove('active'));
             thumb.classList.add('active');
 
+            qvImg.style.transform = 'scale(1)';
+            qvImg.style.transformOrigin = 'center center';
             qvImg.style.opacity = '0.4';
             setTimeout(() => {
               qvImg.src = url;
