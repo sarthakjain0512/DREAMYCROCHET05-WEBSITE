@@ -2753,6 +2753,54 @@ console.log("images:", inquiryImageFiles);
     }
   }
 
+  function renderCompactProductCard(p) {
+    const card = document.createElement('div');
+    const pId = p._id || p.id;
+    const isWishlisted = isProductWishlisted(pId);
+    const imgSrc = p.img || (Array.isArray(p.images) && p.images.length > 0 ? (typeof p.images[0] === 'object' ? p.images[0].url : p.images[0]) : '/images/product-placeholder.webp');
+    const rawPrice = String(p.price || '').trim();
+    const formattedPrice = rawPrice.startsWith('₹') ? rawPrice : `₹${rawPrice}`;
+
+    card.className = 'rv-compact-card flex-shrink-0 w-56 sm:w-64 md:w-auto snap-start glass-card rounded-2xl p-3 relative group overflow-hidden cursor-pointer border border-primary/10 hover:border-primary/30 transition-all duration-300 hover:shadow-md clickable flex flex-col justify-between';
+
+    card.innerHTML = `
+      <div class="relative overflow-hidden rounded-xl aspect-[4/3] mb-2.5 bg-beige/30">
+        <img src="${imgSrc}" alt="${p.name}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" loading="lazy" onerror="this.onerror=null; this.src='/images/product-placeholder.webp';">
+        <button class="rv-wishlist-btn absolute top-2 right-2 w-7 h-7 rounded-full bg-white/80 dark:bg-darkbrown/80 backdrop-blur-sm flex items-center justify-center text-primary hover:scale-110 active:scale-95 transition-all duration-200 z-10 clickable" data-id="${pId}">
+          <span class="material-symbols-outlined text-sm ${isWishlisted ? 'fill-icon' : ''}">${isWishlisted ? 'favorite' : 'favorite'}</span>
+        </button>
+      </div>
+      <div class="flex items-center justify-between gap-2 pt-0.5">
+        <h4 class="font-serif font-bold text-xs md:text-sm text-darkbrown dark:text-beige line-clamp-1">${p.name}</h4>
+        <span class="text-xs font-semibold text-primary shrink-0">${formattedPrice}</span>
+      </div>
+    `;
+
+    // Click card opens Quick View
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.rv-wishlist-btn')) return;
+      openQuickView(p);
+    });
+
+    // Wishlist button click
+    const wishBtn = card.querySelector('.rv-wishlist-btn');
+    if (wishBtn) {
+      wishBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleWishlist(p);
+        const nowWishlisted = isProductWishlisted(pId);
+        const icon = wishBtn.querySelector('.material-symbols-outlined');
+        if (nowWishlisted) {
+          icon.classList.add('fill-icon');
+        } else {
+          icon.classList.remove('fill-icon');
+        }
+      });
+    }
+
+    return card;
+  }
+
   function renderRecentlyViewed() {
     if (!recentlyViewedSection || !recentlyViewedGrid) return;
     try {
@@ -2775,7 +2823,7 @@ console.log("images:", inquiryImageFiles);
       recentlyViewedGrid.innerHTML = '';
 
       foundProducts.forEach(p => {
-        const card = renderProductCard(p, false);
+        const card = renderCompactProductCard(p);
         recentlyViewedGrid.appendChild(card);
       });
 
