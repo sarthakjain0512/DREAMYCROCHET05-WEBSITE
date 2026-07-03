@@ -2760,24 +2760,39 @@ console.log("images:", inquiryImageFiles);
       p.viewCount = (p.viewCount || 0) + 1;
     }
 
+    quickViewModal.classList.remove('quick-view-closing');
     quickViewModal.classList.remove('hidden');
-    setTimeout(() => quickViewModal.classList.add('active'), 50);
+    setTimeout(() => quickViewModal.classList.add('active'), 20);
     playTone(659.25, 0.25, 'sine', 0.1);
   }
 
+  function closeQuickViewModal() {
+    if (!quickViewModal) return;
+    quickViewModal.classList.remove('active');
+    quickViewModal.classList.add('quick-view-closing');
+    setTimeout(() => {
+      quickViewModal.classList.add('hidden');
+      quickViewModal.classList.remove('quick-view-closing');
+    }, 300);
+  }
+
   if (qvCloseBtn) {
-    qvCloseBtn.addEventListener('click', () => {
-      quickViewModal.classList.remove('active');
-      setTimeout(() => quickViewModal.classList.add('hidden'), 400);
+    qvCloseBtn.addEventListener('click', closeQuickViewModal);
+  }
+
+  if (quickViewModal) {
+    quickViewModal.addEventListener('click', (e) => {
+      if (e.target === quickViewModal) {
+        closeQuickViewModal();
+      }
     });
   }
 
   // Quick view triggers
   const qvCustomOrderBtn = document.getElementById('qv-custom-order-btn');
   qvCustomOrderBtn?.addEventListener('click', () => {
-    quickViewModal.classList.remove('active');
+    closeQuickViewModal();
     setTimeout(() => {
-      quickViewModal.classList.add('hidden');
       openCustomOrderModal();
     }, 300);
   });

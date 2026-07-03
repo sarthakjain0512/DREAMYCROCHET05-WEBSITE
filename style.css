@@ -1590,3 +1590,49 @@ tbody tr:hover {
   color: var(--color-beige) !important;
 }
 
+/* ================================================
+   BOUTIQUE QUICK VIEW MODAL ANIMATIONS
+   ================================================ */
+#quick-view-modal.modal-overlay {
+  opacity: 0;
+  transition: opacity 300ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity;
+}
+
+#quick-view-modal .modal-content {
+  opacity: 0;
+  transform: translateY(18px) scale(0.96);
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1), opacity 300ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity;
+}
+
+#quick-view-modal.active {
+  opacity: 1;
+}
+
+#quick-view-modal.active .modal-content {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+#quick-view-modal.quick-view-closing {
+  opacity: 0;
+}
+
+#quick-view-modal.quick-view-closing .modal-content {
+  opacity: 0;
+  transform: translateY(18px) scale(0.96);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #quick-view-modal.modal-overlay,
+  #quick-view-modal .modal-content,
+  #quick-view-modal.active,
+  #quick-view-modal.active .modal-content,
+  #quick-view-modal.quick-view-closing,
+  #quick-view-modal.quick-view-closing .modal-content {
+    transform: none !important;
+    transition: opacity 150ms ease !important;
+  }
+}
+
