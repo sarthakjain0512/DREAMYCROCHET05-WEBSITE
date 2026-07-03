@@ -1565,9 +1565,11 @@ tbody tr:hover {
 
 /* Quick View Modal Scroll Container & Sticky Top-Right Close Button */
 #quick-view-modal .modal-content {
-  max-height: 90vh;
-  max-height: 90dvh;
-  overflow-y: auto;
+  max-height: 85vh;
+  max-height: 85dvh;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
   position: relative;
   -webkit-overflow-scrolling: touch;
 }

@@ -2738,6 +2738,15 @@ console.log("images:", inquiryImageFiles);
       };
     }
     
+    if (typeof lenis !== 'undefined' && lenis && typeof lenis.stop === 'function') {
+      lenis.stop();
+    }
+    const modalContent = quickViewModal.querySelector('.modal-content');
+    if (modalContent) {
+      modalContent.setAttribute('data-lenis-prevent', '');
+      modalContent.scrollTop = 0;
+    }
+
     // Normalize cover image URL
     const imgUrl = (p.img && typeof p.img === 'object') ? p.img.url : (p.img || '');
     qvImg.src = imgUrl || '/images/product-placeholder.webp';
@@ -2770,6 +2779,9 @@ console.log("images:", inquiryImageFiles);
     if (!quickViewModal) return;
     quickViewModal.classList.remove('active');
     quickViewModal.classList.add('quick-view-closing');
+    if (typeof lenis !== 'undefined' && lenis && typeof lenis.start === 'function') {
+      lenis.start();
+    }
     setTimeout(() => {
       quickViewModal.classList.add('hidden');
       quickViewModal.classList.remove('quick-view-closing');
@@ -2786,6 +2798,14 @@ console.log("images:", inquiryImageFiles);
         closeQuickViewModal();
       }
     });
+
+    quickViewModal.addEventListener('wheel', (e) => {
+      const modalContent = quickViewModal.querySelector('.modal-content');
+      if (modalContent && modalContent.scrollHeight > modalContent.clientHeight) {
+        e.stopPropagation();
+        modalContent.scrollTop += e.deltaY;
+      }
+    }, { passive: true });
   }
 
   // Quick view triggers
