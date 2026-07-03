@@ -2699,7 +2699,6 @@ console.log("images:", inquiryImageFiles);
   const qvImg = document.getElementById('qv-img');
   const qvTitle = document.getElementById('qv-title');
   const qvPrice = document.getElementById('qv-price');
-  const qvDesc = document.getElementById('qv-desc');
   const qvType = document.getElementById('qv-type');
   const qvDetailsAccordion = document.getElementById('qv-details-accordion');
   const qvDetailsToggleBtn = document.getElementById('qv-details-toggle-btn');
@@ -2710,7 +2709,6 @@ console.log("images:", inquiryImageFiles);
     if (!quickViewModal) return;
     qvTitle.textContent = p.name;
     qvPrice.textContent = p.price;
-    qvDesc.textContent = p.desc;
     qvType.textContent = p.badge;
 
     // Populate Product Details Accordion full description
