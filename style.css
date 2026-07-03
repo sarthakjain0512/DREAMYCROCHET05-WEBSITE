@@ -1737,3 +1737,31 @@ tbody tr:hover {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
+/* ================================================
+   RECENTLY VIEWED PRODUCTS STYLES
+   ================================================ */
+#recently-viewed-section {
+  position: relative;
+}
+
+#recently-viewed-grid .product-card-container {
+  padding: 0.875rem;
+  border-radius: 18px;
+}
+
+#recently-viewed-grid .image-container {
+  margin-bottom: 0.75rem;
+  aspect-ratio: 4 / 3;
+}
+
+#recently-viewed-grid h3 {
+  font-size: 0.95rem;
+  line-height: 1.3;
+}
+
+#recently-viewed-grid p {
+  font-size: 0.75rem;
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+}
+

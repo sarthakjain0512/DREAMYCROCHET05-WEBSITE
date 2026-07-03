@@ -1277,6 +1277,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       updateWishlistUI();
+      renderRecentlyViewed();
     } catch (err) {
       console.error('Failed to render catalog:', err);
     }
@@ -2734,6 +2735,59 @@ console.log("images:", inquiryImageFiles);
   const qvPrevBtn = document.getElementById('qv-prev-btn');
   const qvNextBtn = document.getElementById('qv-next-btn');
 
+  // --- RECENTLY VIEWED PRODUCTS CONTROLLER ---
+  const recentlyViewedSection = document.getElementById('recently-viewed-section');
+  const recentlyViewedGrid = document.getElementById('recently-viewed-grid');
+
+  function saveToRecentlyViewed(p) {
+    if (!p || p.id === 'custom-order-card' || !p.name) return;
+    try {
+      let items = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+      items = items.filter(name => name !== p.name);
+      items.unshift(p.name);
+      items = items.slice(0, 4);
+      localStorage.setItem('recentlyViewed', JSON.stringify(items));
+      renderRecentlyViewed();
+    } catch (err) {
+      console.warn('Could not save to recently viewed:', err);
+    }
+  }
+
+  function renderRecentlyViewed() {
+    if (!recentlyViewedSection || !recentlyViewedGrid) return;
+    try {
+      const items = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+      if (items.length === 0 || !publicProducts || publicProducts.length === 0) {
+        recentlyViewedSection.classList.add('hidden');
+        return;
+      }
+
+      const foundProducts = items
+        .map(name => publicProducts.find(p => p && p.name === name))
+        .filter(Boolean);
+
+      if (foundProducts.length === 0) {
+        recentlyViewedSection.classList.add('hidden');
+        return;
+      }
+
+      recentlyViewedSection.classList.remove('hidden');
+      recentlyViewedGrid.innerHTML = '';
+
+      foundProducts.forEach(p => {
+        const card = renderProductCard(p, false);
+        recentlyViewedGrid.appendChild(card);
+      });
+
+      if (typeof refreshCursorHovers === 'function') {
+        refreshCursorHovers();
+      }
+    } catch (err) {
+      console.warn('Could not render recently viewed:', err);
+      recentlyViewedSection.classList.add('hidden');
+    }
+  }
+
   function navigateQuickViewProduct(targetProduct) {
     if (!quickViewModal || !targetProduct) return;
     const modalContent = quickViewModal.querySelector('.modal-content');
@@ -2754,6 +2808,7 @@ console.log("images:", inquiryImageFiles);
 
   function openQuickView(p) {
     if (!quickViewModal) return;
+    saveToRecentlyViewed(p);
     qvTitle.textContent = p.name;
     const rawPrice = String(p.price || '').trim();
     qvPrice.textContent = rawPrice.startsWith('₹') ? rawPrice : `₹${rawPrice}`;
