@@ -1705,3 +1705,21 @@ tbody tr:hover {
   }
 }
 
+/* ================================================
+   QUICK VIEW PRODUCT NAVIGATION BUTTON STYLES
+   ================================================ */
+.qv-nav-btn {
+  min-height: 44px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.qv-nav-btn:disabled,
+.qv-nav-btn[disabled] {
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+

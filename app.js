@@ -2705,6 +2705,26 @@ console.log("images:", inquiryImageFiles);
   const qvDetailsPanel = document.getElementById('qv-details-panel');
   const qvFullDesc = document.getElementById('qv-full-desc');
   const qvThumbnailsContainer = document.getElementById('qv-thumbnails');
+  const qvPrevBtn = document.getElementById('qv-prev-btn');
+  const qvNextBtn = document.getElementById('qv-next-btn');
+
+  function navigateQuickViewProduct(targetProduct) {
+    if (!quickViewModal || !targetProduct) return;
+    const modalContent = quickViewModal.querySelector('.modal-content');
+    if (modalContent) {
+      modalContent.style.transition = 'opacity 150ms ease';
+      modalContent.style.opacity = '0.35';
+      setTimeout(() => {
+        openQuickView(targetProduct);
+        modalContent.style.opacity = '1';
+        setTimeout(() => {
+          modalContent.style.transition = '';
+        }, 150);
+      }, 150);
+    } else {
+      openQuickView(targetProduct);
+    }
+  }
 
   function openQuickView(p) {
     if (!quickViewModal) return;
@@ -2712,6 +2732,34 @@ console.log("images:", inquiryImageFiles);
     const rawPrice = String(p.price || '').trim();
     qvPrice.textContent = rawPrice.startsWith('₹') ? rawPrice : `₹${rawPrice}`;
     qvType.textContent = p.badge;
+
+    // Update Previous / Next Navigation Buttons
+    const productList = (typeof publicProducts !== 'undefined' && publicProducts.length > 0) ? publicProducts : [];
+    const currentIndex = productList.findIndex(item => (item._id || item.id) === (p._id || p.id) || item.name === p.name);
+
+    if (qvPrevBtn && qvNextBtn) {
+      if (currentIndex === -1 || productList.length <= 1) {
+        qvPrevBtn.disabled = true;
+        qvNextBtn.disabled = true;
+      } else {
+        qvPrevBtn.disabled = (currentIndex === 0);
+        qvNextBtn.disabled = (currentIndex === productList.length - 1);
+
+        qvPrevBtn.onclick = (e) => {
+          e.stopPropagation();
+          if (currentIndex > 0) {
+            navigateQuickViewProduct(productList[currentIndex - 1]);
+          }
+        };
+
+        qvNextBtn.onclick = (e) => {
+          e.stopPropagation();
+          if (currentIndex < productList.length - 1) {
+            navigateQuickViewProduct(productList[currentIndex + 1]);
+          }
+        };
+      }
+    }
 
     // Populate Product Details Accordion full description
     if (qvFullDesc) {
