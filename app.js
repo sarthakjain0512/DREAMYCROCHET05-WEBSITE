@@ -2755,8 +2755,7 @@ console.log("images:", inquiryImageFiles);
 
   function renderCompactProductCard(p) {
     const card = document.createElement('div');
-    const pId = p._id || p.id;
-    const isWishlisted = isProductWishlisted(pId);
+    const isWishlisted = typeof wishlist !== 'undefined' && Array.isArray(wishlist) && wishlist.includes(p.name);
     const imgSrc = p.img || (Array.isArray(p.images) && p.images.length > 0 ? (typeof p.images[0] === 'object' ? p.images[0].url : p.images[0]) : '/images/product-placeholder.webp');
     const rawPrice = String(p.price || '').trim();
     const formattedPrice = rawPrice.startsWith('₹') ? rawPrice : `₹${rawPrice}`;
@@ -2766,8 +2765,8 @@ console.log("images:", inquiryImageFiles);
     card.innerHTML = `
       <div class="relative overflow-hidden rounded-xl aspect-[4/3] mb-2.5 bg-beige/30">
         <img src="${imgSrc}" alt="${p.name}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" loading="lazy" onerror="this.onerror=null; this.src='/images/product-placeholder.webp';">
-        <button class="rv-wishlist-btn absolute top-2 right-2 w-7 h-7 rounded-full bg-white/80 dark:bg-darkbrown/80 backdrop-blur-sm flex items-center justify-center text-primary hover:scale-110 active:scale-95 transition-all duration-200 z-10 clickable" data-id="${pId}">
-          <span class="material-symbols-outlined text-sm ${isWishlisted ? 'fill-icon' : ''}">${isWishlisted ? 'favorite' : 'favorite'}</span>
+        <button class="wishlist-heart-btn absolute top-2 right-2 w-7 h-7 rounded-full bg-white/80 dark:bg-darkbrown/80 backdrop-blur-sm flex items-center justify-center text-primary hover:scale-110 active:scale-95 transition-all duration-200 z-10 clickable" data-product-name="${p.name}">
+          <span class="material-symbols-outlined text-sm ${isWishlisted ? 'text-red-400' : ''}" style="${isWishlisted ? "font-variation-settings: 'FILL' 1;" : ''}">favorite</span>
         </button>
       </div>
       <div class="flex items-center justify-between gap-2 pt-0.5">
@@ -2778,25 +2777,9 @@ console.log("images:", inquiryImageFiles);
 
     // Click card opens Quick View
     card.addEventListener('click', (e) => {
-      if (e.target.closest('.rv-wishlist-btn')) return;
+      if (e.target.closest('.wishlist-heart-btn')) return;
       openQuickView(p);
     });
-
-    // Wishlist button click
-    const wishBtn = card.querySelector('.rv-wishlist-btn');
-    if (wishBtn) {
-      wishBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggleWishlist(p);
-        const nowWishlisted = isProductWishlisted(pId);
-        const icon = wishBtn.querySelector('.material-symbols-outlined');
-        if (nowWishlisted) {
-          icon.classList.add('fill-icon');
-        } else {
-          icon.classList.remove('fill-icon');
-        }
-      });
-    }
 
     return card;
   }
@@ -2829,6 +2812,10 @@ console.log("images:", inquiryImageFiles);
 
       if (typeof refreshCursorHovers === 'function') {
         refreshCursorHovers();
+      }
+
+      if (typeof ScrollTrigger !== 'undefined' && typeof ScrollTrigger.refresh === 'function') {
+        setTimeout(() => ScrollTrigger.refresh(), 100);
       }
     } catch (err) {
       console.warn('Could not render recently viewed:', err);
