@@ -1043,8 +1043,10 @@
         <span class="material-symbols-outlined">close</span>
       </button>
 
-      <div class="w-full md:w-1/2">
-        <img id="qv-img" src="" alt="Product view" class="w-full h-72 md:h-full object-contain bg-beige/30 rounded-2xl shadow-sm border border-primary/5" onerror="this.onerror=null; this.src='/images/product-placeholder.webp';">
+      <div class="w-full md:w-1/2 flex flex-col">
+        <img id="qv-img" src="" alt="Product view" class="w-full h-72 object-contain bg-beige/30 rounded-2xl shadow-sm border border-primary/5 transition-opacity duration-200" onerror="this.onerror=null; this.src='/images/product-placeholder.webp';">
+        <!-- Thumbnail Strip Container -->
+        <div id="qv-thumbnails" class="flex gap-2.5 mt-3 overflow-x-auto pb-1 hidden"></div>
       </div>
 
       <div class="w-full md:w-1/2 flex flex-col justify-between space-y-6">

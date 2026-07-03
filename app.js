@@ -2704,6 +2704,7 @@ console.log("images:", inquiryImageFiles);
   const qvDetailsToggleBtn = document.getElementById('qv-details-toggle-btn');
   const qvDetailsPanel = document.getElementById('qv-details-panel');
   const qvFullDesc = document.getElementById('qv-full-desc');
+  const qvThumbnailsContainer = document.getElementById('qv-thumbnails');
 
   function openQuickView(p) {
     if (!quickViewModal) return;
@@ -2747,18 +2748,51 @@ console.log("images:", inquiryImageFiles);
       modalContent.scrollTop = 0;
     }
 
-    // Normalize cover image URL
-    const imgUrl = (p.img && typeof p.img === 'object') ? p.img.url : (p.img || '');
-    qvImg.src = imgUrl || '/images/product-placeholder.webp';
+    // Product Images & Thumbnail Strip Setup
+    const allImages = (Array.isArray(p.images) && p.images.length > 0)
+      ? p.images.map(i => (typeof i === 'object' && i ? i.url : i)).filter(Boolean)
+      : (p.img ? [(typeof p.img === 'object' && p.img ? p.img.url : p.img)] : []);
 
-    // Bind click to open gallery
-    const galleryImages = (p.images && p.images.length > 0) ? p.images : (p.img ? [p.img] : []);
+    const primaryImgUrl = allImages[0] || '/images/product-placeholder.webp';
+    qvImg.src = primaryImgUrl;
+
+    if (qvThumbnailsContainer) {
+      qvThumbnailsContainer.innerHTML = '';
+      if (allImages.length > 1) {
+        qvThumbnailsContainer.classList.remove('hidden');
+        allImages.forEach((url, idx) => {
+          const thumb = document.createElement('img');
+          thumb.src = url;
+          thumb.alt = `${p.name} view ${idx + 1}`;
+          thumb.className = `qv-thumb-item ${idx === 0 ? 'active' : ''}`;
+          thumb.onerror = function() { this.src = '/images/product-placeholder.webp'; };
+
+          thumb.onclick = (e) => {
+            e.stopPropagation();
+            if (qvImg.src === url) return;
+            qvThumbnailsContainer.querySelectorAll('.qv-thumb-item').forEach(t => t.classList.remove('active'));
+            thumb.classList.add('active');
+
+            qvImg.style.opacity = '0.4';
+            setTimeout(() => {
+              qvImg.src = url;
+              qvImg.style.opacity = '1';
+            }, 120);
+          };
+          qvThumbnailsContainer.appendChild(thumb);
+        });
+      } else {
+        qvThumbnailsContainer.classList.add('hidden');
+      }
+    }
+
+    // Bind main image click to open Fullscreen Gallery
     qvImg.style.cursor = 'pointer';
     qvImg.onclick = () => {
       quickViewModal.classList.remove('active');
       setTimeout(() => {
         quickViewModal.classList.add('hidden');
-        openGallery(galleryImages, 0, p.name);
+        openGallery(allImages.length > 0 ? allImages : [primaryImgUrl], 0, p.name);
       }, 300);
     };
 
