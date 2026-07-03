@@ -1563,3 +1563,30 @@ tbody tr:hover {
   border-color: rgba(245, 230, 211, 0.08);
 }
 
+/* Quick View Modal Scroll Container & Sticky Top-Right Close Button */
+#quick-view-modal .modal-content {
+  max-height: 90vh;
+  max-height: 90dvh;
+  overflow-y: auto;
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+}
+
+#qv-close-btn {
+  position: sticky !important;
+  top: 1rem !important;
+  right: 1rem !important;
+  margin-left: auto !important;
+  z-index: 60 !important;
+  background-color: rgba(245, 230, 211, 0.85) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  box-shadow: 0 4px 12px rgba(74, 51, 33, 0.15) !important;
+  flex-shrink: 0 !important;
+}
+
+.dark-mode #qv-close-btn {
+  background-color: rgba(27, 18, 12, 0.85) !important;
+  color: var(--color-beige) !important;
+}
+

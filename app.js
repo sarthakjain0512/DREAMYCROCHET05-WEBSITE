@@ -2708,7 +2708,8 @@ console.log("images:", inquiryImageFiles);
   function openQuickView(p) {
     if (!quickViewModal) return;
     qvTitle.textContent = p.name;
-    qvPrice.textContent = p.price;
+    const rawPrice = String(p.price || '').trim();
+    qvPrice.textContent = rawPrice.startsWith('₹') ? rawPrice : `₹${rawPrice}`;
     qvType.textContent = p.badge;
 
     // Populate Product Details Accordion full description
