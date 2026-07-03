@@ -2875,6 +2875,77 @@ console.log("images:", inquiryImageFiles);
       }, 300);
     };
 
+    // Product Share Setup
+    const qvShareBtn = document.getElementById('qv-share-btn');
+    const qvSharePopup = document.getElementById('qv-share-popup');
+    const qvShareCopyBtn = document.getElementById('qv-share-copy-btn');
+    const qvShareWaBtn = document.getElementById('qv-share-wa-btn');
+    const qvShareEmailBtn = document.getElementById('qv-share-email-btn');
+
+    if (qvSharePopup) {
+      qvSharePopup.classList.add('hidden');
+    }
+
+    if (qvShareBtn) {
+      const shareUrl = `${window.location.origin}/?product=${encodeURIComponent(p.name)}`;
+      const shareText = `🌸 Check out this handmade crochet product:\n\n${p.name}\n${shareUrl}`;
+
+      qvShareBtn.onclick = async (e) => {
+        e.stopPropagation();
+
+        if (navigator.share && /Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+          try {
+            await navigator.share({
+              title: p.name,
+              text: `🌸 Check out this handmade crochet product: ${p.name}`,
+              url: shareUrl
+            });
+            return;
+          } catch (_) {}
+        }
+
+        if (qvSharePopup) {
+          qvSharePopup.classList.toggle('hidden');
+        }
+      };
+
+      if (qvShareCopyBtn) {
+        qvShareCopyBtn.onclick = (e) => {
+          e.stopPropagation();
+          qvSharePopup?.classList.add('hidden');
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(shareUrl).then(() => {
+              showToast('✓ Link copied!', 'success');
+            }).catch(() => {
+              showToast('✓ Link copied!', 'success');
+            });
+          } else {
+            showToast('✓ Link copied!', 'success');
+          }
+        };
+      }
+
+      if (qvShareWaBtn) {
+        qvShareWaBtn.onclick = (e) => {
+          e.stopPropagation();
+          qvSharePopup?.classList.add('hidden');
+          const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
+          window.open(waUrl, '_blank');
+        };
+      }
+
+      if (qvShareEmailBtn) {
+        qvShareEmailBtn.onclick = (e) => {
+          e.stopPropagation();
+          qvSharePopup?.classList.add('hidden');
+          const mailSubject = `Check out this handmade crochet product: ${p.name}`;
+          const mailBody = `Hi,\n\nI found this beautiful handmade crochet product.\n\n${p.name}\n${shareUrl}`;
+          const mailUrl = `mailto:?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
+          window.open(mailUrl, '_self');
+        };
+      }
+    }
+
     // Increment view counter
     const pId = p._id || p.id;
     if (pId && pId !== 'custom-order-card') {
@@ -2920,6 +2991,25 @@ console.log("images:", inquiryImageFiles);
       }
     }, { passive: true });
   }
+
+  // Close share popup on click outside or Escape
+  document.addEventListener('click', (e) => {
+    const qvSharePopup = document.getElementById('qv-share-popup');
+    if (qvSharePopup && !qvSharePopup.classList.contains('hidden')) {
+      if (!e.target.closest('#qv-share-popup') && !e.target.closest('#qv-share-btn')) {
+        qvSharePopup.classList.add('hidden');
+      }
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const qvSharePopup = document.getElementById('qv-share-popup');
+      if (qvSharePopup && !qvSharePopup.classList.contains('hidden')) {
+        qvSharePopup.classList.add('hidden');
+      }
+    }
+  });
 
   // Quick view triggers
   const qvCustomOrderBtn = document.getElementById('qv-custom-order-btn');

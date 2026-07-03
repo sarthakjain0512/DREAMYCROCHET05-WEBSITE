@@ -1120,11 +1120,29 @@
               <span class="material-symbols-outlined text-sm">auto_awesome</span> Request Custom Order
             </button>
             
-            <div>
+            <div class="flex gap-2 relative">
               <!-- DM on Instagram -->
-              <a id="qv-insta-btn" href="https://www.instagram.com/dreamycrochet05/" target="_blank" class="w-full py-2.5 px-3 rounded-full border border-primary/20 text-primary font-semibold hover:bg-primary-container/20 text-center transition duration-300 clickable text-sm flex items-center justify-center gap-1.5">
+              <a id="qv-insta-btn" href="https://www.instagram.com/dreamycrochet05/" target="_blank" class="flex-1 py-2.5 px-3 rounded-full border border-primary/20 text-primary font-semibold hover:bg-primary-container/20 text-center transition duration-300 clickable text-sm flex items-center justify-center gap-1.5">
                 🌸 DM on Instagram
               </a>
+              <!-- Share Product Button -->
+              <button id="qv-share-btn" type="button" class="py-2.5 px-4 rounded-full border border-primary/20 text-primary font-semibold hover:bg-primary-container/20 transition duration-300 clickable text-sm flex items-center justify-center gap-1.5 shrink-0" title="Share product">
+                <span class="material-symbols-outlined text-base">share</span> Share
+              </button>
+
+              <!-- Boutique Share Popup Menu -->
+              <div id="qv-share-popup" class="hidden absolute bottom-full right-0 mb-2 w-56 bg-cream dark:bg-darkbrown rounded-2xl p-2 shadow-xl border border-primary/20 z-50 transition-all">
+                <div class="text-[11px] font-bold text-primary/70 dark:text-beige/70 px-3 py-1.5 uppercase tracking-wider">Share Product</div>
+                <button id="qv-share-copy-btn" type="button" class="w-full text-left px-3 py-2 text-xs font-semibold text-darkbrown dark:text-beige hover:bg-beige/50 dark:hover:bg-white/10 rounded-xl flex items-center gap-2.5 transition">
+                  <span class="material-symbols-outlined text-base">content_copy</span> Copy Link
+                </button>
+                <button id="qv-share-wa-btn" type="button" class="w-full text-left px-3 py-2 text-xs font-semibold text-darkbrown dark:text-beige hover:bg-beige/50 dark:hover:bg-white/10 rounded-xl flex items-center gap-2.5 transition">
+                  <span class="text-base">💚</span> Share on WhatsApp
+                </button>
+                <button id="qv-share-email-btn" type="button" class="w-full text-left px-3 py-2 text-xs font-semibold text-darkbrown dark:text-beige hover:bg-beige/50 dark:hover:bg-white/10 rounded-xl flex items-center gap-2.5 transition">
+                  <span class="material-symbols-outlined text-base">mail</span> Share via Email
+                </button>
+              </div>
             </div>
           </div>
         </div>

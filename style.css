@@ -1723,3 +1723,17 @@ tbody tr:hover {
   transform: none !important;
 }
 
+/* ================================================
+   QUICK VIEW SHARE POPUP MENU STYLES
+   ================================================ */
+#qv-share-popup {
+  box-shadow: 0 10px 30px rgba(74, 51, 33, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transform-origin: bottom right;
+}
+
+.dark-mode #qv-share-popup {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
