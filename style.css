@@ -1466,3 +1466,100 @@ tbody tr:hover {
   }
 }
 
+/* ================================================
+   STEP 2: PRODUCT QUICK VIEW ACCORDION STYLING
+   ================================================ */
+
+/* Accordion Outer Container */
+#qv-details-accordion {
+  border: 1px solid var(--border-light, rgba(181, 138, 106, 0.18));
+  border-radius: 16px;
+  background-color: rgba(245, 230, 211, 0.35);
+  box-shadow: 0 2px 8px rgba(74, 51, 33, 0.04);
+  transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dark-mode #qv-details-accordion {
+  background-color: rgba(45, 30, 21, 0.45);
+  border-color: rgba(245, 230, 211, 0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Accordion Toggle Button */
+#qv-details-toggle-btn {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--text-main, #4A3321);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  border-radius: 16px;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+#qv-details-toggle-btn:hover {
+  background-color: rgba(245, 230, 211, 0.5);
+}
+
+.dark-mode #qv-details-toggle-btn:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+#qv-details-toggle-btn:focus-visible {
+  outline: 2px solid var(--color-primary, #B58A6A);
+  outline-offset: 2px;
+}
+
+/* Arrow Rotation Animation */
+#qv-details-arrow {
+  display: inline-block;
+  font-size: 0.75rem;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#qv-details-accordion.expanded #qv-details-arrow,
+#qv-details-toggle-btn[aria-expanded="true"] #qv-details-arrow {
+  transform: rotate(180deg);
+}
+
+/* Expandable Panel Container & Smooth Transitions */
+#qv-details-panel {
+  transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease, padding 0.35s ease;
+}
+
+#qv-details-panel:not(.hidden) {
+  opacity: 1;
+}
+
+/* Full Description Typography */
+#qv-full-desc {
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--text-muted, rgba(74, 51, 33, 0.85));
+}
+
+.dark-mode #qv-full-desc {
+  color: rgba(245, 221, 213, 0.85);
+}
+
+/* Specification Information Cards */
+#qv-details-panel .grid > div {
+  background-color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(181, 138, 106, 0.1);
+  border-radius: 12px;
+  padding: 0.5rem 0.75rem;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.dark-mode #qv-details-panel .grid > div {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-color: rgba(245, 230, 211, 0.08);
+}
+
