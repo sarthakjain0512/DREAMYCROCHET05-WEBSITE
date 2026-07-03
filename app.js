@@ -3028,11 +3028,45 @@ console.log("images:", inquiryImageFiles);
     }
   });
 
+  // Global Keyboard Shortcuts for Quick View Modal
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      const qvSharePopup = document.getElementById('qv-share-popup');
-      if (qvSharePopup && !qvSharePopup.classList.contains('hidden')) {
+    // Input safety guard: Ignore when user is typing in form controls
+    const activeEl = document.activeElement;
+    const isEditing = activeEl && (
+      activeEl.tagName === 'INPUT' ||
+      activeEl.tagName === 'TEXTAREA' ||
+      activeEl.tagName === 'SELECT' ||
+      activeEl.isContentEditable
+    );
+    if (isEditing) return;
+
+    // Close share popup on Escape
+    const qvSharePopup = document.getElementById('qv-share-popup');
+    if (qvSharePopup && !qvSharePopup.classList.contains('hidden')) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
         qvSharePopup.classList.add('hidden');
+        return;
+      }
+    }
+
+    // Quick View Modal Shortcuts (only active when modal is open)
+    if (quickViewModal && !quickViewModal.classList.contains('hidden') && quickViewModal.classList.contains('active')) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeQuickViewModal();
+      } else if (e.key === 'ArrowLeft') {
+        const qvPrevBtn = document.getElementById('qv-prev-btn');
+        if (qvPrevBtn && !qvPrevBtn.disabled) {
+          e.preventDefault();
+          qvPrevBtn.click();
+        }
+      } else if (e.key === 'ArrowRight') {
+        const qvNextBtn = document.getElementById('qv-next-btn');
+        if (qvNextBtn && !qvNextBtn.disabled) {
+          e.preventDefault();
+          qvNextBtn.click();
+        }
       }
     }
   });
