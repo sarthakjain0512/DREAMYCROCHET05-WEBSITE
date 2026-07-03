@@ -2701,6 +2701,10 @@ console.log("images:", inquiryImageFiles);
   const qvPrice = document.getElementById('qv-price');
   const qvDesc = document.getElementById('qv-desc');
   const qvType = document.getElementById('qv-type');
+  const qvDetailsAccordion = document.getElementById('qv-details-accordion');
+  const qvDetailsToggleBtn = document.getElementById('qv-details-toggle-btn');
+  const qvDetailsPanel = document.getElementById('qv-details-panel');
+  const qvFullDesc = document.getElementById('qv-full-desc');
 
   function openQuickView(p) {
     if (!quickViewModal) return;
@@ -2708,6 +2712,32 @@ console.log("images:", inquiryImageFiles);
     qvPrice.textContent = p.price;
     qvDesc.textContent = p.desc;
     qvType.textContent = p.badge;
+
+    // Populate Product Details Accordion full description
+    if (qvFullDesc) {
+      qvFullDesc.textContent = p.desc || '';
+    }
+
+    // Reset Accordion state to collapsed whenever a product modal opens
+    if (qvDetailsAccordion && qvDetailsToggleBtn && qvDetailsPanel) {
+      qvDetailsAccordion.classList.remove('expanded');
+      qvDetailsPanel.classList.add('hidden');
+      qvDetailsToggleBtn.setAttribute('aria-expanded', 'false');
+
+      qvDetailsToggleBtn.onclick = (e) => {
+        e.stopPropagation();
+        const isHidden = qvDetailsPanel.classList.contains('hidden');
+        if (isHidden) {
+          qvDetailsPanel.classList.remove('hidden');
+          qvDetailsAccordion.classList.add('expanded');
+          qvDetailsToggleBtn.setAttribute('aria-expanded', 'true');
+        } else {
+          qvDetailsPanel.classList.add('hidden');
+          qvDetailsAccordion.classList.remove('expanded');
+          qvDetailsToggleBtn.setAttribute('aria-expanded', 'false');
+        }
+      };
+    }
     
     // Normalize cover image URL
     const imgUrl = (p.img && typeof p.img === 'object') ? p.img.url : (p.img || '');
