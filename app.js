@@ -1333,6 +1333,32 @@ document.addEventListener('DOMContentLoaded', () => {
       adminLoginOverlay?.classList.remove('active');
       adminLoginOverlay?.classList.add('hidden');
       adminDashboardOverlay?.classList.add('hidden');
+
+      // Deep-link support for shared product URLs (?product=...)
+      if (searchParams.has('product')) {
+        const rawParam = searchParams.get('product');
+        if (rawParam && publicProducts && publicProducts.length > 0) {
+          const targetName = decodeURIComponent(rawParam).trim().toLowerCase();
+          const foundProduct = publicProducts.find(p => p.name && p.name.trim().toLowerCase() === targetName);
+          if (foundProduct) {
+            const productsSec = document.getElementById('best-sellers') || document.getElementById('products-grid');
+            if (productsSec) {
+              if (typeof lenis !== 'undefined' && lenis && typeof lenis.scrollTo === 'function') {
+                lenis.scrollTo(productsSec);
+              } else {
+                productsSec.scrollIntoView({ behavior: 'smooth' });
+              }
+            }
+            setTimeout(() => {
+              openQuickView(foundProduct);
+            }, 400);
+
+            // Remove query parameter from URL without page reload
+            const cleanUrl = window.location.pathname + window.location.hash;
+            window.history.replaceState({}, document.title, cleanUrl);
+          }
+        }
+      }
     }
   }
 
