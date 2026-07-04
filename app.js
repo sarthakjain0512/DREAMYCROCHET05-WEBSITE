@@ -3176,6 +3176,7 @@ console.log("images:", inquiryImageFiles);
   let galleryProductName = '';
   let touchStartX = 0;
   let touchEndX = 0;
+  let isMultiTouchGesture = false;
 
   const galleryModal = document.getElementById('gallery-modal');
   const galleryMainImg = document.getElementById('gallery-main-img');
@@ -3189,6 +3190,11 @@ console.log("images:", inquiryImageFiles);
   function openGallery(images, startIndex, name) {
     if (!galleryModal) return;
     
+    // Reset touch gesture state
+    touchStartX = 0;
+    touchEndX = 0;
+    isMultiTouchGesture = false;
+
     // Normalize images (handle array or single string) to ensure string URLs
     const imgArray = Array.isArray(images) ? images : (images ? [images] : []);
     currentGalleryImages = imgArray.map(img => {
@@ -3210,6 +3216,11 @@ console.log("images:", inquiryImageFiles);
     // Show active image
     showGalleryImage(currentGalleryIndex);
 
+    // Stop Lenis smooth scroll cleanly while gallery is open
+    if (typeof lenis !== 'undefined' && lenis && typeof lenis.stop === 'function') {
+      lenis.stop();
+    }
+
     // Open Modal with GSAP animation
     galleryModal.classList.remove('hidden');
     galleryModal.style.pointerEvents = 'auto';
@@ -3220,6 +3231,7 @@ console.log("images:", inquiryImageFiles);
 
     // Prevent background scrolling
     document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
 
     // Play soft sound chime
     if (typeof playTone === 'function') {
@@ -3229,7 +3241,37 @@ console.log("images:", inquiryImageFiles);
 
   function closeGallery() {
     if (!galleryModal) return;
+
+    // Instantly reset touch gesture state & locks
+    touchStartX = 0;
+    touchEndX = 0;
+    isMultiTouchGesture = false;
+
+    // Restore body & html scroll restrictions immediately (do not wait for GSAP animation)
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+    document.body.style.touchAction = '';
+    document.body.style.pointerEvents = '';
+
     galleryModal.style.pointerEvents = 'none';
+
+    // Resume Lenis smooth scroll immediately if present
+    if (typeof lenis !== 'undefined' && lenis && typeof lenis.start === 'function') {
+      lenis.start();
+      if (typeof lenis.resize === 'function') {
+        lenis.resize();
+      }
+    }
+
+    // Next animation frame guarantee for reflow & ScrollTrigger
+    requestAnimationFrame(() => {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      if (typeof ScrollTrigger !== 'undefined' && ScrollTrigger) {
+        if (typeof ScrollTrigger.update === 'function') ScrollTrigger.update();
+      }
+    });
+
     gsap.to(galleryModal, {
       opacity: 0,
       backdropFilter: 'blur(0px)',
@@ -3238,8 +3280,13 @@ console.log("images:", inquiryImageFiles);
       onComplete: () => {
         galleryModal.classList.add('hidden');
         document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
+        if (typeof ScrollTrigger !== 'undefined' && ScrollTrigger && typeof ScrollTrigger.refresh === 'function') {
+          ScrollTrigger.refresh();
+        }
       }
     });
+
     if (typeof playTone === 'function') {
       playTone(523.25, 0.15, 'sine', 0.05);
     }
@@ -3401,12 +3448,38 @@ console.log("images:", inquiryImageFiles);
   const galleryImageContainer = document.getElementById('gallery-image-container');
   if (galleryImageContainer) {
     galleryImageContainer.addEventListener('touchstart', (e) => {
-      touchStartX = e.changedTouches[0].screenX;
+      if (e.touches && e.touches.length > 1) {
+        isMultiTouchGesture = true;
+        return;
+      }
+      if (e.touches && e.touches.length === 1) {
+        touchStartX = e.touches[0].screenX;
+      }
+    }, { passive: true });
+
+    galleryImageContainer.addEventListener('touchmove', (e) => {
+      if (e.touches && e.touches.length > 1) {
+        isMultiTouchGesture = true;
+      }
     }, { passive: true });
 
     galleryImageContainer.addEventListener('touchend', (e) => {
-      touchEndX = e.changedTouches[0].screenX;
-      handleSwipe();
+      if (isMultiTouchGesture) {
+        if (e.touches && e.touches.length === 0) {
+          isMultiTouchGesture = false;
+        }
+        return;
+      }
+      if (e.changedTouches && e.changedTouches.length > 0) {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+      }
+    }, { passive: true });
+
+    galleryImageContainer.addEventListener('touchcancel', () => {
+      isMultiTouchGesture = false;
+      touchStartX = 0;
+      touchEndX = 0;
     }, { passive: true });
   }
 

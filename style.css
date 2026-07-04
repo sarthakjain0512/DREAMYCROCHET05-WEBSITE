@@ -1183,6 +1183,7 @@ tbody tr:hover {
   width: 100%;
   position: relative;
   overflow: hidden;
+  touch-action: pan-x pan-y pinch-zoom;
 }
 
 #gallery-main-img {
