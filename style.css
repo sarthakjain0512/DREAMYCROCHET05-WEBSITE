@@ -1828,4 +1828,43 @@ tbody tr:hover {
   animation: badgeFloat 3.5s ease-in-out infinite;
 }
 
+/* ================================================
+   FIX DOUBLE VERTICAL SCROLLBAR IN ADMIN PORTAL
+   ================================================ */
+/* Hide homepage content when admin dashboard is active to prevent double height/scrolling */
+body:has(#admin-dashboard-overlay:not(.hidden)) #main-boutique {
+  display: none !important;
+}
+
+@media (min-width: 768px) {
+  /* Desktop Layout Overrides for Admin Dashboard */
+  body:has(#admin-dashboard-overlay:not(.hidden)) {
+    overflow: auto !important; /* Force browser scrollbar on desktop */
+  }
+
+  #admin-dashboard-overlay {
+    position: absolute !important;
+    min-height: 100vh;
+    width: 100%;
+    overflow: visible !important;
+  }
+
+  #admin-dashboard-overlay aside {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 16rem !important; /* w-64 is 16rem */
+    height: 100vh !important;
+    overflow: visible !important;
+    z-index: 95;
+  }
+
+  #admin-dashboard-overlay main {
+    margin-left: 16rem !important;
+    overflow-y: visible !important; /* Eliminate the nested main scrollbar */
+    min-height: 100vh;
+  }
+}
+
 
