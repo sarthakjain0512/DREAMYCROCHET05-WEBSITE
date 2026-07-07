@@ -1655,11 +1655,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const visibleClass = p.isVisible !== false ? 'text-primary' : 'text-primary/35';
       
       row.innerHTML = `
-        <td class="p-4 pl-6 flex items-center gap-3 font-semibold text-darkbrown">
-          <img src="${p.img}" alt="${p.name}" class="w-10 h-10 object-cover rounded-xl border border-primary/10" onerror="this.onerror=null; this.src='/images/product-placeholder.webp';">
-          <div class="flex flex-col">
-            <span class="font-bold">${p.name}</span>
-            ${p.instagramLink ? `<a href="${p.instagramLink}" target="_blank" class="text-[10px] text-primary/60 hover:underline flex items-center gap-0.5 mt-0.5">📸 Insta Link <span class="material-symbols-outlined text-[8px]">open_in_new</span></a>` : ''}
+        <td class="p-4 pl-6 font-semibold text-darkbrown">
+          <div class="flex items-center gap-3">
+            <img src="${p.img}" alt="${p.name}" class="w-10 h-10 object-cover rounded-xl border border-primary/10" onerror="this.onerror=null; this.src='/images/product-placeholder.webp';">
+            <div class="flex flex-col">
+              <span class="font-bold">${p.name}</span>
+              ${p.instagramLink ? `<a href="${p.instagramLink}" target="_blank" class="text-[10px] text-primary/60 hover:underline flex items-center gap-0.5 mt-0.5">📸 Insta Link <span class="material-symbols-outlined text-[8px]">open_in_new</span></a>` : ''}
+            </div>
           </div>
         </td>
         <td class="p-4 text-primary font-medium">${p.badge}</td>
@@ -4089,6 +4091,60 @@ console.log("images:", inquiryImageFiles);
         });
       });
     }
+  }
+
+  // --- MOBILE ADMIN SIDEBAR DRAWER CONTROLLER ---
+  const adminHamburgerBtn = document.getElementById('admin-hamburger-btn');
+  const adminDrawerOverlay = document.getElementById('admin-drawer-overlay');
+  const adminAside = document.querySelector('#admin-dashboard-overlay aside');
+
+  function openAdminDrawer() {
+    if (adminAside) adminAside.classList.add('active-drawer');
+    if (adminDrawerOverlay) {
+      adminDrawerOverlay.classList.remove('hidden');
+      // Force reflow
+      adminDrawerOverlay.offsetHeight;
+      adminDrawerOverlay.style.opacity = '1';
+    }
+    // Prevent background scrolling while open
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeAdminDrawer() {
+    if (adminAside) adminAside.classList.remove('active-drawer');
+    if (adminDrawerOverlay) {
+      adminDrawerOverlay.style.opacity = '0';
+      setTimeout(() => {
+        adminDrawerOverlay.classList.add('hidden');
+      }, 300);
+    }
+    // Restore scrolling on close
+    document.body.style.overflow = '';
+  }
+
+  if (adminHamburgerBtn) {
+    adminHamburgerBtn.addEventListener('click', openAdminDrawer);
+  }
+
+  if (adminDrawerOverlay) {
+    adminDrawerOverlay.addEventListener('click', closeAdminDrawer);
+  }
+
+  // Escape key support to close drawer
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeAdminDrawer();
+    }
+  });
+
+  // Close drawer when selecting any navigation link
+  const adminTabBtns = document.querySelectorAll('.admin-tab-btn');
+  adminTabBtns.forEach(btn => {
+    btn.addEventListener('click', closeAdminDrawer);
+  });
+
+  if (adminLogoutBtn) {
+    adminLogoutBtn.addEventListener('click', closeAdminDrawer);
   }
 
   // Initialize wishlist states

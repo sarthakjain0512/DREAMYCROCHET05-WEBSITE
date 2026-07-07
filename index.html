@@ -1258,6 +1258,8 @@
 
   <!-- ===== ADMIN DASHBOARD OVERLAY ===== -->
   <div id="admin-dashboard-overlay" class="fixed inset-0 z-[90] bg-cream dark:bg-darkbrown flex flex-col md:flex-row hidden overflow-hidden">
+    <!-- Mobile Drawer Overlay -->
+    <div id="admin-drawer-overlay" class="hidden"></div>
     <!-- Sidebar -->
     <aside class="w-full md:w-64 bg-beige/60 dark:bg-black/20 border-b md:border-b-0 md:border-r border-primary/10 p-6 flex flex-col justify-between">
       <div>
@@ -1298,6 +1300,14 @@
 
     <!-- Main Content Panel -->
     <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+      <!-- Mobile Admin Header (Visible only on mobile/tablet) -->
+      <div id="admin-mobile-header" class="hidden items-center justify-between p-4 bg-beige/60 dark:bg-black/20 border border-primary/10 mb-6 rounded-2xl">
+        <button id="admin-hamburger-btn" type="button" class="p-2 rounded-xl hover:bg-primary-container/30 transition clickable flex items-center justify-center text-darkbrown dark:text-beige" title="Open Navigation Menu">
+          <span class="material-symbols-outlined text-2xl">menu</span>
+        </button>
+        <span class="font-heading italic font-bold text-base text-primary">DreamyCrochet05</span>
+        <div class="w-10"></div> <!-- Spacer for symmetry -->
+      </div>
       
       <!-- Tab: Overview -->
       <section id="tab-overview" class="admin-tab-content space-y-8">
@@ -1339,7 +1349,7 @@
 
       <!-- Tab: Manage Products -->
       <section id="tab-products" class="admin-tab-content hidden space-y-6">
-        <div class="flex justify-between items-center">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h2 class="text-3xl font-heading font-bold text-darkbrown">Boutique Catalog</h2>
             <p class="text-sm text-primary/70">Modify prices, details, categories, and upload creations.</p>
