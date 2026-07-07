@@ -1222,13 +1222,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function renderCatalog() {
     if (!productsGrid) return;
-    productsGrid.innerHTML = '';
     
     try {
       const products = await BackendAPI.getProducts();
       publicProducts = products; // Cache for wishlist/favorites view
       const token = sessionStorage.getItem('admin_token');
       const isAdmin = token ? await verifyAdminToken(token) : false;
+
+      productsGrid.innerHTML = '';
 
       products.forEach(p => {
         productsGrid.appendChild(renderProductCard(p, isAdmin));
@@ -4008,7 +4009,7 @@ console.log("images:", inquiryImageFiles);
   });
 
   // --- INTERACTIVE PRODUCTS AND CARD SWAYS ---
-  document.querySelectorAll('.product-card-container, .why-choose-card, #why-crochet .glass-card').forEach(card => {
+  document.querySelectorAll('.why-choose-card, #why-crochet .glass-card').forEach(card => {
     card.addEventListener('mousemove', (e) => {
       const rect = card.getBoundingClientRect();
       const x = e.clientX - rect.left - rect.width / 2;
