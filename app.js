@@ -3857,6 +3857,23 @@ console.log("images:", inquiryImageFiles);
         start: "top 90%"
       }
     });
+
+    // Premium Scroll Reveal Animation
+    gsap.utils.toArray(".scroll-reveal").forEach(sec => {
+      gsap.from(sec, {
+        opacity: 0,
+        y: 40,
+        scale: 0.98,
+        duration: 0.9,
+        ease: "power3.out",
+        clearProps: "all",
+        scrollTrigger: {
+          trigger: sec,
+          start: "top 85%",
+          once: true
+        }
+      });
+    });
   }
 
   // --- INSTAGRAM PROMOTION INTERACTION ---
