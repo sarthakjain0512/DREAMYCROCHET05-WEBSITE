@@ -14,6 +14,124 @@ const getApiUrl = (endpoint) => {
 
 
 document.addEventListener('DOMContentLoaded', () => {
+  // --- SAFE IMAGE LOADING HELPERS ---
+  function getImageUrlString(val) {
+    if (!val) return '';
+    if (typeof val === 'object') {
+      return val.url || '';
+    }
+    return String(val);
+  }
+
+  function resolveProductPrimaryImage(product) {
+    const placeholder = '/images/product-placeholder.webp';
+    if (!product) return placeholder;
+
+    // 1. product.img.url
+    if (product.img && typeof product.img === 'object' && product.img.url) {
+      if (typeof product.img.url === 'string' && product.img.url.trim() !== '') {
+        return product.img.url.trim();
+      }
+    }
+
+    // 2. product.img (if it is a string)
+    if (product.img && typeof product.img === 'string' && product.img.trim() !== '') {
+      return product.img.trim();
+    }
+
+    // 3. product.images[0].url
+    if (Array.isArray(product.images) && product.images.length > 0) {
+      const firstImg = product.images[0];
+      if (firstImg && typeof firstImg === 'object' && firstImg.url) {
+        if (typeof firstImg.url === 'string' && firstImg.url.trim() !== '') {
+          return firstImg.url.trim();
+        }
+      }
+      
+      // 4. product.images[0] (if it is a string)
+      if (firstImg && typeof firstImg === 'string' && firstImg.trim() !== '') {
+        return firstImg.trim();
+      }
+    }
+
+    // 5. placeholder
+    return placeholder;
+  }
+
+  function resolveProductGalleryImages(product) {
+    if (!product) return ['/images/product-placeholder.webp'];
+    const primary = resolveProductPrimaryImage(product);
+    const list = [primary];
+    
+    if (Array.isArray(product.images)) {
+      product.images.forEach(img => {
+        const url = getImageUrlString(img);
+        if (url && !list.includes(url)) {
+          list.push(url);
+        }
+      });
+    }
+    return list;
+  }
+
+  function getProductImageUrl(rawUrl, product) {
+    const fallbackUrl = '/images/product-placeholder.webp';
+    let targetUrl = getImageUrlString(rawUrl) || fallbackUrl;
+    if (!product) return targetUrl;
+    
+    let version = '';
+    if (product.updatedAt) {
+      version = new Date(product.updatedAt).getTime();
+    } else if (product.createdAt) {
+      version = new Date(product.createdAt).getTime();
+    }
+
+    if (version && targetUrl && !targetUrl.startsWith('data:') && targetUrl !== fallbackUrl) {
+      const separator = targetUrl.includes('?') ? '&' : '?';
+      targetUrl = `${targetUrl}${separator}updated=${version}`;
+    }
+    return targetUrl;
+  }
+
+  function safeLoadProductImage(imgElement, rawUrl, product = null, options = {}) {
+    if (!imgElement) return;
+    const fallbackUrl = '/images/product-placeholder.webp';
+    const targetUrl = getProductImageUrl(rawUrl, product);
+
+    imgElement.dataset.pendingUrl = targetUrl;
+
+    if (!imgElement.src || imgElement.src === window.location.href) {
+      imgElement.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    }
+
+    const tempImg = new Image();
+    tempImg.onload = () => {
+      if (imgElement.dataset.pendingUrl === targetUrl) {
+        imgElement.src = targetUrl;
+        const container = options.container || (imgElement.parentElement && imgElement.parentElement.classList.contains('image-container') ? imgElement.parentElement : null);
+        if (container) {
+          container.classList.add('loaded');
+        }
+        if (options.onSuccess) options.onSuccess();
+        delete imgElement.dataset.pendingUrl;
+      }
+    };
+
+    tempImg.onerror = () => {
+      if (imgElement.dataset.pendingUrl === targetUrl) {
+        imgElement.src = fallbackUrl;
+        const container = options.container || (imgElement.parentElement && imgElement.parentElement.classList.contains('image-container') ? imgElement.parentElement : null);
+        if (container) {
+          container.classList.add('loaded');
+        }
+        if (options.onError) options.onError();
+        delete imgElement.dataset.pendingUrl;
+      }
+    };
+
+    tempImg.src = targetUrl;
+  }
+
   // --- TOAST NOTIFICATIONS ---
   const toastContainer = document.getElementById('toast-container');
   
@@ -508,7 +626,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const itemEl = document.createElement('div');
         itemEl.className = 'flex items-center gap-4 bg-white/60 dark:bg-darkbrown/40 p-3 rounded-2xl border border-primary/5 hover:border-primary/10 transition-all duration-300';
         itemEl.innerHTML = `
-          <img src="${p.img}" alt="${p.name}" class="w-16 h-16 object-contain bg-beige/30 rounded-xl border border-primary/5 shrink-0" onerror="this.onerror=null; this.src='/images/product-placeholder.webp';">
+          <img alt="${p.name}" class="w-16 h-16 object-contain bg-beige/30 rounded-xl border border-primary/5 shrink-0">
           <div class="flex-grow min-w-0">
             <h4 class="font-serif text-sm font-bold text-darkbrown dark:text-beige truncate">${p.name}</h4>
             <p class="text-xs text-primary font-semibold">₹${p.price}</p>
@@ -522,6 +640,9 @@ document.addEventListener('DOMContentLoaded', () => {
             </button>
           </div>
         `;
+
+        const imgEl = itemEl.querySelector('img');
+        safeLoadProductImage(imgEl, resolveProductPrimaryImage(p), p);
 
         // Bind view button
         itemEl.querySelector('.view-wishlist-item-btn').addEventListener('click', (e) => {
@@ -1139,8 +1260,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
     } else {
-      const imgSrc = p.img || (Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : '/images/product-placeholder.webp');
-      imgHtml = `<img src="${imgSrc}" alt="${p.name}" class="w-full h-full object-contain bg-beige/30 group-hover:scale-105 duration-500" loading="lazy" onload="this.parentElement.classList.add('loaded')" onerror="this.onerror=null; this.src='/images/product-placeholder.webp'; this.parentElement.classList.add('loaded')">`;
+      imgHtml = `<img alt="${p.name}" class="w-full h-full object-contain bg-beige/30 group-hover:scale-105 duration-500" loading="lazy">`;
     }
 
     // Prefilled inquiry buttons
@@ -1155,7 +1275,7 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     }
 
-    const galleryImages = (p.images && p.images.length > 0) ? p.images : (p.img ? [p.img] : []);
+    const galleryImages = resolveProductGalleryImages(p);
     const showCollectionBtn = !isCustomOrderCard && galleryImages.length > 0;
 
     card.innerHTML = `
@@ -1215,6 +1335,13 @@ document.addEventListener('DOMContentLoaded', () => {
         e.stopPropagation();
         handleDeleteProduct(pId, p.name);
       });
+    }
+
+    if (!isCustomOrderCard) {
+      const imgEl = card.querySelector('.image-container img');
+      const containerEl = card.querySelector('.image-container');
+      const rawSrc = resolveProductPrimaryImage(p);
+      safeLoadProductImage(imgEl, rawSrc, p, { container: containerEl });
     }
 
     return card;
@@ -1657,7 +1784,7 @@ document.addEventListener('DOMContentLoaded', () => {
       row.innerHTML = `
         <td class="p-4 pl-6 font-semibold text-darkbrown">
           <div class="flex items-center gap-3">
-            <img src="${p.img}" alt="${p.name}" class="w-10 h-10 object-cover rounded-xl border border-primary/10" onerror="this.onerror=null; this.src='/images/product-placeholder.webp';">
+            <img alt="${p.name}" class="w-10 h-10 object-cover rounded-xl border border-primary/10">
             <div class="flex flex-col">
               <span class="font-bold">${p.name}</span>
               ${p.instagramLink ? `<a href="${p.instagramLink}" target="_blank" class="text-[10px] text-primary/60 hover:underline flex items-center gap-0.5 mt-0.5">📸 Insta Link <span class="material-symbols-outlined text-[8px]">open_in_new</span></a>` : ''}
@@ -1689,6 +1816,11 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </td>
       `;
+
+      const rowImgEl = row.querySelector('img');
+      if (rowImgEl) {
+        safeLoadProductImage(rowImgEl, resolveProductPrimaryImage(p), p);
+      }
       
       row.querySelector('.toggle-featured-btn').addEventListener('click', async (e) => {
         e.stopPropagation();
@@ -1987,15 +2119,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    if (p.images && p.images.length > 0) {
-      uploadedImages = [...p.images];
-      const coverUrl = p.coverImage || p.img || p.image;
-      const foundIdx = uploadedImages.indexOf(coverUrl);
-      coverImageIndex = foundIdx !== -1 ? foundIdx : 0;
-    } else if (p.img || p.image) {
-      uploadedImages = [p.img || p.image];
-      coverImageIndex = 0;
-    }
+    const gallery = resolveProductGalleryImages(p);
+    uploadedImages = [...gallery];
+    const coverUrl = resolveProductPrimaryImage(p);
+    const foundIdx = uploadedImages.indexOf(coverUrl);
+    coverImageIndex = foundIdx !== -1 ? foundIdx : 0;
     
     renderUploadedPreviews();
 
@@ -2759,7 +2887,7 @@ console.log("images:", inquiryImageFiles);
   function renderCompactProductCard(p) {
     const card = document.createElement('div');
     const isWishlisted = typeof wishlist !== 'undefined' && Array.isArray(wishlist) && wishlist.includes(p.name);
-    const imgSrc = p.img || (Array.isArray(p.images) && p.images.length > 0 ? (typeof p.images[0] === 'object' ? p.images[0].url : p.images[0]) : '/images/product-placeholder.webp');
+    const imgSrc = resolveProductPrimaryImage(p);
     const rawPrice = String(p.price || '').trim();
     const formattedPrice = rawPrice.startsWith('₹') ? rawPrice : `₹${rawPrice}`;
 
@@ -2767,7 +2895,7 @@ console.log("images:", inquiryImageFiles);
 
     card.innerHTML = `
       <div class="relative overflow-hidden rounded-xl aspect-[4/3] mb-2.5 bg-beige/30">
-        <img src="${imgSrc}" alt="${p.name}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" loading="lazy" onerror="this.onerror=null; this.src='/images/product-placeholder.webp';">
+        <img alt="${p.name}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" loading="lazy">
         <button class="wishlist-heart-btn absolute top-2 right-2 w-7 h-7 rounded-full bg-white/80 dark:bg-darkbrown/80 backdrop-blur-sm flex items-center justify-center text-primary hover:scale-110 active:scale-95 transition-all duration-200 z-10 clickable" data-product-name="${p.name}">
           <span class="material-symbols-outlined text-sm ${isWishlisted ? 'text-red-400' : ''}" style="${isWishlisted ? "font-variation-settings: 'FILL' 1;" : ''}">favorite</span>
         </button>
@@ -2777,6 +2905,9 @@ console.log("images:", inquiryImageFiles);
         <span class="text-xs font-semibold text-primary shrink-0">${formattedPrice}</span>
       </div>
     `;
+
+    const imgEl = card.querySelector('img');
+    safeLoadProductImage(imgEl, imgSrc, p);
 
     // Click card opens Quick View
     card.addEventListener('click', (e) => {
@@ -2916,14 +3047,11 @@ console.log("images:", inquiryImageFiles);
     }
 
     // Product Images & Thumbnail Strip Setup
-    const allImages = (Array.isArray(p.images) && p.images.length > 0)
-      ? p.images.map(i => (typeof i === 'object' && i ? i.url : i)).filter(Boolean)
-      : (p.img ? [(typeof p.img === 'object' && p.img ? p.img.url : p.img)] : []);
-
-    const primaryImgUrl = allImages[0] || '/images/product-placeholder.webp';
-    qvImg.src = primaryImgUrl;
+    const allImages = resolveProductGalleryImages(p);
+    const primaryImgUrl = resolveProductPrimaryImage(p);
     qvImg.style.transform = 'scale(1)';
     qvImg.style.transformOrigin = 'center center';
+    safeLoadProductImage(qvImg, primaryImgUrl, p);
 
     // Desktop Hover Zoom Controller for Main Image
     if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
@@ -2958,24 +3086,29 @@ console.log("images:", inquiryImageFiles);
         qvThumbnailsContainer.classList.remove('hidden');
         allImages.forEach((url, idx) => {
           const thumb = document.createElement('img');
-          thumb.src = url;
           thumb.alt = `${p.name} view ${idx + 1}`;
           thumb.className = `qv-thumb-item ${idx === 0 ? 'active' : ''}`;
-          thumb.onerror = function() { this.src = '/images/product-placeholder.webp'; };
+
+          safeLoadProductImage(thumb, url, p);
 
           thumb.onclick = (e) => {
             e.stopPropagation();
-            if (qvImg.src === url) return;
+            const cacheBustedUrl = getProductImageUrl(url, p);
+            if (qvImg.dataset.pendingUrl === cacheBustedUrl) return;
             qvThumbnailsContainer.querySelectorAll('.qv-thumb-item').forEach(t => t.classList.remove('active'));
             thumb.classList.add('active');
 
             qvImg.style.transform = 'scale(1)';
             qvImg.style.transformOrigin = 'center center';
             qvImg.style.opacity = '0.4';
-            setTimeout(() => {
-              qvImg.src = url;
-              qvImg.style.opacity = '1';
-            }, 120);
+            safeLoadProductImage(qvImg, url, p, {
+              onSuccess: () => {
+                qvImg.style.opacity = '1';
+              },
+              onError: () => {
+                qvImg.style.opacity = '1';
+              }
+            });
           };
           qvThumbnailsContainer.appendChild(thumb);
         });
@@ -3307,6 +3440,9 @@ console.log("images:", inquiryImageFiles);
     }
 
     if (galleryMainImg) {
+      const product = publicProducts ? publicProducts.find(prod => prod.name === galleryProductName) : null;
+      const targetUrl = currentGalleryImages[currentGalleryIndex] || '/images/product-placeholder.webp';
+
       // Crossfade animation
       gsap.to(galleryMainImg, {
         opacity: 0,
@@ -3315,37 +3451,25 @@ console.log("images:", inquiryImageFiles);
         ease: 'power2.in',
         onComplete: () => {
           let animated = false;
-          galleryMainImg.onload = () => {
-            if (animated) return;
-            animated = true;
-            gsap.fromTo(galleryMainImg, 
-              { opacity: 0, scale: 0.98 },
-              { opacity: 1, scale: 1, duration: 0.25, ease: 'power2.out' }
-            );
-          };
           
-          galleryMainImg.onerror = () => {
-            galleryMainImg.onerror = null;
-            galleryMainImg.src = '/images/product-placeholder.webp';
-            if (animated) return;
-            animated = true;
-            gsap.fromTo(galleryMainImg, 
-              { opacity: 0, scale: 0.98 },
-              { opacity: 1, scale: 1, duration: 0.25, ease: 'power2.out' }
-            );
-          };
-          
-          galleryMainImg.src = currentGalleryImages[currentGalleryIndex] || '/images/product-placeholder.webp';
-          
-          if (galleryMainImg.complete && galleryMainImg.naturalWidth !== 0) {
-            if (!animated) {
+          safeLoadProductImage(galleryMainImg, targetUrl, product, {
+            onSuccess: () => {
+              if (animated) return;
+              animated = true;
+              gsap.fromTo(galleryMainImg, 
+                { opacity: 0, scale: 0.98 },
+                { opacity: 1, scale: 1, duration: 0.25, ease: 'power2.out' }
+              );
+            },
+            onError: () => {
+              if (animated) return;
               animated = true;
               gsap.fromTo(galleryMainImg, 
                 { opacity: 0, scale: 0.98 },
                 { opacity: 1, scale: 1, duration: 0.25, ease: 'power2.out' }
               );
             }
-          }
+          });
         }
       });
     }
@@ -3361,10 +3485,19 @@ console.log("images:", inquiryImageFiles);
     if (!galleryThumbnails) return;
     galleryThumbnails.innerHTML = '';
     
+    const product = publicProducts ? publicProducts.find(prod => prod.name === galleryProductName) : null;
+    
     currentGalleryImages.forEach((img, idx) => {
       const thumb = document.createElement('div');
       thumb.className = `gallery-thumb-item relative w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden cursor-pointer border-2 transition-all duration-300 flex-shrink-0 clickable ${idx === currentGalleryIndex ? 'border-primary scale-105 shadow-md' : 'border-transparent opacity-60 hover:opacity-100 hover:scale-102'}`;
-      thumb.innerHTML = `<img src="${img}" alt="thumbnail ${idx}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='/images/product-placeholder.webp';">`;
+      
+      const thumbImg = document.createElement('img');
+      thumbImg.alt = `thumbnail ${idx}`;
+      thumbImg.className = 'w-full h-full object-cover';
+      
+      safeLoadProductImage(thumbImg, img, product);
+      thumb.appendChild(thumbImg);
+
       thumb.addEventListener('click', () => {
         if (idx !== currentGalleryIndex) {
           showGalleryImage(idx);
@@ -3407,11 +3540,14 @@ console.log("images:", inquiryImageFiles);
     const nextIdx = (currentGalleryIndex + 1) % currentGalleryImages.length;
     const prevIdx = (currentGalleryIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length;
     
+    const product = publicProducts ? publicProducts.find(prod => prod.name === galleryProductName) : null;
+    
     [nextIdx, prevIdx].forEach(idx => {
       const link = document.createElement('link');
       link.rel = 'preload';
       link.as = 'image';
-      link.href = currentGalleryImages[idx];
+      link.href = getProductImageUrl(currentGalleryImages[idx], product);
+      document.head.appendChild(link);
       setTimeout(() => link.remove(), 1000);
     });
   }
