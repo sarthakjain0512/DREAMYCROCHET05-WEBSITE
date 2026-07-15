@@ -14,6 +14,12 @@ const getApiUrl = (endpoint) => {
 
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Check touch devices & reduced motion & mobile screen widths
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || (window.navigator && window.navigator.msMaxTouchPoints > 0);
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isMobile = window.innerWidth < 768;
+  const isMobileOrTouch = isTouchDevice || isMobile;
+
   // --- SAFE IMAGE LOADING HELPERS ---
   function getImageUrlString(val) {
     if (!val) return '';
@@ -99,12 +105,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const targetUrl = getProductImageUrl(rawUrl, product);
 
     imgElement.dataset.pendingUrl = targetUrl;
+    imgElement.decoding = 'async';
 
     if (!imgElement.src || imgElement.src === window.location.href) {
       imgElement.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
     }
 
     const tempImg = new Image();
+    tempImg.decoding = 'async';
     tempImg.onload = () => {
       if (imgElement.dataset.pendingUrl === targetUrl) {
         imgElement.src = targetUrl;
@@ -165,31 +173,30 @@ document.addEventListener('DOMContentLoaded', () => {
   window.showToast = showToast;
 
   // --- MOUSE PARALLAX MOVEMENT ---
-  document.addEventListener('mousemove', (e) => {
-    const amount = 30;
-    const x = (window.innerWidth / 2 - e.clientX) / amount;
-    const y = (window.innerHeight / 2 - e.clientY) / amount;
-    
-    document.querySelectorAll('.parallax-layer').forEach(el => {
-      const depth = el.getAttribute('data-depth') || 1;
-      gsap.to(el, {
-        x: x * depth,
-        y: y * depth,
-        duration: 1.2,
-        ease: "power2.out"
+  if (!isMobileOrTouch) {
+    document.addEventListener('mousemove', (e) => {
+      const amount = 30;
+      const x = (window.innerWidth / 2 - e.clientX) / amount;
+      const y = (window.innerHeight / 2 - e.clientY) / amount;
+      
+      document.querySelectorAll('.parallax-layer').forEach(el => {
+        const depth = el.getAttribute('data-depth') || 1;
+        gsap.to(el, {
+          x: x * depth,
+          y: y * depth,
+          duration: 1.2,
+          ease: "power2.out"
+        });
       });
     });
-  });
+  }
 
   // --- PREMIUM CURSOR COMPANION ---
   let refreshCursorHovers = () => {};
 
-  // Check touch devices & reduced motion
-  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const companion = document.getElementById('cursor-companion');
 
-  if (companion && !isTouchDevice && !prefersReducedMotion) {
+  if (companion && !isMobileOrTouch && !prefersReducedMotion) {
     companion.style.display = 'block';
     
     const yarnBall = companion.querySelector('.yarn-ball-svg-wrapper');
@@ -419,13 +426,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- SCROLL TO TOP BUTTON ---
   const scrollToTopBtn = document.getElementById('scroll-to-top-btn');
   if (scrollToTopBtn) {
+    let scrollTimeout;
     window.addEventListener('scroll', () => {
-      if (window.scrollY > 300) {
-        scrollToTopBtn.classList.add('show');
-      } else {
-        scrollToTopBtn.classList.remove('show');
+      if (!scrollTimeout) {
+        scrollTimeout = setTimeout(() => {
+          scrollTimeout = null;
+          if (window.scrollY > 300) {
+            scrollToTopBtn.classList.add('show');
+          } else {
+            scrollToTopBtn.classList.remove('show');
+          }
+        }, 100);
       }
-    });
+    }, { passive: true });
     scrollToTopBtn.addEventListener('click', () => {
       if (lenis) {
         lenis.scrollTo(0);
@@ -3633,6 +3646,11 @@ console.log("images:", inquiryImageFiles);
 
   let lenis;
   function initLenis() {
+    if (isMobileOrTouch) {
+      console.log("Lenis smooth scroll disabled on mobile/touch devices.");
+      return;
+    }
+    
     lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -3641,8 +3659,10 @@ console.log("images:", inquiryImageFiles);
     });
 
     function raf(time) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
+      if (lenis) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      }
     }
     requestAnimationFrame(raf);
 
@@ -3652,6 +3672,22 @@ console.log("images:", inquiryImageFiles);
 
   function initGSAPScrollAnimations() {
     gsap.registerPlugin(ScrollTrigger);
+
+    if (prefersReducedMotion) {
+      // Force reveal all animated elements immediately and do not register triggers
+      document.querySelectorAll('.reveal-section .text-center').forEach(el => gsap.set(el, { opacity: 1, y: 0 }));
+      document.querySelectorAll('#why-crochet .glass-card, .why-choose-card').forEach(el => gsap.set(el, { opacity: 1, y: 0, scale: 1 }));
+      document.querySelectorAll('.timeline-item').forEach(el => gsap.set(el, { opacity: 1, y: 0, scale: 1 }));
+      const storyMask = document.querySelector('#founder-story-image-card .story-mask');
+      if (storyMask) gsap.set(storyMask, { scaleX: 0 });
+      document.querySelectorAll('#founder h2 .reveal-char').forEach(el => gsap.set(el, { opacity: 1, y: 0 }));
+      document.querySelectorAll('#founder p, #founder h4, #founder .text-primary').forEach(el => gsap.set(el, { opacity: 1, y: 0 }));
+      document.querySelectorAll('#instagram-promo .instagram-frame-wrapper, #instagram-promo .space-y-8 > *').forEach(el => gsap.set(el, { opacity: 1, x: 0 }));
+      document.querySelectorAll('footer > div > *').forEach(el => gsap.set(el, { opacity: 1, y: 0 }));
+      document.querySelectorAll('.scroll-reveal').forEach(el => gsap.set(el, { opacity: 1, y: 0, scale: 1 }));
+      return;
+    }
+
     // Ensure ScrollTrigger uses the document as scroller (Lenis smooth scroll)
     ScrollTrigger.defaults({ scroller: document.body });
     // Initialize Lenis smooth scroll
@@ -3668,7 +3704,8 @@ console.log("images:", inquiryImageFiles);
           ease: "power2.out",
           scrollTrigger: {
             trigger: sec,
-            start: "top 85%"
+            start: "top 85%",
+            once: true
           }
         });
       }
@@ -3772,14 +3809,21 @@ console.log("images:", inquiryImageFiles);
     const whyCrochetCards = document.querySelectorAll('#why-crochet .glass-card');
     whyCrochetCards.forEach(card => { card.style.opacity = '0'; card.style.transform = 'translateY(50px)'; });
 
+    let whyCrochetAnimated = false;
+    const animateWhyCrochet = () => {
+      if (whyCrochetAnimated) return;
+      whyCrochetAnimated = true;
+      whyCrochetCards.forEach((card, i) => {
+        setTimeout(() => {
+          gsap.to(card, { opacity: 1, y: 0, duration: 1.2, ease: 'power3.out', clearProps: 'transform' });
+        }, i * 200);
+      });
+    };
+
     const whyObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          whyCrochetCards.forEach((card, i) => {
-            setTimeout(() => {
-              gsap.to(card, { opacity: 1, y: 0, duration: 1.2, ease: 'power3.out', clearProps: 'transform' });
-            }, i * 200);
-          });
+          animateWhyCrochet();
           whyObserver.disconnect();
         }
       });
@@ -3794,37 +3838,44 @@ console.log("images:", inquiryImageFiles);
       start: 'top 85%',
       once: true,
       onEnter: () => {
-        whyCrochetCards.forEach((card, i) => {
-          setTimeout(() => { gsap.to(card, { opacity: 1, y: 0, duration: 1.2, ease: 'power3.out' }); }, i * 200);
-        });
+        animateWhyCrochet();
       }
     });
 
     // Hover rotate icons for Why cards
-    document.querySelectorAll('#why-crochet .glass-card').forEach(card => {
-      const icon = card.querySelector('.material-symbols-outlined');
-      if (icon) {
-        card.addEventListener('mouseenter', () => {
-          gsap.to(icon, { rotate: 12, scale: 1.15, duration: 0.4, ease: "power2.out" });
-        });
-        card.addEventListener('mouseleave', () => {
-          gsap.to(icon, { rotate: 0, scale: 1, duration: 0.4, ease: "power2.out" });
-        });
-      }
-    });
+    if (!isMobileOrTouch) {
+      document.querySelectorAll('#why-crochet .glass-card').forEach(card => {
+        const icon = card.querySelector('.material-symbols-outlined');
+        if (icon) {
+          card.addEventListener('mouseenter', () => {
+            gsap.to(icon, { rotate: 12, scale: 1.15, duration: 0.4, ease: "power2.out" });
+          });
+          card.addEventListener('mouseleave', () => {
+            gsap.to(icon, { rotate: 0, scale: 1, duration: 0.4, ease: "power2.out" });
+          });
+        }
+      });
+    }
 
     // Why Choose Us cards entrance
     const whyChooseCards = document.querySelectorAll('.why-choose-card');
     whyChooseCards.forEach(card => { card.style.opacity = '0'; card.style.transform = 'translateY(60px) scale(0.9)'; });
 
+    let whyChooseAnimated = false;
+    const animateWhyChoose = () => {
+      if (whyChooseAnimated) return;
+      whyChooseAnimated = true;
+      whyChooseCards.forEach((card, i) => {
+        setTimeout(() => {
+          gsap.to(card, { opacity: 1, y: 0, scale: 1, duration: 1.2, ease: 'back.out(1.2)', clearProps: 'transform' });
+        }, i * 150);
+      });
+    };
+
     const whyChooseObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          whyChooseCards.forEach((card, i) => {
-            setTimeout(() => {
-              gsap.to(card, { opacity: 1, y: 0, scale: 1, duration: 1.2, ease: 'back.out(1.2)', clearProps: 'transform' });
-            }, i * 150);
-          });
+          animateWhyChoose();
           whyChooseObserver.disconnect();
         }
       });
@@ -3839,9 +3890,7 @@ console.log("images:", inquiryImageFiles);
       start: 'top 85%',
       once: true,
       onEnter: () => {
-        whyChooseCards.forEach((card, i) => {
-          setTimeout(() => { gsap.to(card, { opacity: 1, y: 0, scale: 1, duration: 1.2, ease: 'back.out(1.2)' }); }, i * 150);
-        });
+        animateWhyChoose();
       }
     });
 
@@ -3866,7 +3915,8 @@ console.log("images:", inquiryImageFiles);
         ease: "back.out(1.4)",
         scrollTrigger: {
           trigger: item,
-          start: "top 75%"
+          start: "top 75%",
+          once: true
         }
       });
     });
@@ -3906,7 +3956,8 @@ console.log("images:", inquiryImageFiles);
         ease: "power3.inOut",
         scrollTrigger: {
           trigger: '#founder',
-          start: "top 70%"
+          start: "top 70%",
+          once: true
         }
       });
     }
@@ -3928,7 +3979,8 @@ console.log("images:", inquiryImageFiles);
         ease: "power2.out",
         scrollTrigger: {
           trigger: '#founder h2',
-          start: "top 80%"
+          start: "top 80%",
+          once: true
         }
       });
     }
@@ -3942,7 +3994,8 @@ console.log("images:", inquiryImageFiles);
         ease: "power3.out",
         scrollTrigger: {
           trigger: el,
-          start: "top 85%"
+          start: "top 85%",
+          once: true
         }
       });
     });
@@ -3955,7 +4008,8 @@ console.log("images:", inquiryImageFiles);
       ease: "power3.out",
       scrollTrigger: {
         trigger: '#instagram-promo',
-        start: "top 80%"
+        start: "top 80%",
+        once: true
       }
     });
 
@@ -3967,7 +4021,8 @@ console.log("images:", inquiryImageFiles);
       ease: "power3.out",
       scrollTrigger: {
         trigger: '#instagram-promo',
-        start: "top 80%"
+        start: "top 80%",
+        once: true
       }
     });
 
@@ -3992,7 +4047,8 @@ console.log("images:", inquiryImageFiles);
       ease: "power2.out",
       scrollTrigger: {
         trigger: 'footer',
-        start: "top 90%"
+        start: "top 90%",
+        once: true
       }
     });
 
@@ -4017,7 +4073,7 @@ console.log("images:", inquiryImageFiles);
   // --- INSTAGRAM PROMOTION INTERACTION ---
 
   const instaFrame = document.getElementById('instagram-frame');
-  if (instaFrame) {
+  if (instaFrame && !isMobileOrTouch) {
     let lastHeartSpawn = 0;
     
     instaFrame.addEventListener('mousemove', (e) => {
@@ -4080,23 +4136,27 @@ console.log("images:", inquiryImageFiles);
   // --- MOUSE FOLLOW GLOW EFFECT ---
   const followGlow = document.getElementById('mouse-follow-glow');
   if (followGlow) {
-    document.addEventListener('mouseenter', () => {
-      followGlow.style.opacity = '1';
-    });
-    document.addEventListener('mouseleave', () => {
-      followGlow.style.opacity = '0';
-    });
-    document.addEventListener('mousemove', (e) => {
-      gsap.to(followGlow, {
-        left: e.clientX,
-        top: e.clientY,
-        duration: 0.8,
-        ease: "power2.out"
-      });
-      if (followGlow.style.opacity === '0' || followGlow.style.opacity === '') {
+    if (isMobileOrTouch) {
+      followGlow.style.display = 'none';
+    } else {
+      document.addEventListener('mouseenter', () => {
         followGlow.style.opacity = '1';
-      }
-    });
+      });
+      document.addEventListener('mouseleave', () => {
+        followGlow.style.opacity = '0';
+      });
+      document.addEventListener('mousemove', (e) => {
+        gsap.to(followGlow, {
+          left: e.clientX,
+          top: e.clientY,
+          duration: 0.8,
+          ease: "power2.out"
+        });
+        if (followGlow.style.opacity === '0' || followGlow.style.opacity === '') {
+          followGlow.style.opacity = '1';
+        }
+      });
+    }
   }
 
   // --- LUXURY CLICK RIPPLE EFFECT ---
@@ -4140,55 +4200,59 @@ console.log("images:", inquiryImageFiles);
   });
 
   // --- MAGNETIC BUTTONS INTERACTION ---
-  document.querySelectorAll('.clickable, button, a').forEach(btn => {
-    btn.addEventListener('mousemove', (e) => {
-      const rect = btn.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-      
-      gsap.to(btn, {
-        x: x * 0.35,
-        y: y * 0.35,
-        duration: 0.3,
-        ease: "power2.out"
+  if (!isMobileOrTouch) {
+    document.querySelectorAll('.clickable, button, a').forEach(btn => {
+      btn.addEventListener('mousemove', (e) => {
+        const rect = btn.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        
+        gsap.to(btn, {
+          x: x * 0.35,
+          y: y * 0.35,
+          duration: 0.3,
+          ease: "power2.out"
+        });
+      });
+      btn.addEventListener('mouseleave', () => {
+        gsap.to(btn, {
+          x: 0,
+          y: 0,
+          duration: 0.6,
+          ease: "elastic.out(1.2, 0.4)"
+        });
       });
     });
-    btn.addEventListener('mouseleave', () => {
-      gsap.to(btn, {
-        x: 0,
-        y: 0,
-        duration: 0.6,
-        ease: "elastic.out(1.2, 0.4)"
-      });
-    });
-  });
+  }
 
   // --- INTERACTIVE PRODUCTS AND CARD SWAYS ---
-  document.querySelectorAll('.why-choose-card, #why-crochet .glass-card').forEach(card => {
-    card.addEventListener('mousemove', (e) => {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-      const rotateX = (y / rect.height) * -8;
-      const rotateY = (x / rect.width) * 8;
-      
-      gsap.to(card, {
-        rotateX: rotateX,
-        rotateY: rotateY,
-        transformPerspective: 1000,
-        duration: 0.4,
-        ease: "power2.out"
+  if (!isMobileOrTouch) {
+    document.querySelectorAll('.why-choose-card, #why-crochet .glass-card').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        const rotateX = (y / rect.height) * -8;
+        const rotateY = (x / rect.width) * 8;
+        
+        gsap.to(card, {
+          rotateX: rotateX,
+          rotateY: rotateY,
+          transformPerspective: 1000,
+          duration: 0.4,
+          ease: "power2.out"
+        });
+      });
+      card.addEventListener('mouseleave', () => {
+        gsap.to(card, {
+          rotateX: 0,
+          rotateY: 0,
+          duration: 0.6,
+          ease: "power2.out"
+        });
       });
     });
-    card.addEventListener('mouseleave', () => {
-      gsap.to(card, {
-        rotateX: 0,
-        rotateY: 0,
-        duration: 0.6,
-        ease: "power2.out"
-      });
-    });
-  });
+  }
 
   // Hero bouquet floating yoyo and cursor movement
   const heroBouquetImg = document.getElementById('hero-bouquet-img');
@@ -4202,7 +4266,7 @@ console.log("images:", inquiryImageFiles);
       ease: "sine.inOut"
     });
     
-    if (heroBouquetContainer) {
+    if (heroBouquetContainer && !isMobileOrTouch) {
       heroBouquetContainer.addEventListener('mousemove', (e) => {
         const rect = heroBouquetContainer.getBoundingClientRect();
         const x = e.clientX - rect.left - rect.width / 2;

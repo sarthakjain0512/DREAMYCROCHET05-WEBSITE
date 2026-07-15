@@ -1961,4 +1961,37 @@ body:has(#admin-dashboard-overlay:not(.hidden)) #main-boutique {
   }
 }
 
-
+@media (max-width: 767px) {
+  /* Disable layout-thrashing backdrop filters on mobile */
+  header.sticky,
+  .backdrop-blur-md,
+  .backdrop-blur-sm,
+  .backdrop-blur-lg,
+  .backdrop-blur-xl,
+  .mobile-nav-overlay,
+  .modal-overlay,
+  #qv-share-popup,
+  .toast,
+  #qv-close-btn,
+  .wishlist-heart-btn {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  
+  /* Fallback legible solid background colors for headers and buttons */
+  header.sticky {
+    background-color: rgba(245, 235, 224, 0.96) !important;
+  }
+  .dark-mode header.sticky {
+    background-color: rgba(15, 12, 10, 0.98) !important;
+  }
+  .wishlist-heart-btn {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+  }
+  .bg-beige\/60 {
+    background-color: rgba(245, 230, 211, 0.94) !important;
+  }
+  .dark-mode .bg-darkbrown\/60 {
+    background-color: rgba(45, 30, 21, 0.94) !important;
+  }
+}
