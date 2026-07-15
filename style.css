@@ -2019,11 +2019,12 @@ body:has(#admin-dashboard-overlay:not(.hidden)) #main-boutique {
   pointer-events: auto;
 }
 
-/* Ensure nice scrollbar for thumbnails strip on mobile detail */
-#mob-qv-thumbnails::-webkit-scrollbar {
-  height: 4px;
+/* Ensure mobile snap gallery behaves smoothly and hides scrollbar */
+#mob-qv-gallery-scroll {
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
 }
-#mob-qv-thumbnails::-webkit-scrollbar-thumb {
-  background: var(--primary);
-  border-radius: 4px;
+#mob-qv-gallery-scroll::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
 }

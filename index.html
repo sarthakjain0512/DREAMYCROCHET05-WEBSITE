@@ -1171,28 +1171,49 @@
 
   <!-- DEDICATED MOBILE PRODUCT DETAIL PAGE -->
   <div id="mobile-product-detail" class="hidden fixed inset-0 z-[60] bg-cream dark:bg-darkbrown overflow-y-auto flex flex-col transition-all duration-300 transform translate-x-full">
-    <!-- Header with Back button -->
-    <div class="sticky top-0 z-30 bg-cream dark:bg-darkbrown border-b border-primary/10 px-4 py-3 flex items-center gap-3">
-      <button id="mob-qv-back-btn" class="w-10 h-10 rounded-full hover:bg-beige/40 flex items-center justify-center text-darkbrown dark:text-beige transition clickable">
-        <span class="material-symbols-outlined">arrow_back</span>
-      </button>
-      <span class="font-serif font-bold text-lg text-darkbrown dark:text-beige">Product Details</span>
-    </div>
-
-    <!-- Product Content -->
-    <div class="p-6 space-y-6 flex-1 flex flex-col gap-6">
-      
-      <div class="w-full flex flex-col">
-        <img id="mob-qv-img" src="" alt="Product view" class="w-full h-72 object-contain bg-beige/30 rounded-2xl shadow-sm border border-primary/5 transition-opacity duration-200" onerror="this.onerror=null; this.src='/images/product-placeholder.webp';" decoding="async">
-        <!-- Thumbnail Strip Container -->
-        <div id="mob-qv-thumbnails" class="flex gap-2.5 mt-3 overflow-x-auto pb-1 hidden"></div>
+    <!-- Top Hero Image Gallery (Mobile Only) -->
+    <div class="relative w-full rounded-b-[2.5rem] overflow-hidden bg-beige/30 dark:bg-black/20 shadow-sm border-b border-primary/5 aspect-square">
+      <!-- Floating Header Controls -->
+      <div class="absolute top-4 left-4 right-4 z-30 flex items-center justify-between pointer-events-none">
+        <!-- Floating Back Button -->
+        <button id="mob-qv-back-btn" class="w-10 h-10 rounded-full bg-white/90 dark:bg-black/80 backdrop-blur-md shadow-md flex items-center justify-center text-darkbrown dark:text-beige hover:bg-white dark:hover:bg-black transition clickable pointer-events-auto" title="Back">
+          <span class="material-symbols-outlined text-xl font-bold">arrow_back</span>
+        </button>
+        <!-- Floating Action Buttons -->
+        <div class="flex items-center gap-2 pointer-events-auto">
+          <!-- Wishlist Toggle Button -->
+          <button id="mob-qv-wishlist-btn" class="wishlist-heart-btn w-10 h-10 rounded-full bg-white/90 dark:bg-black/80 backdrop-blur-md shadow-md flex items-center justify-center text-darkbrown dark:text-beige hover:bg-white dark:hover:bg-black transition clickable" title="Add to favorites">
+            <span class="material-symbols-outlined text-xl">favorite</span>
+          </button>
+          <!-- Share Button -->
+          <button id="mob-qv-share-btn" type="button" class="w-10 h-10 rounded-full bg-white/90 dark:bg-black/80 backdrop-blur-md shadow-md flex items-center justify-center text-darkbrown dark:text-beige hover:bg-white dark:hover:bg-black transition clickable" title="Share product">
+            <span class="material-symbols-outlined text-xl">share</span>
+          </button>
+        </div>
       </div>
 
-      <div class="w-full flex flex-col justify-between space-y-6">
-        <div class="space-y-4">
-          <span id="mob-qv-type" class="inline-block px-3 py-1 rounded-full bg-primary-container text-on-primary-container text-xs font-semibold">Badge</span>
-          <h3 id="mob-qv-title" class="text-3xl font-heading font-bold text-darkbrown">Product Name</h3>
-          <span id="mob-qv-price" class="text-2xl font-bold text-primary block">₹0.00</span>
+      <!-- Swipeable Gallery Scroll Area -->
+      <div id="mob-qv-gallery-scroll" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth">
+        <!-- Gallery slides will be injected dynamically via JavaScript -->
+      </div>
+
+      <!-- Floating Image Counter -->
+      <div id="mob-qv-gallery-counter" class="absolute bottom-4 right-4 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-bold text-white tracking-widest uppercase">
+        1 / 1
+      </div>
+
+      <!-- Floating Dot Indicators -->
+      <div id="mob-qv-gallery-dots" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-20">
+        <!-- Dots will be injected dynamically via JavaScript -->
+      </div>
+    </div>
+
+    <!-- Product Content details -->
+    <div class="p-6 space-y-6 flex-1 flex flex-col">
+      <div class="space-y-3">
+        <span id="mob-qv-type" class="inline-block px-3 py-1 rounded-full bg-primary-container text-on-primary-container text-xs font-semibold tracking-wide w-fit">Badge</span>
+        <h3 id="mob-qv-title" class="text-3xl font-heading font-extrabold text-darkbrown leading-tight dark:text-beige">Product Name</h3>
+        <span id="mob-qv-price" class="text-2xl font-bold text-primary mt-1 block">₹0.00</span>
 
           <!-- 📋 Product Details Accordion Section -->
           <div id="mob-qv-details-accordion" class="mt-3 border border-primary/15 rounded-2xl overflow-hidden bg-beige/30 dark:bg-black/20">
