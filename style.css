@@ -1995,3 +1995,35 @@ body:has(#admin-dashboard-overlay:not(.hidden)) #main-boutique {
     background-color: rgba(45, 30, 21, 0.94) !important;
   }
 }
+
+/* Dedicated Mobile Product Detail Page styling */
+#mobile-product-detail {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background-color: #FFF8EE; /* bg-cream */
+  overflow-y: auto;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dark-mode #mobile-product-detail {
+  background-color: #1B120C; /* bg-darkbrown */
+}
+
+#mobile-product-detail.active {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Ensure nice scrollbar for thumbnails strip on mobile detail */
+#mob-qv-thumbnails::-webkit-scrollbar {
+  height: 4px;
+}
+#mob-qv-thumbnails::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}

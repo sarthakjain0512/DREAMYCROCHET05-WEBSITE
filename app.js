@@ -2879,6 +2879,21 @@ console.log("images:", inquiryImageFiles);
   const qvPrevBtn = document.getElementById('qv-prev-btn');
   const qvNextBtn = document.getElementById('qv-next-btn');
 
+  // --- DYNAMIC MOBILE PRODUCT DETAIL PAGE HANDLER ---
+  const mobileProductDetail = document.getElementById('mobile-product-detail');
+  const mobQvBackBtn = document.getElementById('mob-qv-back-btn');
+  const mobQvImg = document.getElementById('mob-qv-img');
+  const mobQvTitle = document.getElementById('mob-qv-title');
+  const mobQvPrice = document.getElementById('mob-qv-price');
+  const mobQvType = document.getElementById('mob-qv-type');
+  const mobQvDetailsAccordion = document.getElementById('mob-qv-details-accordion');
+  const mobQvDetailsToggleBtn = document.getElementById('mob-qv-details-toggle-btn');
+  const mobQvDetailsPanel = document.getElementById('mob-qv-details-panel');
+  const mobQvFullDesc = document.getElementById('mob-qv-full-desc');
+  const mobQvThumbnailsContainer = document.getElementById('mob-qv-thumbnails');
+  const mobQvPrevBtn = document.getElementById('mob-qv-prev-btn');
+  const mobQvNextBtn = document.getElementById('mob-qv-next-btn');
+
   // --- RECENTLY VIEWED PRODUCTS CONTROLLER ---
   const recentlyViewedSection = document.getElementById('recently-viewed-section');
   const recentlyViewedGrid = document.getElementById('recently-viewed-grid');
@@ -2988,7 +3003,282 @@ console.log("images:", inquiryImageFiles);
     }
   }
 
+  // --- MOBILE PRODUCT DETAIL PAGE LOGIC ---
+  let currentMobileProduct = null;
+  let openedGalleryFromMobileDetail = false;
+
+  function openMobileProductDetail(p, pushState = true) {
+    if (!mobileProductDetail) return;
+    currentMobileProduct = p;
+    saveToRecentlyViewed(p);
+    
+    mobQvTitle.textContent = p.name;
+    const rawPrice = String(p.price || '').trim();
+    mobQvPrice.textContent = rawPrice.startsWith('₹') ? rawPrice : `₹${rawPrice}`;
+    mobQvType.textContent = p.badge;
+
+    // Update Previous / Next Navigation Buttons
+    const productList = (typeof publicProducts !== 'undefined' && publicProducts.length > 0) ? publicProducts : [];
+    const currentIndex = productList.findIndex(item => (item._id || item.id) === (p._id || p.id) || item.name === p.name);
+
+    if (mobQvPrevBtn && mobQvNextBtn) {
+      if (currentIndex === -1 || productList.length <= 1) {
+        mobQvPrevBtn.disabled = true;
+        mobQvNextBtn.disabled = true;
+      } else {
+        mobQvPrevBtn.disabled = (currentIndex === 0);
+        mobQvNextBtn.disabled = (currentIndex === productList.length - 1);
+
+        mobQvPrevBtn.onclick = (e) => {
+          e.stopPropagation();
+          if (currentIndex > 0) {
+            navigateMobileProductDetail(productList[currentIndex - 1]);
+          }
+        };
+
+        mobQvNextBtn.onclick = (e) => {
+          e.stopPropagation();
+          if (currentIndex < productList.length - 1) {
+            navigateMobileProductDetail(productList[currentIndex + 1]);
+          }
+        };
+      }
+    }
+
+    // Populate Product Details Accordion
+    if (mobQvFullDesc) {
+      mobQvFullDesc.textContent = p.desc || '';
+    }
+
+    // Reset Accordion state
+    if (mobQvDetailsAccordion && mobQvDetailsToggleBtn && mobQvDetailsPanel) {
+      mobQvDetailsAccordion.classList.remove('expanded');
+      mobQvDetailsPanel.classList.add('hidden');
+      mobQvDetailsToggleBtn.setAttribute('aria-expanded', 'false');
+
+      mobQvDetailsToggleBtn.onclick = (e) => {
+        e.stopPropagation();
+        const isHidden = mobQvDetailsPanel.classList.contains('hidden');
+        if (isHidden) {
+          mobQvDetailsPanel.classList.remove('hidden');
+          mobQvDetailsAccordion.classList.add('expanded');
+          mobQvDetailsToggleBtn.setAttribute('aria-expanded', 'true');
+        } else {
+          mobQvDetailsPanel.classList.add('hidden');
+          mobQvDetailsAccordion.classList.remove('expanded');
+          mobQvDetailsToggleBtn.setAttribute('aria-expanded', 'false');
+        }
+      };
+    }
+
+    // Product Images & Thumbnail Strip Setup
+    const allImages = resolveProductGalleryImages(p);
+    const primaryImgUrl = resolveProductPrimaryImage(p);
+    safeLoadProductImage(mobQvImg, primaryImgUrl, p);
+
+    if (mobQvThumbnailsContainer) {
+      mobQvThumbnailsContainer.innerHTML = '';
+      if (allImages.length > 1) {
+        mobQvThumbnailsContainer.classList.remove('hidden');
+        allImages.forEach((url, idx) => {
+          const thumb = document.createElement('img');
+          thumb.alt = `${p.name} view ${idx + 1}`;
+          thumb.className = `qv-thumb-item ${idx === 0 ? 'active' : ''}`;
+
+          safeLoadProductImage(thumb, url, p);
+
+          thumb.onclick = (e) => {
+            e.stopPropagation();
+            const cacheBustedUrl = getProductImageUrl(url, p);
+            if (mobQvImg.dataset.pendingUrl === cacheBustedUrl) return;
+            mobQvThumbnailsContainer.querySelectorAll('.qv-thumb-item').forEach(t => t.classList.remove('active'));
+            thumb.classList.add('active');
+
+            mobQvImg.style.opacity = '0.4';
+            safeLoadProductImage(mobQvImg, url, p, {
+              onSuccess: () => {
+                mobQvImg.style.opacity = '1';
+              },
+              onError: () => {
+                mobQvImg.style.opacity = '1';
+              }
+            });
+          };
+          mobQvThumbnailsContainer.appendChild(thumb);
+        });
+      } else {
+        mobQvThumbnailsContainer.classList.add('hidden');
+      }
+    }
+
+    // Bind main image click to open Fullscreen Gallery
+    mobQvImg.style.cursor = 'pointer';
+    mobQvImg.onclick = () => {
+      openedGalleryFromMobileDetail = true;
+      mobileProductDetail.classList.remove('active');
+      setTimeout(() => {
+        mobileProductDetail.classList.add('hidden');
+        openGallery(allImages.length > 0 ? allImages : [primaryImgUrl], 0, p.name);
+      }, 300);
+    };
+
+    // Product Share Setup
+    const mobQvShareBtn = document.getElementById('mob-qv-share-btn');
+    const mobQvSharePopup = document.getElementById('mob-qv-share-popup');
+    const mobQvShareCopyBtn = document.getElementById('mob-qv-share-copy-btn');
+    const mobQvShareWaBtn = document.getElementById('mob-qv-share-wa-btn');
+    const mobQvShareEmailBtn = document.getElementById('mob-qv-share-email-btn');
+
+    if (mobQvSharePopup) {
+      mobQvSharePopup.classList.add('hidden');
+    }
+
+    if (mobQvShareBtn) {
+      const shareUrl = `${window.location.origin}/?product=${encodeURIComponent(p.name)}`;
+      const shareText = `🌸 Check out this handmade crochet product:\n\n${p.name}\n${shareUrl}`;
+
+      mobQvShareBtn.onclick = async (e) => {
+        e.stopPropagation();
+
+        if (navigator.share && /Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+          try {
+            await navigator.share({
+              title: p.name,
+              text: `🌸 Check out this handmade crochet product: ${p.name}`,
+              url: shareUrl
+            });
+            return;
+          } catch (_) {}
+        }
+
+        if (mobQvSharePopup) {
+          mobQvSharePopup.classList.toggle('hidden');
+        }
+      };
+
+      if (mobQvShareCopyBtn) {
+        mobQvShareCopyBtn.onclick = (e) => {
+          e.stopPropagation();
+          mobQvSharePopup?.classList.add('hidden');
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(shareUrl).then(() => {
+              showToast('✓ Link copied!', 'success');
+            }).catch(() => {
+              showToast('✓ Link copied!', 'success');
+            });
+          } else {
+            showToast('✓ Link copied!', 'success');
+          }
+        };
+      }
+
+      if (mobQvShareWaBtn) {
+        mobQvShareWaBtn.onclick = (e) => {
+          e.stopPropagation();
+          mobQvSharePopup?.classList.add('hidden');
+          const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
+          window.open(waUrl, '_blank');
+        };
+      }
+
+      if (mobQvShareEmailBtn) {
+        mobQvShareEmailBtn.onclick = (e) => {
+          e.stopPropagation();
+          mobQvSharePopup?.classList.add('hidden');
+          const mailSubject = `Check out this handmade crochet product: ${p.name}`;
+          const mailBody = `Hi,\n\nI found this beautiful handmade crochet product.\n\n${p.name}\n${shareUrl}`;
+          const mailUrl = `mailto:?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
+          window.open(mailUrl, '_self');
+        };
+      }
+    }
+
+    // Increment view counter
+    const pId = p._id || p.id;
+    if (pId && pId !== 'custom-order-card') {
+      BackendAPI.incrementViewCount(pId);
+      p.viewCount = (p.viewCount || 0) + 1;
+    }
+
+    // Custom Order Request Button
+    const mobQvCustomOrderBtn = document.getElementById('mob-qv-custom-order-btn');
+    if (mobQvCustomOrderBtn) {
+      mobQvCustomOrderBtn.onclick = () => {
+        closeMobileProductDetail(false);
+        setTimeout(() => {
+          openCustomOrderModal();
+        }, 300);
+      };
+    }
+
+    // History PushState
+    if (pushState) {
+      window.history.pushState({ page: 'mobile-detail', product: p.name }, '', '?product=' + encodeURIComponent(p.name));
+    }
+
+    mobileProductDetail.classList.remove('hidden');
+    // Force reflow
+    mobileProductDetail.offsetHeight;
+    mobileProductDetail.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    playTone(659.25, 0.25, 'sine', 0.1);
+  }
+
+  function closeMobileProductDetail(shouldGoBackInHistory = true) {
+    if (!mobileProductDetail) return;
+    mobileProductDetail.classList.remove('active');
+    document.body.style.overflow = '';
+    
+    setTimeout(() => {
+      mobileProductDetail.classList.add('hidden');
+    }, 300);
+
+    if (shouldGoBackInHistory) {
+      if (window.history.state && window.history.state.page === 'mobile-detail') {
+        window.history.back();
+      } else {
+        const cleanUrl = window.location.pathname + window.location.hash;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
+    }
+  }
+
+  function navigateMobileProductDetail(targetProduct) {
+    if (!mobileProductDetail || !targetProduct) return;
+    mobileProductDetail.style.transition = 'opacity 150ms ease';
+    mobileProductDetail.style.opacity = '0.35';
+    setTimeout(() => {
+      openMobileProductDetail(targetProduct, false);
+      mobileProductDetail.style.opacity = '1';
+      setTimeout(() => {
+        mobileProductDetail.style.transition = 'transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease';
+      }, 150);
+    }, 150);
+  }
+
+  // Bind Native Back Button
+  if (mobQvBackBtn) {
+    mobQvBackBtn.addEventListener('click', () => closeMobileProductDetail(true));
+  }
+
+  // Bind popstate listener for browser back/forward buttons
+  window.addEventListener('popstate', (e) => {
+    if (e.state && e.state.page === 'mobile-detail') {
+      const prodName = e.state.product;
+      const p = publicProducts.find(item => item.name === prodName);
+      if (p) {
+        openMobileProductDetail(p, false);
+      }
+    } else {
+      closeMobileProductDetail(false);
+    }
+  });
+
   function openQuickView(p) {
+    if (window.innerWidth < 768) {
+      openMobileProductDetail(p);
+      return;
+    }
     if (!quickViewModal) return;
     saveToRecentlyViewed(p);
     qvTitle.textContent = p.name;
@@ -3391,6 +3681,12 @@ console.log("images:", inquiryImageFiles);
   function closeGallery() {
     if (!galleryModal) return;
 
+    let wasFromMobileDetail = false;
+    if (typeof openedGalleryFromMobileDetail !== 'undefined' && openedGalleryFromMobileDetail) {
+      wasFromMobileDetail = true;
+      openedGalleryFromMobileDetail = false;
+    }
+
     // Instantly reset touch gesture state & locks
     touchStartX = 0;
     touchEndX = 0;
@@ -3432,6 +3728,9 @@ console.log("images:", inquiryImageFiles);
         document.documentElement.style.overflow = '';
         if (typeof ScrollTrigger !== 'undefined' && ScrollTrigger && typeof ScrollTrigger.refresh === 'function') {
           ScrollTrigger.refresh();
+        }
+        if (wasFromMobileDetail && currentMobileProduct) {
+          openMobileProductDetail(currentMobileProduct, false);
         }
       }
     });
