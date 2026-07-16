@@ -496,9 +496,9 @@
       </div>
     </section>
 
-    <!-- ===== SECTION: CUSTOMER REVIEWS (Phase 2 Review Submission) ===== -->
+    <!-- ===== SECTION: CUSTOMER REVIEWS (Phase 2 Review Submission & Display) ===== -->
     <section id="reviews-section" class="py-24 px-6 bg-cream dark:bg-black/10 border-t border-primary/5 reveal-section scroll-reveal">
-      <div class="max-w-4xl mx-auto text-center space-y-6">
+      <div class="max-w-6xl mx-auto text-center space-y-6">
         <span class="decorative-badge inline-block px-5 py-2 rounded-full bg-primary-container/70 text-on-primary-container text-xs font-bold tracking-widest uppercase border border-primary/10">❤️ Reviews</span>
         <h2 class="text-4xl md:text-5xl font-heading font-bold text-darkbrown leading-tight">
           ❤️ Customer Reviews
@@ -506,12 +506,40 @@
         <p class="text-base md:text-lg text-primary/80 leading-relaxed max-w-xl mx-auto font-medium">
           Share your experience with DreamyCrochet05
         </p>
-        <div class="pt-4">
-          <button id="open-overall-review-btn" class="premium-button inline-flex items-center gap-3 px-10 py-4 rounded-full bg-primary text-white font-bold text-base hover:bg-primary/90 hover:scale-105 active:scale-95 duration-300 shadow-lg clickable">
-            <span class="material-symbols-outlined text-xl">rate_review</span>
+
+        <!-- Aggregate Rating Stats Block -->
+        <div id="overall-rating-stats" class="flex flex-col items-center justify-center gap-2 pt-4 hidden">
+          <div class="flex items-center gap-1.5 text-2xl text-yellow-400" id="overall-agg-stars">
+            <!-- Dynamically populated stars -->
+          </div>
+          <p class="text-sm font-semibold text-darkbrown dark:text-beige">
+            <span id="overall-avg-rating" class="text-lg font-bold">0.0</span> / 5.0 
+            (<span id="overall-total-count">0</span> reviews)
+          </p>
+        </div>
+
+        <div class="pt-4 flex justify-center gap-4 flex-wrap">
+          <button id="open-overall-review-btn" class="premium-button inline-flex items-center gap-3 px-8 py-3.5 rounded-full bg-primary text-white font-bold text-sm hover:bg-primary/90 hover:scale-105 active:scale-95 duration-300 shadow-lg clickable">
+            <span class="material-symbols-outlined text-lg">rate_review</span>
             Write a Review
           </button>
+          <button id="view-all-reviews-btn" class="premium-button inline-flex items-center gap-3 px-8 py-3.5 rounded-full border-2 border-primary/30 text-primary font-bold text-sm hover:bg-primary-container/20 hover:scale-105 active:scale-95 duration-300 shadow-sm clickable hidden">
+            <span class="material-symbols-outlined text-lg font-bold">visibility</span>
+            View All Reviews
+          </button>
         </div>
+
+        <!-- Reviews Cards Grid Container -->
+        <div id="overall-reviews-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-10 text-left max-w-5xl mx-auto">
+          <!-- Injected dynamically -->
+        </div>
+
+        <!-- Empty state placeholder -->
+        <div id="overall-reviews-empty" class="pt-8 max-w-md mx-auto text-center space-y-2">
+          <p class="text-primary/70 dark:text-beige/70 font-semibold">No Reviews Yet</p>
+          <p class="text-xs text-primary/50">Be the first customer to review DreamyCrochet05.</p>
+        </div>
+
       </div>
     </section>
 
@@ -2318,6 +2346,34 @@
         <button id="success-close-product-btn" class="px-8 py-2.5 rounded-full bg-primary text-white font-bold text-sm hover:bg-primary/90 hover:scale-105 active:scale-95 duration-300 shadow-md clickable" type="button">
           Close
         </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== VIEW ALL REVIEWS MODAL ===== -->
+  <div id="view-all-reviews-modal" class="modal-overlay fixed inset-0 z-[60] flex items-center justify-center p-4 hidden">
+    <div class="modal-content bg-cream w-full max-w-3xl rounded-3xl shadow-2xl relative border border-primary/15 overflow-y-auto max-h-[90vh]" data-lenis-prevent>
+      
+      <!-- Sticky Header -->
+      <div class="sticky top-0 bg-cream/95 backdrop-blur-md border-b border-primary/10 px-8 pt-7 pb-5 z-10">
+        <button id="close-view-all-reviews-modal" class="absolute top-4 right-4 w-10 h-10 rounded-full hover:bg-beige/60 flex items-center justify-center text-darkbrown transition clickable" type="button">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-container to-secondary flex items-center justify-center shadow-sm">
+            <span class="text-2xl">❤️</span>
+          </div>
+          <div>
+            <h3 class="text-xl font-heading font-bold text-darkbrown">Customer Reviews</h3>
+            <p class="text-xs text-primary/60 mt-0.5">All approved ratings and feedback from our buyers</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- All Reviews Scrollable List -->
+      <div class="p-8 space-y-6" id="all-reviews-list-container">
+        <!-- Injected dynamically -->
       </div>
 
     </div>

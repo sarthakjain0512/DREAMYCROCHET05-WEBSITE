@@ -1289,6 +1289,16 @@ document.addEventListener('DOMContentLoaded', () => {
         xhr.onerror = () => reject(new Error('Network connection failure.'));
         xhr.send(formData);
       });
+    },
+    getOverallReviews: async () => {
+      const res = await fetch(getApiUrl('/api/reviews/overall'));
+      if (!res.ok) throw new Error('Failed to fetch overall reviews');
+      return res.json();
+    },
+    getProductReviews: async (productId) => {
+      const res = await fetch(getApiUrl(`/api/reviews/product/${productId}`));
+      if (!res.ok) throw new Error('Failed to fetch product reviews');
+      return res.json();
     }
   };
 
@@ -5807,6 +5817,346 @@ console.log("images:", inquiryImageFiles);
       }
     }
   });
+
+  // ─── REVIEW DISPLAY SYSTEM (Phase 2 Review Rendering & Display) ───────────
+
+  let cacheOverallReviews = null;
+  const cacheProductReviews = {}; // productId -> reviews array
+
+  function escapeHTML(str) {
+    if (!str) return '';
+    return str.replace(/[&<>'"]/g, 
+      tag => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;'
+      }[tag] || tag)
+    );
+  }
+
+  function getRelativeTimeString(dateString) {
+    if (!dateString) return 'Recently';
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffSecs = Math.floor(diffMs / 1000);
+    const diffMins = Math.floor(diffSecs / 60);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+    const diffWeeks = Math.floor(diffDays / 7);
+    const diffMonths = Math.floor(diffDays / 30);
+
+    if (isNaN(date.getTime())) return 'Recently';
+    if (diffSecs < 60) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    if (diffWeeks < 5) return `${diffWeeks} week${diffWeeks > 1 ? 's' : ''} ago`;
+    if (diffMonths < 12) return `${diffMonths} month${diffMonths > 1 ? 's' : ''} ago`;
+    return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  const verifiedBadge = `
+    <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 rounded-full">
+      <span class="material-symbols-outlined text-[10px] font-bold">verified</span> Verified Buyer
+    </span>`;
+
+  function generateStarsHTML(rating) {
+    let html = '';
+    for (let i = 1; i <= 5; i++) {
+      if (i <= rating) {
+        html += '★';
+      } else {
+        html += '<span class="text-primary/20">★</span>';
+      }
+    }
+    return html;
+  }
+
+  function createReviewCardHTML(review) {
+    const relativeTime = getRelativeTimeString(review.createdAt);
+    const starsHTML = generateStarsHTML(review.rating);
+    
+    let galleryHTML = '';
+    if (review.images && review.images.length > 0) {
+      galleryHTML = `
+        <div class="flex gap-2 flex-wrap mt-3">
+          ${review.images.map(img => `
+            <div class="w-16 h-16 rounded-xl overflow-hidden border border-primary/10 cursor-zoom-in hover:scale-105 active:scale-95 transition duration-200 shadow-sm relative">
+              <img src="${img.url || img}" class="w-full h-full object-cover review-gallery-img" loading="lazy" alt="Review photo">
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+    
+    return `
+      <div class="glass-card p-5 rounded-3xl relative flex flex-col justify-between shadow-sm border border-primary/5 hover:shadow-md transition-shadow duration-300">
+        <div class="space-y-3">
+          <div class="flex justify-between items-center gap-2">
+            <div class="flex items-center gap-0.5 text-sm text-yellow-400">
+              ${starsHTML}
+            </div>
+            <span class="text-[10px] text-primary/50 font-medium">${relativeTime}</span>
+          </div>
+          
+          <p class="text-xs text-primary/80 leading-relaxed font-medium whitespace-pre-wrap">${escapeHTML(review.review)}</p>
+          
+          ${galleryHTML}
+        </div>
+        
+        <div class="flex items-center gap-3 pt-4 border-t border-primary/5 mt-4">
+          <div class="w-8 h-8 rounded-full bg-primary-container/40 flex items-center justify-center font-bold text-xs text-primary">
+            ${(review.name || 'C').charAt(0).toUpperCase()}
+          </div>
+          <div class="flex flex-col">
+            <span class="text-xs font-bold text-darkbrown dark:text-beige leading-none mb-1">${escapeHTML(review.name)}</span>
+            ${verifiedBadge}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Load and Render Overall reviews
+  async function loadOverallReviews() {
+    const gridEl = document.getElementById('overall-reviews-grid');
+    const emptyEl = document.getElementById('overall-reviews-empty');
+    const statsEl = document.getElementById('overall-rating-stats');
+    const viewAllBtn = document.getElementById('view-all-reviews-btn');
+    
+    if (!gridEl) return;
+    
+    try {
+      if (!cacheOverallReviews) {
+        cacheOverallReviews = await BackendAPI.getOverallReviews();
+      }
+      
+      const approved = cacheOverallReviews.filter(r => r.status === 'approved');
+      const count = approved.length;
+      
+      if (count === 0) {
+        if (emptyEl) emptyEl.classList.remove('hidden');
+        gridEl.classList.add('hidden');
+        statsEl?.classList.add('hidden');
+        viewAllBtn?.classList.add('hidden');
+        return;
+      }
+      
+      // Calculate Stats
+      const totalRating = approved.reduce((sum, r) => sum + r.rating, 0);
+      const avg = (totalRating / count).toFixed(1);
+      
+      // Populate Stats
+      if (statsEl) {
+        statsEl.classList.remove('hidden');
+        const avgEl = document.getElementById('overall-avg-rating');
+        const countEl = document.getElementById('overall-total-count');
+        const starsEl = document.getElementById('overall-agg-stars');
+        
+        if (avgEl) avgEl.textContent = avg;
+        if (countEl) countEl.textContent = count.toString();
+        if (starsEl) starsEl.innerHTML = generateStarsHTML(Math.round(parseFloat(avg)));
+      }
+      
+      if (emptyEl) emptyEl.classList.add('hidden');
+      gridEl.classList.remove('hidden');
+      gridEl.innerHTML = '';
+      
+      // Render first 3 reviews on homepage
+      const homepageReviews = approved.slice(0, 3);
+      homepageReviews.forEach(rev => {
+        gridEl.innerHTML += createReviewCardHTML(rev);
+      });
+      
+      // Show/Hide View All Button
+      if (count > 3 && viewAllBtn) {
+        viewAllBtn.classList.remove('hidden');
+      } else {
+        viewAllBtn?.classList.add('hidden');
+      }
+      
+    } catch (err) {
+      console.error('Failed to load overall reviews:', err);
+      if (emptyEl) emptyEl.classList.remove('hidden');
+    }
+  }
+
+  // View All Reviews Modal Setup
+  const viewAllModal = document.getElementById('view-all-reviews-modal');
+  const viewAllCloseBtn = document.getElementById('close-view-all-reviews-modal');
+  const allReviewsListContainer = document.getElementById('all-reviews-list-container');
+  
+  if (viewAllModal) {
+    initFocusTrap(viewAllModal);
+  }
+
+  function openViewAllModal() {
+    if (!viewAllModal || !allReviewsListContainer || !cacheOverallReviews) return;
+    
+    allReviewsListContainer.innerHTML = '';
+    const approved = cacheOverallReviews.filter(r => r.status === 'approved');
+    
+    // Grid of all reviews in modal
+    const wrapperGrid = document.createElement('div');
+    wrapperGrid.className = 'grid grid-cols-1 md:grid-cols-2 gap-4';
+    
+    approved.forEach(rev => {
+      wrapperGrid.innerHTML += createReviewCardHTML(rev);
+    });
+    
+    allReviewsListContainer.appendChild(wrapperGrid);
+    
+    viewAllModal.classList.remove('hidden');
+    setTimeout(() => {
+      viewAllModal.classList.add('active');
+      viewAllCloseBtn?.focus();
+    }, 50);
+  }
+
+  function closeViewAllModal() {
+    if (!viewAllModal) return;
+    viewAllModal.classList.remove('active');
+    setTimeout(() => viewAllModal.classList.add('hidden'), 400);
+  }
+
+  document.getElementById('view-all-reviews-btn')?.addEventListener('click', openViewAllModal);
+  viewAllCloseBtn?.addEventListener('click', closeViewAllModal);
+  viewAllModal?.addEventListener('click', (e) => {
+    if (e.target === viewAllModal) closeViewAllModal();
+  });
+
+  // ESC key support to close view all modal
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && viewAllModal && !viewAllModal.classList.contains('hidden')) {
+      closeViewAllModal();
+    }
+  });
+
+  // Product reviews rendering
+  async function loadProductReviews(productId, panelEl) {
+    if (!panelEl) return;
+    
+    panelEl.innerHTML = `
+      <div class="flex items-center justify-center py-8">
+        <div class="animate-spin rounded-full h-6 w-6 border-2 border-primary border-t-transparent"></div>
+      </div>
+    `;
+    
+    try {
+      if (!cacheProductReviews[productId]) {
+        cacheProductReviews[productId] = await BackendAPI.getProductReviews(productId);
+      }
+      
+      const approved = cacheProductReviews[productId].filter(r => r.status === 'approved');
+      const count = approved.length;
+      
+      if (count === 0) {
+        panelEl.innerHTML = `
+          <div class="flex flex-col items-center justify-center py-6 text-center space-y-3">
+            <p class="text-primary/70 dark:text-beige/70 font-semibold text-xs">No Reviews Yet</p>
+            <p class="text-[11px] text-primary/50 font-medium">Be the first to review this product.</p>
+            <button type="button" class="write-product-review-trigger px-5 py-2 rounded-full bg-primary text-white font-bold text-xs hover:bg-primary/90 hover:scale-105 active:scale-95 duration-300 shadow-sm clickable">
+              Write Review
+            </button>
+          </div>
+        `;
+      } else {
+        const totalRating = approved.reduce((sum, r) => sum + r.rating, 0);
+        const avg = (totalRating / count).toFixed(1);
+        
+        const cardsHTML = approved.map(rev => createReviewCardHTML(rev)).join('');
+        
+        panelEl.innerHTML = `
+          <div class="space-y-4">
+            <!-- Aggregate Stats -->
+            <div class="flex items-center justify-between border-b border-primary/10 pb-3 flex-wrap gap-2">
+              <div class="flex items-center gap-1.5">
+                <div class="flex items-center text-yellow-400 text-xs gap-0.5">
+                  ${generateStarsHTML(Math.round(parseFloat(avg)))}
+                </div>
+                <span class="font-bold text-darkbrown dark:text-beige text-xs">${avg} / 5.0 (${count} reviews)</span>
+              </div>
+              <button type="button" class="write-product-review-trigger px-4 py-1.5 rounded-full bg-primary text-white font-bold text-[11px] hover:bg-primary/90 hover:scale-105 active:scale-95 duration-200 shadow-sm clickable">
+                Write Review
+              </button>
+            </div>
+            
+            <!-- Scrollable Reviews List -->
+            <div class="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+              ${cardsHTML}
+            </div>
+          </div>
+        `;
+      }
+      
+      // Wire up write review button click listeners dynamically
+      panelEl.querySelectorAll('.write-product-review-trigger').forEach(btn => {
+        btn.addEventListener('click', openProductReviewModal);
+      });
+      
+    } catch (err) {
+      console.error('Failed to load product reviews:', err);
+      panelEl.innerHTML = `
+        <div class="text-center py-4 text-xs text-red-500 font-medium">
+          Failed to load reviews. Please try again.
+        </div>
+      `;
+    }
+  }
+
+  // Handle accordion toggle clicks and load reviews on demand
+  const desktopToggle = document.getElementById('qv-reviews-toggle-btn');
+  const desktopPanel = document.getElementById('qv-reviews-panel');
+  desktopToggle?.addEventListener('click', () => {
+    const isExpanded = desktopToggle.getAttribute('aria-expanded') === 'true';
+    if (isExpanded && currentDesktopProduct) {
+      const pId = currentDesktopProduct._id || currentDesktopProduct.id;
+      if (pId) loadProductReviews(pId, desktopPanel);
+    }
+  });
+
+  const mobileToggle = document.getElementById('mob-reviews-toggle-btn');
+  const mobilePanel = document.getElementById('mob-reviews-panel');
+  mobileToggle?.addEventListener('click', () => {
+    const isExpanded = mobileToggle.getAttribute('aria-expanded') === 'true';
+    if (isExpanded && currentMobileProduct) {
+      const pId = currentMobileProduct._id || currentMobileProduct.id;
+      if (pId) loadProductReviews(pId, mobilePanel);
+    }
+  });
+
+  // Event Delegation for review gallery image clicks
+  document.addEventListener('click', (e) => {
+    const img = e.target.closest('.review-gallery-img');
+    if (img) {
+      openLightbox(img.src);
+    }
+  });
+
+  // Bust cache and reload reviews on successful submission
+  document.getElementById('success-close-overall-btn')?.addEventListener('click', () => {
+    cacheOverallReviews = null;
+    loadOverallReviews();
+  });
+  
+  document.getElementById('success-close-product-btn')?.addEventListener('click', () => {
+    const activeProd = (window.innerWidth < 768) ? currentMobileProduct : currentDesktopProduct;
+    if (activeProd) {
+      const pId = activeProd._id || activeProd.id;
+      if (pId) {
+        delete cacheProductReviews[pId];
+        const panel = (window.innerWidth < 768) ? mobilePanel : desktopPanel;
+        loadProductReviews(pId, panel);
+      }
+    }
+  });
+
+  // Fetch overall reviews on load
+  loadOverallReviews();
 
   // Initialize wishlist states
   updateWishlistUI();
