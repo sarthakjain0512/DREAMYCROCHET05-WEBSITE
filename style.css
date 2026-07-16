@@ -2204,3 +2204,136 @@ body:has(#admin-dashboard-overlay:not(.hidden)) #main-boutique {
     transform: scale(1) !important;
   }
 }
+
+/* Premium Hero Entrance & Floating Animations */
+@keyframes hero-fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-fade-scale {
+  0% {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes hero-fade-only {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes hero-fade-right {
+  0% {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes hero-float-btn {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes hero-float-img {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+/* Initial States & Animation assignments */
+.hero-animate-badge {
+  opacity: 0;
+  animation: hero-fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.hero-animate-heading {
+  opacity: 0;
+  animation: hero-fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+}
+
+.hero-animate-highlight {
+  opacity: 0;
+  animation: hero-fade-scale 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+}
+
+.hero-animate-quote {
+  opacity: 0;
+  animation: hero-fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.45s forwards;
+}
+
+.hero-animate-desc {
+  opacity: 0;
+  animation: hero-fade-only 0.6s ease-out 0.55s forwards;
+}
+
+.hero-animate-btn-wrapper {
+  opacity: 0;
+  display: inline-block;
+  animation: hero-fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.65s forwards, hero-float-btn 5s ease-in-out 1.35s infinite;
+  will-change: transform, opacity;
+}
+
+#hero-bouquet-container {
+  opacity: 0;
+  animation: hero-fade-right 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+  will-change: transform, opacity;
+}
+
+#hero-bouquet-img {
+  animation: hero-float-img 6s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Hover Pauses Floating (Desktop) */
+@media (hover: hover) {
+  .hero-animate-btn-wrapper:hover {
+    animation-play-state: paused;
+  }
+  #hero-bouquet-container:hover #hero-bouquet-img {
+    animation-play-state: paused;
+  }
+}
+
+/* Accessibility settings */
+@media (prefers-reduced-motion: reduce) {
+  .hero-animate-badge,
+  .hero-animate-heading,
+  .hero-animate-highlight,
+  .hero-animate-quote,
+  .hero-animate-desc,
+  .hero-animate-btn-wrapper,
+  #hero-bouquet-container {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+  #hero-bouquet-img {
+    animation: none !important;
+  }
+}

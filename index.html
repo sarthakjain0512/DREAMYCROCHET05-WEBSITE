@@ -189,46 +189,47 @@
     <!-- Section 1: Hero Welcome & Quick Recommendation Quiz Intro -->
     <section class="py-16 md:py-24 px-6 max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12 relative">
       <div class="flex-1 space-y-8 z-10">
-        <span class="inline-block px-4 py-1.5 rounded-full bg-primary-container/60 text-on-primary-container font-semibold text-xs tracking-wider uppercase">Handcrafted Masterpieces</span>
+        <span class="hero-animate-badge inline-block px-4 py-1.5 rounded-full bg-primary-container/60 text-on-primary-container font-semibold text-xs tracking-wider uppercase">Handcrafted Masterpieces</span>
         
         <h1 id="main-hero-title" class="text-4xl md:text-6xl font-heading font-bold text-darkbrown leading-tight">
-          Flowers That Never Fade.
-          <br>
-          <span class="text-primary dark:text-primary-container bg-gradient-to-r from-primary-container/50 to-secondary/40 dark:from-primary/30 dark:to-secondary/20 px-6 py-2 rounded-2xl filter drop-shadow-sm inline-block mt-3 border border-primary/10 shadow-sm text-2xl md:text-4xl font-serif">
+          <span class="hero-animate-heading block">Flowers That Never Fade.</span>
+          <span class="hero-animate-highlight text-primary dark:text-primary-container bg-gradient-to-r from-primary-container/50 to-secondary/40 dark:from-primary/30 dark:to-secondary/20 px-6 py-2 rounded-2xl filter drop-shadow-sm inline-block mt-3 border border-primary/10 shadow-sm text-2xl md:text-4xl font-serif">
             Memories That Make Forever.
           </span>
         </h1>
-
+ 
         <!-- Premium Subtitle: Emotional Hindi-English Message -->
-        <div id="hero-subtitle-block" class="hero-subtitle-container relative p-5 max-w-lg bg-beige/15 dark:bg-black/10 border border-primary/5 rounded-2xl shadow-sm">
+        <div id="hero-subtitle-block" class="hero-animate-quote hero-subtitle-container relative p-5 max-w-lg bg-beige/15 dark:bg-black/10 border border-primary/5 rounded-2xl shadow-sm">
           <!-- Soft glow backdrop -->
           <div class="hero-subtitle-glow"></div>
-
+ 
           <!-- Floating decorative elements -->
           <span class="hero-deco hero-deco-heart" aria-hidden="true">❤️</span>
           <span class="hero-deco hero-deco-flower" aria-hidden="true">🌷</span>
           <span class="hero-deco hero-deco-sparkle1" aria-hidden="true">✨</span>
           <span class="hero-deco hero-deco-sparkle2" aria-hidden="true">✨</span>
-
+ 
           <!-- Line 1: Hindi-English emotional quote -->
           <p id="hero-subtitle-line1" class="hero-subtitle-line1 font-body font-semibold leading-relaxed">
             Har stitch mein thoda sa waqt, thodi si mehnat aur bahut saara pyaar chhupa hai.&nbsp;❤️
           </p>
-
+ 
           <!-- Line 2: Brand tagline -->
           <p id="hero-subtitle-line2" class="hero-subtitle-line2 font-body font-medium mt-2 tracking-wide text-xs">
             Handmade by Mom&nbsp;•&nbsp;Made to be Remembered&nbsp;🌷
           </p>
         </div>
-
-        <p class="text-sm md:text-base text-primary/80 leading-relaxed max-w-md">
+ 
+        <p class="hero-animate-desc text-sm md:text-base text-primary/80 leading-relaxed max-w-md">
           Bring warmth to your hostel rooms, offices, and study desks. Find the perfect customized gift for your friends and aesthetic-loving companions.
         </p>
-
+ 
         <div class="flex flex-wrap gap-4 pt-2">
-          <a href="#best-sellers" class="premium-button px-8 py-3 rounded-full bg-primary text-white hover:bg-primary/95 hover:scale-105 active:scale-95 duration-300 font-semibold clickable shadow-md text-sm flex items-center justify-center">
-            Shop Collection
-          </a>
+          <div class="hero-animate-btn-wrapper inline-block">
+            <a href="#best-sellers" class="premium-button px-8 py-3 rounded-full bg-primary text-white hover:bg-primary/95 hover:scale-105 active:scale-95 duration-300 font-semibold clickable shadow-md text-sm flex items-center justify-center">
+              Shop Collection
+            </a>
+          </div>
           <button id="start-quiz-btn" class="premium-button px-6 py-3 rounded-full bg-primary-container text-on-primary-container hover:shadow-lg hover:scale-105 active:scale-95 duration-300 font-semibold clickable shadow-md text-sm">
             Take Gift Quiz 🌸
           </button>
@@ -792,7 +793,7 @@
           <div id="founder-story-image-card" class="polaroid-card transform rotate-2 hover:rotate-0 transition duration-300 shadow-2xl overflow-hidden relative">
             <div class="story-mask absolute inset-0 bg-cream dark:bg-darkbrown z-20 pointer-events-none"></div>
             <div class="image-container w-64 h-64 overflow-hidden">
-              <img src="photoes/hands_crocheting_flower.png.jpeg" alt="Hands Crocheting Flower" class="w-full h-full object-cover" loading="lazy" decoding="async" onload="this.parentElement.classList.add('loaded')">
+              <img src="photoes/hands_crocheting_flower.png.jpeg" alt="Hands Crocheting Flower" class="w-full h-full object-cover" loading="lazy" decoding="async" onload="this.classList.add('fade-in-ready'); this.parentElement.classList.add('loaded')">
             </div>
             <div class="text-center mt-3">
               <p class="font-handwritten text-2xl font-bold">Hands That Create Magic</p>
@@ -861,7 +862,7 @@
 
             <!-- Profile Image Container -->
             <div class="relative overflow-hidden rounded-2xl bg-cream dark:bg-black/10 border border-primary/5 shadow-inner image-container">
-              <img src="photoes/instagram_screenshot.png" alt="Instagram Profile Screenshot" class="w-full h-auto object-cover max-h-[440px] transform group-hover:scale-[1.02] duration-700" loading="lazy" decoding="async" onload="this.parentElement.classList.add('loaded')">
+              <img src="photoes/instagram_screenshot.png" alt="Instagram Profile Screenshot" class="w-full h-auto object-cover max-h-[440px] transform group-hover:scale-[1.02] duration-700" loading="lazy" decoding="async" onload="this.classList.add('fade-in-ready'); this.parentElement.classList.add('loaded')">
               
               <!-- Aesthetic light overlay -->
               <div class="absolute inset-0 bg-gradient-to-tr from-primary-container/10 via-transparent to-secondary/15 pointer-events-none"></div>
@@ -914,19 +915,21 @@
           </div>
 
           <!-- Buttons -->
-          <div class="flex flex-wrap items-center gap-4 pt-2">
-            <a href="https://www.instagram.com/dreamycrochet05/" target="_blank" class="premium-button px-8 py-3.5 rounded-full bg-primary text-white hover:bg-primary/90 hover:scale-105 active:scale-95 duration-300 font-semibold clickable shadow-md text-sm flex items-center gap-2 group instagram-glow-btn">
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center sm:justify-start gap-4 sm:gap-5 md:gap-6 pt-2 mb-1">
+            <a href="https://www.instagram.com/dreamycrochet05/" target="_blank" class="premium-button px-8 py-3.5 rounded-full bg-primary text-white hover:bg-primary/90 hover:scale-105 active:scale-95 duration-300 font-semibold clickable shadow-md text-sm flex items-center justify-center gap-2 group instagram-glow-btn w-full sm:w-auto">
               <span>Follow on Instagram</span>
               <svg class="w-4 h-4 transform group-hover:translate-x-1 duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
               </svg>
             </a>
-            <a href="https://dreamycrochet05.smartbiz.in/" target="_blank" class="px-8 py-3.5 rounded-full border border-primary/30 text-primary dark:text-beige hover:bg-primary/5 hover:scale-105 active:scale-95 duration-300 font-semibold clickable text-sm inline-flex items-center justify-center">
+            <a href="https://dreamycrochet05.smartbiz.in/" target="_blank" class="px-8 py-3.5 rounded-full border border-primary/30 text-primary dark:text-beige hover:bg-primary/5 hover:scale-105 active:scale-95 duration-300 font-semibold clickable text-sm inline-flex items-center justify-center w-full sm:w-auto mb-2 sm:mb-0">
               Visit Website
             </a>
           </div>
         </div>
       </div>
+
+    </section>
 
     <footer class="bg-beige dark:bg-darkbrown py-12 px-6 border-t border-primary/10">
       <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
