@@ -2086,5 +2086,14 @@ body:has(#admin-dashboard-overlay:not(.hidden)) #main-boutique {
 .related-product-card:hover {
   transform: translateY(-2px);
 }
-
-
+/* Premium Image Load transitions & skeletons */
+.image-container img {
+  opacity: 0;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.image-container img.fade-in-ready {
+  opacity: 1;
+}
+.shimmer-skeleton::before {
+  opacity: 1 !important;
+}

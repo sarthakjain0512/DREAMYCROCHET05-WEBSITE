@@ -132,37 +132,101 @@ document.addEventListener('DOMContentLoaded', () => {
     imgElement.dataset.pendingUrl = targetUrl;
     imgElement.decoding = 'async';
 
+    // Optimize Cloudinary URL format and quality if applicable
+    let optimizedUrl = targetUrl;
+    if (optimizedUrl.includes('res.cloudinary.com') && optimizedUrl.includes('/image/upload/')) {
+      if (!optimizedUrl.includes('/f_auto,q_auto')) {
+        optimizedUrl = optimizedUrl.replace('/image/upload/', '/image/upload/f_auto,q_auto/');
+      }
+    }
+
     if (!imgElement.src || imgElement.src === window.location.href) {
       imgElement.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
     }
 
-    const tempImg = new Image();
-    tempImg.decoding = 'async';
-    tempImg.onload = () => {
-      if (imgElement.dataset.pendingUrl === targetUrl) {
-        imgElement.src = targetUrl;
-        const container = options.container || (imgElement.parentElement && imgElement.parentElement.classList.contains('image-container') ? imgElement.parentElement : null);
-        if (container) {
-          container.classList.add('loaded');
+    // Set up skeleton loader container layout
+    const container = options.container || (imgElement.parentElement && imgElement.parentElement.classList.contains('image-container') ? imgElement.parentElement : null);
+    if (container) {
+      container.classList.remove('loaded');
+      container.classList.add('shimmer-skeleton');
+    }
+
+    const startLoading = () => {
+      const tempImg = new Image();
+      tempImg.decoding = 'async';
+      tempImg.onload = () => {
+        if (imgElement.dataset.pendingUrl === targetUrl) {
+          imgElement.src = optimizedUrl;
+          imgElement.classList.add('fade-in-ready');
+          if (container) {
+            container.classList.remove('shimmer-skeleton');
+            container.classList.add('loaded');
+          }
+          if (options.onSuccess) options.onSuccess();
+          delete imgElement.dataset.pendingUrl;
         }
-        if (options.onSuccess) options.onSuccess();
-        delete imgElement.dataset.pendingUrl;
-      }
+      };
+
+      tempImg.onerror = () => {
+        // Fall back to original URL if optimized URL fails to load due to strict transformation rules
+        if (optimizedUrl !== targetUrl) {
+          optimizedUrl = targetUrl;
+          tempImg.src = targetUrl;
+        } else {
+          if (imgElement.dataset.pendingUrl === targetUrl) {
+            imgElement.src = fallbackUrl;
+            imgElement.classList.add('fade-in-ready');
+            if (container) {
+              container.classList.remove('shimmer-skeleton');
+              container.classList.add('loaded');
+            }
+            if (options.onError) options.onError();
+            delete imgElement.dataset.pendingUrl;
+          }
+        }
+      };
+
+      tempImg.src = optimizedUrl;
     };
 
-    tempImg.onerror = () => {
-      if (imgElement.dataset.pendingUrl === targetUrl) {
-        imgElement.src = fallbackUrl;
-        const container = options.container || (imgElement.parentElement && imgElement.parentElement.classList.contains('image-container') ? imgElement.parentElement : null);
-        if (container) {
-          container.classList.add('loaded');
-        }
-        if (options.onError) options.onError();
-        delete imgElement.dataset.pendingUrl;
+    if (options.eager) {
+      startLoading();
+    } else {
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              startLoading();
+              observer.unobserve(imgElement);
+            }
+          });
+        }, { rootMargin: '200px 0px' });
+        observer.observe(imgElement);
+      } else {
+        startLoading();
       }
-    };
+    }
+  }
 
-    tempImg.src = targetUrl;
+  function preloadGalleryImages(p) {
+    const images = resolveProductGalleryImages(p);
+    images.forEach(url => {
+      const targetUrl = getProductImageUrl(url, p);
+      let optimizedUrl = targetUrl;
+      if (optimizedUrl.includes('res.cloudinary.com') && optimizedUrl.includes('/image/upload/')) {
+        if (!optimizedUrl.includes('/f_auto,q_auto')) {
+          optimizedUrl = optimizedUrl.replace('/image/upload/', '/image/upload/f_auto,q_auto/');
+        }
+      }
+      const img = new Image();
+      img.onerror = () => {
+        if (optimizedUrl !== targetUrl) {
+          optimizedUrl = targetUrl;
+          img.src = targetUrl;
+        }
+      };
+      img.src = optimizedUrl;
+    });
   }
 
   // --- TOAST NOTIFICATIONS ---
@@ -1253,7 +1317,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('layout-list')?.addEventListener('click', () => applyLayout('list'));
 
   // Render a single product card
-  function renderProductCard(p, isAdmin) {
+  function renderProductCard(p, isAdmin, index) {
     const isCustomOrderCard = p.id === 'custom-order-card';
     const card = document.createElement('div');
     card.className = `product-card-container glass-card rounded-cozy p-4 relative group flex flex-col h-full cursor-pointer`;
@@ -1381,7 +1445,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const imgEl = card.querySelector('.image-container img');
       const containerEl = card.querySelector('.image-container');
       const rawSrc = resolveProductPrimaryImage(p);
-      safeLoadProductImage(imgEl, rawSrc, p, { container: containerEl });
+      const isEager = (index !== undefined && index < 3);
+      safeLoadProductImage(imgEl, rawSrc, p, { container: containerEl, eager: isEager });
     }
 
     return card;
@@ -1398,8 +1463,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       productsGrid.innerHTML = '';
 
-      products.forEach(p => {
-        productsGrid.appendChild(renderProductCard(p, isAdmin));
+      products.forEach((p, index) => {
+        productsGrid.appendChild(renderProductCard(p, isAdmin, index));
       });
 
       // Append static Custom Order card for customers
@@ -3291,7 +3356,7 @@ console.log("images:", inquiryImageFiles);
         img.className = 'w-full h-full object-contain transition-opacity duration-200 cursor-pointer';
         img.alt = `${p.name} view ${idx + 1}`;
         img.setAttribute('decoding', 'async');
-        safeLoadProductImage(img, url, p);
+        safeLoadProductImage(img, url, p, { eager: idx === 0 });
 
         // Bind main image click to open Fullscreen Gallery
         img.onclick = () => {
@@ -3486,6 +3551,7 @@ console.log("images:", inquiryImageFiles);
 
     // Render Related Products
     renderRelatedProducts(p, true);
+    preloadGalleryImages(p);
 
     mobileProductDetail.classList.remove('hidden');
     // Force reflow
@@ -3662,7 +3728,8 @@ console.log("images:", inquiryImageFiles);
     const primaryImgUrl = resolveProductPrimaryImage(p);
     qvImg.style.transform = 'scale(1)';
     qvImg.style.transformOrigin = 'center center';
-    safeLoadProductImage(qvImg, primaryImgUrl, p);
+    safeLoadProductImage(qvImg, primaryImgUrl, p, { eager: true });
+    preloadGalleryImages(p);
 
     // Desktop Hover Zoom Controller for Main Image
     if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
