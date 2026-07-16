@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const isMobile = window.innerWidth < 768;
   const isMobileOrTouch = isTouchDevice || isMobile;
 
+
   // --- SAFE IMAGE LOADING HELPERS ---
   function getImageUrlString(val) {
     if (!val) return '';
@@ -3033,6 +3034,143 @@ console.log("images:", inquiryImageFiles);
     }
   }
 
+  // --- RELATED PRODUCTS ("YOU MAY ALSO LIKE") LOGIC ---
+  function getRelatedProducts(currentProduct) {
+    const list = (typeof publicProducts !== 'undefined' && Array.isArray(publicProducts)) ? publicProducts : [];
+    const currentId = currentProduct._id || currentProduct.id;
+    const currentCategory = currentProduct.category || currentProduct.badge || '';
+
+    // Filter candidate products (excluding current product and custom order card)
+    const candidates = list.filter(prod => {
+      const prodId = prod._id || prod.id;
+      return prodId !== currentId && prodId !== 'custom-order-card';
+    });
+
+    // Priority 1: Same category
+    const sameCategory = candidates.filter(prod => {
+      const cat = prod.category || prod.badge || '';
+      return cat.toLowerCase() === currentCategory.toLowerCase();
+    });
+
+    // Priority 2: Featured products
+    const featured = candidates.filter(prod => !!prod.featured);
+
+    const selected = [];
+    const selectedIds = new Set();
+
+    // 1. Add same category products
+    for (const prod of sameCategory) {
+      if (selected.length >= 3) break;
+      const prodId = prod._id || prod.id;
+      selected.push(prod);
+      selectedIds.add(prodId);
+    }
+
+    // 2. Fill remaining slots with featured products
+    for (const prod of featured) {
+      if (selected.length >= 3) break;
+      const prodId = prod._id || prod.id;
+      if (!selectedIds.has(prodId)) {
+        selected.push(prod);
+        selectedIds.add(prodId);
+      }
+    }
+
+    // 3. Fill remaining slots with any candidates if still less than 3
+    for (const prod of candidates) {
+      if (selected.length >= 3) break;
+      const prodId = prod._id || prod.id;
+      if (!selectedIds.has(prodId)) {
+        selected.push(prod);
+        selectedIds.add(prodId);
+      }
+    }
+
+    return selected;
+  }
+
+  function renderRelatedProducts(p, isMobileView) {
+    const related = getRelatedProducts(p);
+
+    if (isMobileView) {
+      const container = document.getElementById('mob-qv-related-products-section');
+      const listEl = document.getElementById('mob-qv-related-products-list');
+      if (!container || !listEl) return;
+
+      if (related.length === 0) {
+        container.classList.add('hidden');
+        return;
+      }
+
+      listEl.innerHTML = '';
+      related.forEach(prod => {
+        const card = document.createElement('div');
+        card.className = 'related-product-card flex-shrink-0 w-[110px] snap-start flex flex-col gap-1.5 p-2 rounded-2xl bg-beige/10 dark:bg-white/5 border border-primary/5 hover:bg-beige/35 dark:hover:bg-white/10 transition duration-200 cursor-pointer';
+
+        const priceText = formatPrice(prod.price);
+        const nameText = prod.name || prod.title || '';
+        const imgUrl = resolveProductPrimaryImage(prod);
+
+        card.innerHTML = `
+          <div class="aspect-[4/3] rounded-xl overflow-hidden bg-beige/30 flex items-center justify-center">
+            <img src="${imgUrl}" alt="${nameText}" class="w-full h-full object-contain" loading="lazy">
+          </div>
+          <div class="flex flex-col flex-grow justify-between gap-0.5">
+            <h5 class="text-[10px] font-bold text-darkbrown dark:text-beige leading-tight line-clamp-2 min-h-[24px]">${nameText}</h5>
+            <span class="text-[10px] font-semibold text-primary">${priceText}</span>
+          </div>
+        `;
+
+        card.onclick = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          navigateMobileProductDetail(prod);
+        };
+
+        listEl.appendChild(card);
+      });
+      container.classList.remove('hidden');
+    } else {
+      const container = document.getElementById('qv-related-products-section');
+      const listEl = document.getElementById('qv-related-products-list');
+      if (!container || !listEl) return;
+
+      if (related.length === 0) {
+        container.classList.add('hidden');
+        return;
+      }
+
+      listEl.innerHTML = '';
+      related.forEach(prod => {
+        const card = document.createElement('div');
+        card.className = 'related-product-card flex flex-col gap-1.5 p-2 rounded-2xl bg-beige/10 dark:bg-white/5 border border-primary/5 hover:bg-beige/35 dark:hover:bg-white/10 transition duration-200 cursor-pointer';
+
+        const priceText = formatPrice(prod.price);
+        const nameText = prod.name || prod.title || '';
+        const imgUrl = resolveProductPrimaryImage(prod);
+
+        card.innerHTML = `
+          <div class="aspect-[4/3] rounded-xl overflow-hidden bg-beige/30 flex items-center justify-center">
+            <img src="${imgUrl}" alt="${nameText}" class="w-full h-full object-contain" loading="lazy">
+          </div>
+          <div class="flex flex-col flex-grow justify-between gap-0.5">
+            <h5 class="text-[10px] font-bold text-darkbrown dark:text-beige leading-tight line-clamp-2 min-h-[24px]">${nameText}</h5>
+            <span class="text-[10px] font-semibold text-primary">${priceText}</span>
+          </div>
+        `;
+
+        card.onclick = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          navigateQuickViewProduct(prod);
+        };
+
+        listEl.appendChild(card);
+      });
+      container.classList.remove('hidden');
+    }
+  }
+
   // --- MOBILE PRODUCT DETAIL PAGE LOGIC ---
   let currentMobileProduct = null;
   let openedGalleryFromMobileDetail = false;
@@ -3345,6 +3483,9 @@ console.log("images:", inquiryImageFiles);
     if (pushState) {
       window.history.pushState({ page: 'mobile-detail', product: p.name }, '', '?product=' + encodeURIComponent(p.name));
     }
+
+    // Render Related Products
+    renderRelatedProducts(p, true);
 
     mobileProductDetail.classList.remove('hidden');
     // Force reflow
@@ -3674,6 +3815,9 @@ console.log("images:", inquiryImageFiles);
       BackendAPI.incrementViewCount(pId);
       p.viewCount = (p.viewCount || 0) + 1;
     }
+
+    // Render Related Products
+    renderRelatedProducts(p, false);
 
     quickViewModal.classList.remove('quick-view-closing');
     quickViewModal.classList.remove('hidden');

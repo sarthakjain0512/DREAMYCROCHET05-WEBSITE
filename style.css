@@ -1280,11 +1280,15 @@ tbody tr:hover {
   transform: translateY(8px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
 }
 
-.product-card-container:hover .view-collection-btn {
-  opacity: 1;
-  transform: translateY(0);
+@media (hover: hover) and (pointer: fine) {
+  .product-card-container:hover .view-collection-btn {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
 }
 
 /* Admin Image Previews Grid Action Overlays */
@@ -2063,4 +2067,24 @@ body:has(#admin-dashboard-overlay:not(.hidden)) #main-boutique {
   text-overflow: ellipsis !important;
   word-break: break-word;
 }
+
+/* You May Also Like / Related Products Section Styles */
+#mob-qv-related-products-list::-webkit-scrollbar {
+  height: 4px;
+}
+#mob-qv-related-products-list::-webkit-scrollbar-thumb {
+  background-color: rgba(181, 138, 106, 0.2);
+  border-radius: 4px;
+}
+#mob-qv-related-products-list {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(181, 138, 106, 0.2) transparent;
+}
+.related-product-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.related-product-card:hover {
+  transform: translateY(-2px);
+}
+
 
