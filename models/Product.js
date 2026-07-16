@@ -36,6 +36,13 @@ const productSchema = new mongoose.Schema(
       default: 'Ask Us',
       trim: true
     },
+    // Stock field – integer between 0 and 9999, defaults to 10
+    stock: {
+      type: Number,
+      min: 0,
+      max: 9999,
+      default: 10
+    },
 
     // ── Image ─────────────────────────────────────────────────────────────────
     image: {

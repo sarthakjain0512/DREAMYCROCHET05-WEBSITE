@@ -13,6 +13,30 @@ const getApiUrl = (endpoint) => {
 };
 
 
+
+// ─── Price Formatter ──────────────────────────────────────────────────────────
+// Always renders price as "Rs. XXX". Strips any leading ₹, ₹, Rs., Rs or spaces.
+function formatPrice(raw) {
+  if (!raw) return 'Ask Us';
+  const s = String(raw).trim();
+  if (s.toLowerCase() === 'ask us' || s === '') return 'Ask Us';
+  // Strip any currency prefix (₹, Rs., Rs , etc.)
+  const cleaned = s.replace(/^(rs\.?\s*|₹\s*|₹\s*)/i, '').trim();
+  if (!cleaned) return 'Ask Us';
+  return `Rs. ${cleaned}`;
+}
+
+// ─── Stock Status Helper ──────────────────────────────────────────────────────
+// Returns { text, color } based on stock level. Treats undefined/null as 10.
+function getStockStatus(stock) {
+  const qty = (stock === undefined || stock === null) ? 10 : Number(stock);
+  if (qty === 0)  return { text: '🔴 Out of Stock',    color: '#dc2626' };
+  if (qty <= 5)   return { text: `🟠 Only ${qty} left`, color: '#ea580c' };
+  return           { text: `🟢 In Stock (${qty} left)`, color: '#16a34a' };
+}
+
+
+
 document.addEventListener('DOMContentLoaded', () => {
   // Check touch devices & reduced motion & mobile screen widths
   const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || (window.navigator && window.navigator.msMaxTouchPoints > 0);
@@ -642,7 +666,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <img alt="${p.name}" class="w-16 h-16 object-contain bg-beige/30 rounded-xl border border-primary/5 shrink-0">
           <div class="flex-grow min-w-0">
             <h4 class="font-serif text-sm font-bold text-darkbrown dark:text-beige truncate">${p.name}</h4>
-            <p class="text-xs text-primary font-semibold">₹${p.price}</p>
+            <p class="text-xs text-primary font-semibold">${formatPrice(p.price)}</p>
           </div>
           <div class="flex items-center gap-2 shrink-0">
             <button class="view-wishlist-item-btn w-8 h-8 rounded-full hover:bg-beige/80 dark:hover:bg-beige/20 text-darkbrown dark:text-beige flex items-center justify-center transition clickable" title="View details">
@@ -1282,9 +1306,11 @@ document.addEventListener('DOMContentLoaded', () => {
       inquiryButtons = `
         <div class="mt-4 flex gap-2 w-full pt-3 border-t border-primary/5">
           <a href="https://www.instagram.com/dreamycrochet05/" target="_blank" class="w-full py-2.5 rounded-full border border-primary/20 text-xs font-bold text-primary hover:bg-primary-container/20 text-center transition duration-300 clickable flex items-center justify-center gap-1.5">
-            🌸 Ask on Instagram
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            DM on Instagram
           </a>
         </div>
+
       `;
     }
 
@@ -1306,16 +1332,16 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="flex-grow flex flex-col justify-between">
         <div>
           <div class="flex justify-between items-start mb-2 gap-2">
-            <h3 class="font-serif text-xl font-bold text-darkbrown line-clamp-1">${p.name}</h3>
-            <span class="text-primary font-semibold shrink-0">₹${p.price}</span>
+            <h3 class="font-serif text-xl font-bold text-darkbrown line-clamp-2 leading-snug">${p.name}</h3>
+            <span class="text-primary font-semibold shrink-0">${formatPrice(p.price)}</span>
           </div>
-          <p class="text-primary/70 text-sm leading-relaxed mb-3 line-clamp-2">${p.desc}</p>
         </div>
         <div class="mt-auto">
           <span class="inline-block px-3 py-1 text-xs rounded-full bg-primary-container text-on-primary-container font-semibold">${p.badge}</span>
           ${inquiryButtons}
         </div>
       </div>
+
     `;
 
     // Bind card clicks
@@ -1805,7 +1831,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </td>
         <td class="p-4 text-primary font-medium">${p.badge}</td>
-        <td class="p-4 font-bold text-darkbrown">₹${p.price}</td>
+        <td class="p-4 font-bold text-darkbrown">${formatPrice(p.price)}</td>
         <td class="p-4 text-xs text-primary/70">${p.label || '<span class="text-primary/30">N/A</span>'}</td>
         <td class="p-4 text-xs text-primary/80 font-bold text-center">${p.viewCount || 0}</td>
         <td class="p-4 text-center">
@@ -1967,6 +1993,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const uploadDescInput  = document.getElementById('upload-desc');
   const uploadBadgeInput = document.getElementById('upload-badge');
   const uploadLabelInput = document.getElementById('upload-label');
+  const uploadStockInput = document.getElementById('upload-stock');
 
   function openUploadModal() {
     if (!uploadModal) return;
@@ -1992,6 +2019,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (uploadDescInput)   uploadDescInput.value = '';
     if (uploadBadgeInput)  uploadBadgeInput.value = '';
     if (uploadLabelInput)  uploadLabelInput.value = '';
+    if (uploadStockInput)  uploadStockInput.value = '10';
     
     const featuredInput = document.getElementById('upload-featured');
     if (featuredInput) featuredInput.checked = false;
@@ -2116,6 +2144,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (uploadDescInput)   uploadDescInput.value = p.desc;
     if (uploadBadgeInput)  uploadBadgeInput.value = p.badge;
     if (uploadLabelInput)  uploadLabelInput.value = p.label || '';
+    if (uploadStockInput)  uploadStockInput.value = (p.stock !== undefined && p.stock !== null) ? p.stock : 10;
     
     const featuredInput = document.getElementById('upload-featured');
     if (featuredInput) featuredInput.checked = !!p.featured;
@@ -2568,6 +2597,7 @@ document.addEventListener('DOMContentLoaded', () => {
       description: uploadDescInput?.value.trim() || '',
       category: uploadBadgeInput?.value.trim() || 'New',
       label: uploadLabelInput?.value.trim() || '',
+      stock: parseInt(uploadStockInput?.value, 10) >= 0 ? parseInt(uploadStockInput?.value, 10) : 10,
       featured: document.getElementById('upload-featured')?.checked || false,
       isVisible: document.getElementById('upload-visible')?.checked !== false,
       instagramLink: document.getElementById('upload-instagram')?.value.trim() || ''
@@ -2918,8 +2948,6 @@ console.log("images:", inquiryImageFiles);
     const card = document.createElement('div');
     const isWishlisted = typeof wishlist !== 'undefined' && Array.isArray(wishlist) && wishlist.includes(p.name);
     const imgSrc = resolveProductPrimaryImage(p);
-    const rawPrice = String(p.price || '').trim();
-    const formattedPrice = rawPrice.startsWith('₹') ? rawPrice : `₹${rawPrice}`;
 
     card.className = 'rv-compact-card flex-shrink-0 w-56 sm:w-64 md:w-auto snap-start glass-card rounded-2xl p-3 relative group overflow-hidden cursor-pointer border border-primary/10 hover:border-primary/30 transition-all duration-300 hover:shadow-md clickable flex flex-col justify-between';
 
@@ -2932,7 +2960,7 @@ console.log("images:", inquiryImageFiles);
       </div>
       <div class="flex items-center justify-between gap-2 pt-0.5">
         <h4 class="font-serif font-bold text-xs md:text-sm text-darkbrown dark:text-beige line-clamp-1">${p.name}</h4>
-        <span class="text-xs font-semibold text-primary shrink-0">${formattedPrice}</span>
+        <span class="text-xs font-semibold text-primary shrink-0">${formatPrice(p.price)}</span>
       </div>
     `;
 
@@ -3015,9 +3043,37 @@ console.log("images:", inquiryImageFiles);
     saveToRecentlyViewed(p);
     
     mobQvTitle.textContent = p.name;
-    const rawPrice = String(p.price || '').trim();
-    mobQvPrice.textContent = rawPrice.startsWith('₹') ? rawPrice : `₹${rawPrice}`;
+    mobQvPrice.textContent = formatPrice(p.price);
     mobQvType.textContent = p.badge;
+
+    // ── Stock status (below price) ────────────────────────────────────────────
+    const mobStockEl = document.getElementById('mob-qv-stock');
+    const isCustomOrder = (p._id || p.id) === 'custom-order-card';
+    if (mobStockEl) {
+      if (isCustomOrder) {
+        mobStockEl.textContent = '';
+      } else {
+        const ss = getStockStatus(p.stock);
+        mobStockEl.textContent  = ss.text;
+        mobStockEl.style.color  = ss.color;
+      }
+    }
+
+    // ── Disable inquiry buttons when out of stock (not hidden) ───────────────
+    const mobOrderBtn = document.getElementById('mob-qv-custom-order-btn');
+    const mobInstaBtn = document.getElementById('mob-qv-insta-btn');
+    const outOfStock  = !isCustomOrder && Number(p.stock === undefined ? 10 : p.stock) === 0;
+    if (mobOrderBtn) {
+      mobOrderBtn.disabled = outOfStock;
+      mobOrderBtn.style.opacity  = outOfStock ? '0.45' : '';
+      mobOrderBtn.style.cursor   = outOfStock ? 'not-allowed' : '';
+      mobOrderBtn.style.pointerEvents = outOfStock ? 'none' : '';
+    }
+    if (mobInstaBtn) {
+      mobInstaBtn.style.opacity  = outOfStock ? '0.45' : '';
+      mobInstaBtn.style.cursor   = outOfStock ? 'not-allowed' : '';
+      mobInstaBtn.style.pointerEvents = outOfStock ? 'none' : '';
+    }
 
     // Update Previous / Next Navigation Buttons
     const productList = (typeof publicProducts !== 'undefined' && publicProducts.length > 0) ? publicProducts : [];
@@ -3055,20 +3111,29 @@ console.log("images:", inquiryImageFiles);
     // Reset Accordion state
     if (mobQvDetailsAccordion && mobQvDetailsToggleBtn && mobQvDetailsPanel) {
       mobQvDetailsAccordion.classList.remove('expanded');
+      mobQvDetailsPanel.classList.remove('expanded');
       mobQvDetailsPanel.classList.add('hidden');
       mobQvDetailsToggleBtn.setAttribute('aria-expanded', 'false');
 
       mobQvDetailsToggleBtn.onclick = (e) => {
         e.stopPropagation();
-        const isHidden = mobQvDetailsPanel.classList.contains('hidden');
-        if (isHidden) {
+        const isCollapsed = !mobQvDetailsPanel.classList.contains('expanded');
+        if (isCollapsed) {
           mobQvDetailsPanel.classList.remove('hidden');
+          // Force reflow
+          mobQvDetailsPanel.offsetHeight;
+          mobQvDetailsPanel.classList.add('expanded');
           mobQvDetailsAccordion.classList.add('expanded');
           mobQvDetailsToggleBtn.setAttribute('aria-expanded', 'true');
         } else {
-          mobQvDetailsPanel.classList.add('hidden');
+          mobQvDetailsPanel.classList.remove('expanded');
           mobQvDetailsAccordion.classList.remove('expanded');
           mobQvDetailsToggleBtn.setAttribute('aria-expanded', 'false');
+          setTimeout(() => {
+            if (!mobQvDetailsPanel.classList.contains('expanded')) {
+              mobQvDetailsPanel.classList.add('hidden');
+            }
+          }, 350);
         }
       };
     }
@@ -3347,9 +3412,37 @@ console.log("images:", inquiryImageFiles);
     if (!quickViewModal) return;
     saveToRecentlyViewed(p);
     qvTitle.textContent = p.name;
-    const rawPrice = String(p.price || '').trim();
-    qvPrice.textContent = rawPrice.startsWith('₹') ? rawPrice : `₹${rawPrice}`;
+    qvPrice.textContent = formatPrice(p.price);
     qvType.textContent = p.badge;
+
+    // ── Stock status (below price) ────────────────────────────────────────────
+    const qvStockEl = document.getElementById('qv-stock');
+    const isCustomOrderQV = (p._id || p.id) === 'custom-order-card';
+    if (qvStockEl) {
+      if (isCustomOrderQV) {
+        qvStockEl.textContent = '';
+      } else {
+        const ss = getStockStatus(p.stock);
+        qvStockEl.textContent  = ss.text;
+        qvStockEl.style.color  = ss.color;
+      }
+    }
+
+    // ── Disable inquiry buttons when out of stock (not hidden) ───────────────
+    const qvOrderBtn  = document.getElementById('qv-custom-order-btn');
+    const qvInstaBtn  = document.getElementById('qv-insta-btn');
+    const qvOutOfStock = !isCustomOrderQV && Number(p.stock === undefined ? 10 : p.stock) === 0;
+    if (qvOrderBtn) {
+      qvOrderBtn.disabled = qvOutOfStock;
+      qvOrderBtn.style.opacity  = qvOutOfStock ? '0.45' : '';
+      qvOrderBtn.style.cursor   = qvOutOfStock ? 'not-allowed' : '';
+      qvOrderBtn.style.pointerEvents = qvOutOfStock ? 'none' : '';
+    }
+    if (qvInstaBtn) {
+      qvInstaBtn.style.opacity  = qvOutOfStock ? '0.45' : '';
+      qvInstaBtn.style.cursor   = qvOutOfStock ? 'not-allowed' : '';
+      qvInstaBtn.style.pointerEvents = qvOutOfStock ? 'none' : '';
+    }
 
     // Update Previous / Next Navigation Buttons
     const productList = (typeof publicProducts !== 'undefined' && publicProducts.length > 0) ? publicProducts : [];
@@ -3387,20 +3480,29 @@ console.log("images:", inquiryImageFiles);
     // Reset Accordion state to collapsed whenever a product modal opens
     if (qvDetailsAccordion && qvDetailsToggleBtn && qvDetailsPanel) {
       qvDetailsAccordion.classList.remove('expanded');
+      qvDetailsPanel.classList.remove('expanded');
       qvDetailsPanel.classList.add('hidden');
       qvDetailsToggleBtn.setAttribute('aria-expanded', 'false');
 
       qvDetailsToggleBtn.onclick = (e) => {
         e.stopPropagation();
-        const isHidden = qvDetailsPanel.classList.contains('hidden');
-        if (isHidden) {
+        const isCollapsed = !qvDetailsPanel.classList.contains('expanded');
+        if (isCollapsed) {
           qvDetailsPanel.classList.remove('hidden');
+          // Force reflow
+          qvDetailsPanel.offsetHeight;
+          qvDetailsPanel.classList.add('expanded');
           qvDetailsAccordion.classList.add('expanded');
           qvDetailsToggleBtn.setAttribute('aria-expanded', 'true');
         } else {
-          qvDetailsPanel.classList.add('hidden');
+          qvDetailsPanel.classList.remove('expanded');
           qvDetailsAccordion.classList.remove('expanded');
           qvDetailsToggleBtn.setAttribute('aria-expanded', 'false');
+          setTimeout(() => {
+            if (!qvDetailsPanel.classList.contains('expanded')) {
+              qvDetailsPanel.classList.add('hidden');
+            }
+          }, 350);
         }
       };
     }
