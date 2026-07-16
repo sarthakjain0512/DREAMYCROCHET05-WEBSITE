@@ -5024,6 +5024,143 @@ console.log("images:", inquiryImageFiles);
     adminLogoutBtn.addEventListener('click', closeAdminDrawer);
   }
 
+  // --- PREMIUM FULL SCREEN SEARCH OVERLAY CONTROLLER ---
+  const searchToggle = document.getElementById('search-toggle');
+  const searchOverlay = document.getElementById('search-overlay');
+  const searchCloseBtn = document.getElementById('search-close-btn');
+  const searchInput = document.getElementById('search-input');
+  const searchStatusMessage = document.getElementById('search-status-message');
+  const searchResultsGrid = document.getElementById('search-results-grid');
+
+  function openSearchOverlay() {
+    if (!searchOverlay) return;
+    searchOverlay.classList.remove('hidden');
+    // Force reflow
+    searchOverlay.offsetHeight;
+    searchOverlay.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+    searchOverlay.classList.add('opacity-100', 'translate-y-0');
+    document.body.style.overflow = 'hidden';
+    
+    if (typeof lenis !== 'undefined' && lenis && typeof lenis.stop === 'function') {
+      lenis.stop();
+    }
+
+    // Auto-focus search input
+    if (searchInput) {
+      setTimeout(() => searchInput.focus(), 150);
+    }
+  }
+
+  function closeSearchOverlay() {
+    if (!searchOverlay) return;
+    searchOverlay.classList.remove('opacity-100', 'translate-y-0');
+    searchOverlay.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+    document.body.style.overflow = '';
+    
+    if (typeof lenis !== 'undefined' && lenis && typeof lenis.start === 'function') {
+      lenis.start();
+    }
+
+    // Clear search query
+    if (searchInput) {
+      searchInput.value = '';
+    }
+    renderSearchResults('');
+
+    setTimeout(() => {
+      if (searchOverlay.classList.contains('opacity-0')) {
+        searchOverlay.classList.add('hidden');
+      }
+    }, 300);
+  }
+
+  function renderSearchResults(query) {
+    if (!searchResultsGrid || !searchStatusMessage) return;
+    searchResultsGrid.innerHTML = '';
+
+    const cleanQuery = (query || '').trim().toLowerCase();
+    if (!cleanQuery) {
+      searchStatusMessage.textContent = 'Search your favourite crochet products...';
+      return;
+    }
+
+    const list = (typeof publicProducts !== 'undefined' && Array.isArray(publicProducts)) ? publicProducts : [];
+    // Filter custom order cards out of normal search
+    const filtered = list.filter(p => {
+      if (p.id === 'custom-order-card' || p._id === 'custom-order-card') return false;
+      const name = (p.name || '').toLowerCase();
+      const cat = (p.category || p.badge || '').toLowerCase();
+      return name.includes(cleanQuery) || cat.includes(cleanQuery);
+    });
+
+    if (filtered.length === 0) {
+      searchStatusMessage.textContent = 'No products found.';
+      return;
+    }
+
+    searchStatusMessage.textContent = `Found ${filtered.length} product${filtered.length > 1 ? 's' : ''} matching your search:`;
+
+    filtered.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'glass-card rounded-2xl p-3 flex flex-col gap-3 cursor-pointer hover:scale-[1.02] transition duration-200';
+      
+      const priceText = formatPrice(p.price);
+      const nameText = p.name || '';
+      const badgeText = p.badge || p.category || '';
+      const imgUrl = resolveProductPrimaryImage(p);
+
+      card.innerHTML = `
+        <div class="aspect-[4/3] rounded-xl overflow-hidden bg-beige/30 flex items-center justify-center relative image-container">
+          <img src="" alt="${nameText}" class="w-full h-full object-contain" loading="lazy">
+        </div>
+        <div class="flex flex-col flex-grow justify-between gap-1.5">
+          <div>
+            <h4 class="text-xs font-bold text-darkbrown dark:text-beige leading-tight line-clamp-2">${nameText}</h4>
+            <span class="inline-block mt-1 px-2 py-0.5 rounded-full bg-primary-container text-on-primary-container text-[9px] font-bold uppercase tracking-wider">${badgeText}</span>
+          </div>
+          <span class="text-xs font-semibold text-primary block mt-auto">${priceText}</span>
+        </div>
+      `;
+
+      // Load image safely with skeleton shimmer loader
+      const imgEl = card.querySelector('img');
+      const containerEl = card.querySelector('.image-container');
+      safeLoadProductImage(imgEl, imgUrl, p, { container: containerEl });
+
+      // Click card opens details
+      card.addEventListener('click', (e) => {
+        closeSearchOverlay();
+        if (window.innerWidth < 768) {
+          openMobileProductDetail(p);
+        } else {
+          openQuickView(p);
+        }
+      });
+
+      searchResultsGrid.appendChild(card);
+    });
+  }
+
+  // Bind Event Listeners
+  if (searchToggle) {
+    searchToggle.addEventListener('click', openSearchOverlay);
+  }
+  if (searchCloseBtn) {
+    searchCloseBtn.addEventListener('click', closeSearchOverlay);
+  }
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      renderSearchResults(e.target.value);
+    });
+  }
+
+  // Escape key support to close search
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && searchOverlay && !searchOverlay.classList.contains('hidden')) {
+      closeSearchOverlay();
+    }
+  });
+
   // Initialize wishlist states
   updateWishlistUI();
 });

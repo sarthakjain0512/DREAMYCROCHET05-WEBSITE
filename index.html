@@ -141,6 +141,11 @@
         </nav>
         
         <div class="flex items-center gap-3">
+          <!-- Search Toggle -->
+          <button id="search-toggle" class="p-2 rounded-full hover:bg-beige/40 text-darkbrown dark:text-beige transition clickable active:scale-90" title="Search">
+            <span class="material-symbols-outlined text-xl">search</span>
+          </button>
+
           <!-- Music Toggle -->
           <button id="music-toggle" class="p-2 rounded-full hover:bg-beige/40 text-darkbrown dark:text-beige transition clickable active:scale-90" title="Toggle Music">
             <span id="music-icon" class="material-symbols-outlined text-xl">music_off</span>
@@ -2106,6 +2111,40 @@
     <div class="w-full max-w-3xl z-10 select-none pb-2">
       <div id="gallery-thumbnails" class="flex gap-2 justify-start md:justify-center overflow-x-auto py-2 px-4 no-scrollbar">
         <!-- Thumbnails injected via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PREMIUM FULL SCREEN SEARCH OVERLAY ===== -->
+  <div id="search-overlay" class="fixed inset-0 z-[110] bg-cream/95 dark:bg-darkbrown/95 backdrop-blur-xl flex flex-col p-6 md:p-12 transition-all duration-300 transform opacity-0 translate-y-4 pointer-events-none hidden" data-lenis-prevent="">
+    <!-- Close Button -->
+    <button id="search-close-btn" class="absolute top-6 right-6 w-12 h-12 rounded-full bg-beige/30 dark:bg-white/5 flex items-center justify-center text-darkbrown dark:text-beige hover:bg-beige/60 hover:scale-105 active:scale-95 transition-all duration-300 clickable z-50">
+      <span class="material-symbols-outlined text-2xl">close</span>
+    </button>
+
+    <!-- Search Main Content Container -->
+    <div class="max-w-3xl w-full mx-auto flex flex-col flex-1 min-h-0 overflow-hidden pt-12 md:pt-20">
+      <!-- Search Input Area -->
+      <div class="relative w-full mb-8">
+        <span class="material-symbols-outlined absolute left-6 top-1/2 -translate-y-1/2 text-primary/60 text-2xl">search</span>
+        <input 
+          type="text" 
+          id="search-input" 
+          placeholder="Search your favourite crochet products..." 
+          class="w-full pl-16 pr-6 py-5 rounded-3xl border border-primary/20 bg-white/80 dark:bg-white/5 text-darkbrown dark:text-beige placeholder-primary/45 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-transparent text-base md:text-lg shadow-sm transition duration-300"
+          autocomplete="off"
+        >
+      </div>
+
+      <!-- Search Results Area -->
+      <div class="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-primary/10">
+        <!-- Results count or message -->
+        <p id="search-status-message" class="text-sm font-semibold text-primary/70 dark:text-beige/70 mb-4 px-2">Search your favourite crochet products...</p>
+        
+        <!-- Results Grid -->
+        <div id="search-results-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4 pb-12">
+          <!-- Injected dynamically -->
+        </div>
       </div>
     </div>
   </div>

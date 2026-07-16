@@ -2097,3 +2097,10 @@ body:has(#admin-dashboard-overlay:not(.hidden)) #main-boutique {
 .shimmer-skeleton::before {
   opacity: 1 !important;
 }
+/* Search Overlay Scroll Locking */
+#search-overlay {
+  overscroll-behavior: contain;
+}
+#search-overlay .overflow-y-auto {
+  overscroll-behavior: contain;
+}
