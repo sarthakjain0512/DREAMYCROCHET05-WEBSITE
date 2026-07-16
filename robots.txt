@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dreamycrochet05-website.onrender.com/sitemap.xml
