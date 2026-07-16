@@ -72,6 +72,8 @@ app.use('/api/orders', require('./routes/orderRoutes'));           // Legacy (ke
 app.use('/api/custom-orders', require('./routes/customOrderRoutes')); // New inquiry system
 app.use('/api/settings', require('./routes/settingsRoutes'));
 app.use('/api/status', require('./routes/statusRoutes'));
+app.use('/api/reviews', require('./routes/overallReviewRoutes'));
+app.use('/api/reviews', require('./routes/productReviewRoutes'));
 
 
 // Secret Route - Serves index.html for Admin Page
