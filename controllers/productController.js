@@ -50,6 +50,7 @@ const mapProduct = (p) => {
     isVisible: p.isVisible !== undefined ? p.isVisible : true,
     instagramLink: p.instagramLink || '',
     viewCount: p.viewCount || 0,
+    stock: p.stock !== undefined ? Number(p.stock) : 10,
     createdAt: p.createdAt || new Date(),
     updatedAt: p.updatedAt || new Date()
   };
@@ -208,7 +209,7 @@ const incrementViewCount = async (req, res) => {
 const addProduct = async (req, res) => {
   const newlyUploadedImages = [];
   try {
-    const { title, description, category, price, label, featured, isVisible, instagramLink, imageBase64, imagesBase64, coverImageIndex } = req.body;
+    const { title, description, category, price, label, featured, isVisible, instagramLink, imageBase64, imagesBase64, coverImageIndex, stock } = req.body;
 
     if (!title || !title.trim()) {
       return res.status(400).json({ error: 'Product title is required' });
@@ -289,7 +290,8 @@ const addProduct = async (req, res) => {
           label: label?.trim() || '',
           featured: featured === 'true' || featured === true,
           isVisible: isVisible === 'false' || isVisible === false ? false : true,
-          instagramLink: instagramLink?.trim() || ''
+          instagramLink: instagramLink?.trim() || '',
+          stock: stock !== undefined ? Number(stock) : 10
         });
         await product.save();
         savedProduct = mapProduct(product);
@@ -308,6 +310,7 @@ const addProduct = async (req, res) => {
           featured: featured === 'true' || featured === true,
           isVisible: isVisible === 'false' || isVisible === false ? false : true,
           instagramLink: instagramLink?.trim() || '',
+          stock: stock !== undefined ? Number(stock) : 10,
           viewCount: 0,
           createdAt: new Date(),
           updatedAt: new Date()
@@ -345,7 +348,7 @@ const editProduct = async (req, res) => {
   const newlyUploadedImages = [];
   try {
     const { id } = req.params;
-    const { title, description, category, price, label, featured, isVisible, instagramLink, imageBase64, imagesBase64, coverImageIndex } = req.body;
+    const { title, description, category, price, label, featured, isVisible, instagramLink, imageBase64, imagesBase64, coverImageIndex, stock } = req.body;
 
     // Duplicate check
     if (title) {
@@ -439,6 +442,7 @@ const editProduct = async (req, res) => {
         if (featured !== undefined) product.featured = featured === 'true' || featured === true;
         if (isVisible !== undefined) product.isVisible = !(isVisible === 'false' || isVisible === false);
         if (instagramLink !== undefined) product.instagramLink = instagramLink.trim();
+        if (stock !== undefined) product.stock = Number(stock);
 
         product.images = imageUrls;
         product.coverImage = coverImg;
@@ -459,6 +463,7 @@ const editProduct = async (req, res) => {
         if (featured !== undefined) product.featured = featured === 'true' || featured === true;
         if (isVisible !== undefined) product.isVisible = !(isVisible === 'false' || isVisible === false);
         if (instagramLink !== undefined) product.instagramLink = instagramLink.trim();
+        if (stock !== undefined) product.stock = Number(stock);
 
         product.images = imageUrls;
         product.img = coverImg;

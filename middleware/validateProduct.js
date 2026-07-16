@@ -42,8 +42,18 @@ req.body.price = priceNum;
   }
   // Attach trimmed values back to req.body for downstream handlers
   req.body.title = title;
-req.body.price = priceNum;
+  req.body.price = priceNum;
   if (category) req.body.category = category;
   req.body.description = description;
+
+  if (req.body.stock !== undefined && req.body.stock !== null && req.body.stock !== '') {
+    const stockNum = Number(req.body.stock);
+    if (!isNaN(stockNum) && stockNum >= 0) {
+      req.body.stock = Math.floor(stockNum);
+    } else {
+      return res.status(400).json({ error: 'Stock must be a non-negative integer' });
+    }
+  }
+
   next();
 };
