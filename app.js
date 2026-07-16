@@ -2970,6 +2970,9 @@ console.log("images:", inquiryImageFiles);
   const qvDetailsAccordion = document.getElementById('qv-details-accordion');
   const qvDetailsToggleBtn = document.getElementById('qv-details-toggle-btn');
   const qvDetailsPanel = document.getElementById('qv-details-panel');
+  const qvFaqAccordion = document.getElementById('qv-faq-accordion');
+  const qvFaqToggleBtn = document.getElementById('qv-faq-toggle-btn');
+  const qvFaqPanel = document.getElementById('qv-faq-panel');
   const qvFullDesc = document.getElementById('qv-full-desc');
   const qvThumbnailsContainer = document.getElementById('qv-thumbnails');
   const qvPrevBtn = document.getElementById('qv-prev-btn');
@@ -2988,6 +2991,9 @@ console.log("images:", inquiryImageFiles);
   const mobQvDetailsAccordion = document.getElementById('mob-qv-details-accordion');
   const mobQvDetailsToggleBtn = document.getElementById('mob-qv-details-toggle-btn');
   const mobQvDetailsPanel = document.getElementById('mob-qv-details-panel');
+  const mobFaqAccordion = document.getElementById('mob-faq-accordion');
+  const mobFaqToggleBtn = document.getElementById('mob-faq-toggle-btn');
+  const mobFaqPanel = document.getElementById('mob-faq-panel');
   const mobQvFullDesc = document.getElementById('mob-qv-full-desc');
   const mobQvPrevBtn = document.getElementById('mob-qv-prev-btn');
   const mobQvNextBtn = document.getElementById('mob-qv-next-btn');
@@ -3335,6 +3341,36 @@ console.log("images:", inquiryImageFiles);
           setTimeout(() => {
             if (!mobQvDetailsPanel.classList.contains('expanded')) {
               mobQvDetailsPanel.classList.add('hidden');
+            }
+          }, 350);
+        }
+      };
+    }
+
+    // Reset FAQ Accordion state
+    if (mobFaqAccordion && mobFaqToggleBtn && mobFaqPanel) {
+      mobFaqAccordion.classList.remove('expanded');
+      mobFaqPanel.classList.remove('expanded');
+      mobFaqPanel.classList.add('hidden');
+      mobFaqToggleBtn.setAttribute('aria-expanded', 'false');
+
+      mobFaqToggleBtn.onclick = (e) => {
+        e.stopPropagation();
+        const isCollapsed = !mobFaqPanel.classList.contains('expanded');
+        if (isCollapsed) {
+          mobFaqPanel.classList.remove('hidden');
+          // Force reflow
+          mobFaqPanel.offsetHeight;
+          mobFaqPanel.classList.add('expanded');
+          mobFaqAccordion.classList.add('expanded');
+          mobFaqToggleBtn.setAttribute('aria-expanded', 'true');
+        } else {
+          mobFaqPanel.classList.remove('expanded');
+          mobFaqAccordion.classList.remove('expanded');
+          mobFaqToggleBtn.setAttribute('aria-expanded', 'false');
+          setTimeout(() => {
+            if (!mobFaqPanel.classList.contains('expanded')) {
+              mobFaqPanel.classList.add('hidden');
             }
           }, 350);
         }
@@ -3708,6 +3744,36 @@ console.log("images:", inquiryImageFiles);
           setTimeout(() => {
             if (!qvDetailsPanel.classList.contains('expanded')) {
               qvDetailsPanel.classList.add('hidden');
+            }
+          }, 350);
+        }
+      };
+    }
+
+    // Reset FAQ Accordion state
+    if (qvFaqAccordion && qvFaqToggleBtn && qvFaqPanel) {
+      qvFaqAccordion.classList.remove('expanded');
+      qvFaqPanel.classList.remove('expanded');
+      qvFaqPanel.classList.add('hidden');
+      qvFaqToggleBtn.setAttribute('aria-expanded', 'false');
+
+      qvFaqToggleBtn.onclick = (e) => {
+        e.stopPropagation();
+        const isCollapsed = !qvFaqPanel.classList.contains('expanded');
+        if (isCollapsed) {
+          qvFaqPanel.classList.remove('hidden');
+          // Force reflow
+          qvFaqPanel.offsetHeight;
+          qvFaqPanel.classList.add('expanded');
+          qvFaqAccordion.classList.add('expanded');
+          qvFaqToggleBtn.setAttribute('aria-expanded', 'true');
+        } else {
+          qvFaqPanel.classList.remove('expanded');
+          qvFaqAccordion.classList.remove('expanded');
+          qvFaqToggleBtn.setAttribute('aria-expanded', 'false');
+          setTimeout(() => {
+            if (!qvFaqPanel.classList.contains('expanded')) {
+              qvFaqPanel.classList.add('hidden');
             }
           }, 350);
         }

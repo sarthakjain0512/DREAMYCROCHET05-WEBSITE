@@ -1530,13 +1530,19 @@ tbody tr:hover {
 }
 
 #qv-details-accordion.expanded #qv-details-arrow,
-#qv-details-toggle-btn[aria-expanded="true"] #qv-details-arrow {
+#qv-details-toggle-btn[aria-expanded="true"] #qv-details-arrow,
+#qv-faq-accordion.expanded #qv-faq-arrow,
+#qv-faq-toggle-btn[aria-expanded="true"] #qv-faq-arrow,
+#mob-faq-accordion.expanded #mob-faq-arrow,
+#mob-faq-toggle-btn[aria-expanded="true"] #mob-faq-arrow {
   transform: rotate(180deg);
 }
 
 /* Expandable Panel Container & Smooth Transitions */
 #qv-details-panel,
-#mob-qv-details-panel {
+#mob-qv-details-panel,
+#qv-faq-panel,
+#mob-faq-panel {
   max-height: 0;
   opacity: 0;
   overflow: hidden;
@@ -1547,7 +1553,9 @@ tbody tr:hover {
 }
 
 #qv-details-panel.expanded,
-#mob-qv-details-panel.expanded {
+#mob-qv-details-panel.expanded,
+#qv-faq-panel.expanded,
+#mob-faq-panel.expanded {
   max-height: 1000px;
   opacity: 1;
   padding-top: 0.5rem !important; /* pt-2 */
