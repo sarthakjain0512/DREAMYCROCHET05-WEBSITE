@@ -1710,6 +1710,9 @@
           <button data-tab="orders" class="admin-tab-btn flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold text-darkbrown/80 hover:bg-primary-container/30 transition clickable">
             <span class="material-symbols-outlined text-lg">mail</span> Custom Orders
           </button>
+          <button data-tab="reviews" class="admin-tab-btn flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold text-darkbrown/80 hover:bg-primary-container/30 transition clickable">
+            <span class="material-symbols-outlined text-lg">star</span> Manage Reviews
+          </button>
           <button data-tab="homepage" class="admin-tab-btn flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold text-darkbrown/80 hover:bg-primary-container/30 transition clickable">
             <span class="material-symbols-outlined text-lg">home_max</span> Homepage Settings
           </button>
@@ -1910,6 +1913,113 @@
         <div id="admin-orders-cards-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           <!-- Injected via JS -->
         </div>
+      </section>
+
+      <!-- Tab: Reviews Management -->
+      <section id="tab-reviews" class="admin-tab-content hidden space-y-6">
+        <div>
+          <h2 class="text-3xl font-heading font-bold text-darkbrown">Reviews Management</h2>
+          <p class="text-sm text-primary/70">Moderate approved and pending feedback from customers.</p>
+        </div>
+
+        <!-- 4 Stat Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
+          <div class="glass-card p-6 rounded-3xl flex items-center gap-4 border border-primary/5">
+            <div class="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-950/30 flex items-center justify-center text-xl">⏳</div>
+            <div>
+              <span class="text-[10px] text-primary/60 block uppercase font-bold tracking-wider">Pending Reviews</span>
+              <span id="stat-pending-reviews" class="text-2xl font-bold text-darkbrown dark:text-beige">0</span>
+            </div>
+          </div>
+          <div class="glass-card p-6 rounded-3xl flex items-center gap-4 border border-primary/5">
+            <div class="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-950/30 flex items-center justify-center text-xl">✅</div>
+            <div>
+              <span class="text-[10px] text-primary/60 block uppercase font-bold tracking-wider">Approved Reviews</span>
+              <span id="stat-approved-reviews" class="text-2xl font-bold text-darkbrown dark:text-beige">0</span>
+            </div>
+          </div>
+          <div class="glass-card p-6 rounded-3xl flex items-center gap-4 border border-primary/5">
+            <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-950/30 flex items-center justify-center text-xl">🌸</div>
+            <div>
+              <span class="text-[10px] text-primary/60 block uppercase font-bold tracking-wider">Product Reviews</span>
+              <span id="stat-product-reviews" class="text-2xl font-bold text-darkbrown dark:text-beige">0</span>
+            </div>
+          </div>
+          <div class="glass-card p-6 rounded-3xl flex items-center gap-4 border border-primary/5">
+            <div class="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-950/30 flex items-center justify-center text-xl">❤️</div>
+            <div>
+              <span class="text-[10px] text-primary/60 block uppercase font-bold tracking-wider">Overall Reviews</span>
+              <span id="stat-overall-reviews" class="text-2xl font-bold text-darkbrown dark:text-beige">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Primary Switcher (Tabs for Overall vs Product Reviews) -->
+        <div class="flex border-b border-primary/10 gap-6">
+          <button id="admin-overall-reviews-tab" class="py-3 font-heading font-bold text-lg border-b-2 border-primary text-darkbrown dark:text-beige focus:outline-none transition clickable">
+            Overall Website Reviews
+          </button>
+          <button id="admin-product-reviews-tab" class="py-3 font-heading font-bold text-lg border-b-2 border-transparent text-primary/50 hover:text-darkbrown dark:hover:text-beige focus:outline-none transition clickable">
+            Product Reviews
+          </button>
+        </div>
+
+        <!-- Secondary Switchers, Search & Filters Bar -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/40 dark:bg-white/5 p-4 rounded-3xl border border-primary/5 shadow-sm">
+          <!-- Pending/Approved Sub-Tabs -->
+          <div class="flex gap-2 p-1 bg-beige/30 dark:bg-black/20 rounded-2xl border border-primary/5">
+            <button id="admin-subtab-pending" class="px-4 py-2 rounded-xl text-xs font-bold bg-white dark:bg-white/10 text-darkbrown dark:text-beige shadow-sm transition clickable">
+              Pending
+            </button>
+            <button id="admin-subtab-approved" class="px-4 py-2 rounded-xl text-xs font-bold text-primary/60 dark:text-beige/60 hover:text-darkbrown dark:hover:text-beige transition clickable">
+              Approved
+            </button>
+          </div>
+
+          <!-- Search & Filters Container -->
+          <div class="flex flex-wrap items-center gap-3 flex-1 justify-end">
+            <!-- Search bar -->
+            <div class="relative flex-1 min-w-[200px] max-w-xs">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary/40 text-sm">search</span>
+              <input type="text" id="admin-reviews-search" placeholder="Search reviewer, email, text..." class="w-full pl-9 pr-3 py-2 rounded-xl border border-primary/20 bg-white/60 dark:bg-white/10 text-darkbrown dark:text-beige placeholder-primary/30 focus:outline-none focus:ring-1 focus:ring-primary/30 transition text-xs">
+            </div>
+
+            <!-- Stars Filter -->
+            <select id="admin-reviews-filter-stars" class="px-3 py-2 rounded-xl border border-primary/20 bg-white/60 dark:bg-white/10 text-darkbrown dark:text-beige focus:outline-none transition text-xs clickable">
+              <option value="all">All Stars</option>
+              <option value="5">5 ★ Only</option>
+              <option value="4">4 ★ Only</option>
+              <option value="3">3 ★ Only</option>
+              <option value="2">2 ★ Only</option>
+              <option value="1">1 ★ Only</option>
+            </select>
+
+            <!-- Sort Filter -->
+            <select id="admin-reviews-filter-sort" class="px-3 py-2 rounded-xl border border-primary/20 bg-white/60 dark:bg-white/10 text-darkbrown dark:text-beige focus:outline-none transition text-xs clickable">
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Review Cards Container Grid -->
+        <div id="admin-reviews-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <!-- Dynamically populated review cards -->
+        </div>
+
+        <!-- Incremental Rendering / Load More Button -->
+        <div id="admin-reviews-loadmore-container" class="flex justify-center pt-4 hidden">
+          <button id="admin-reviews-loadmore-btn" class="px-8 py-3 rounded-full bg-primary text-white font-bold text-xs hover:bg-primary/90 hover:scale-105 active:scale-95 duration-200 shadow-md clickable">
+            Load More Reviews
+          </button>
+        </div>
+
+        <!-- Empty state within Admin Reviews -->
+        <div id="admin-reviews-empty" class="hidden text-center py-12 space-y-2">
+          <p class="text-primary/70 dark:text-beige/70 font-semibold text-sm">No reviews matching the criteria.</p>
+          <p class="text-xs text-primary/40 dark:text-beige/40">Moderated and approved reviews will appear here.</p>
+        </div>
+
       </section>
 
       <!-- Tab: Homepage Settings -->
@@ -2376,6 +2486,25 @@
         <!-- Injected dynamically -->
       </div>
 
+    </div>
+  </div>
+
+  <!-- ===== PREMIUM CONFIRMATION MODAL ===== -->
+  <div id="admin-confirm-modal" class="modal-overlay fixed inset-0 z-[100] flex items-center justify-center p-4 hidden">
+    <div class="modal-content bg-cream w-full max-w-sm rounded-3xl shadow-2xl p-6 relative border border-primary/15 text-center space-y-6" data-lenis-prevent>
+      <div class="w-16 h-16 rounded-full bg-amber-50 flex items-center justify-center mx-auto text-3xl">⚠️</div>
+      <div class="space-y-2">
+        <h3 class="text-lg font-heading font-bold text-darkbrown">Confirm Action</h3>
+        <p id="admin-confirm-message" class="text-xs text-primary/70 leading-relaxed"></p>
+      </div>
+      <div class="flex gap-3">
+        <button id="admin-confirm-cancel" type="button" class="flex-1 py-2.5 rounded-2xl border border-primary/20 text-primary font-bold text-xs hover:bg-primary/5 active:scale-95 duration-200 clickable">
+          Cancel
+        </button>
+        <button id="admin-confirm-ok" type="button" class="flex-1 py-2.5 rounded-2xl bg-primary text-white font-bold text-xs hover:bg-primary/90 hover:scale-[1.02] active:scale-95 duration-200 shadow-md clickable">
+          Yes, Proceed
+        </button>
+      </div>
     </div>
   </div>
 

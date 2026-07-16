@@ -1299,6 +1299,82 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch(getApiUrl(`/api/reviews/product/${productId}`));
       if (!res.ok) throw new Error('Failed to fetch product reviews');
       return res.json();
+    },
+    getPendingOverallReviewsAdmin: async (token) => {
+      const res = await fetch(getApiUrl('/api/reviews/overall/admin/pending'), {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Failed to fetch pending overall reviews');
+      return res.json();
+    },
+    getApprovedOverallReviewsAdmin: async (token) => {
+      const res = await fetch(getApiUrl('/api/reviews/overall/admin/approved'), {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Failed to fetch approved overall reviews');
+      return res.json();
+    },
+    getPendingProductReviewsAdmin: async (token) => {
+      const res = await fetch(getApiUrl('/api/reviews/product/admin/pending'), {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Failed to fetch pending product reviews');
+      return res.json();
+    },
+    getApprovedProductReviewsAdmin: async (token) => {
+      const res = await fetch(getApiUrl('/api/reviews/product/admin/approved'), {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Failed to fetch approved product reviews');
+      return res.json();
+    },
+    approveOverallReviewAdmin: async (token, id) => {
+      const res = await fetch(getApiUrl(`/api/reviews/overall/admin/${id}/approve`), {
+        method: 'PATCH',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Failed to approve review');
+      return res.json();
+    },
+    rejectOverallReviewAdmin: async (token, id) => {
+      const res = await fetch(getApiUrl(`/api/reviews/overall/admin/${id}/reject`), {
+        method: 'PATCH',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Failed to reject review');
+      return res.json();
+    },
+    deleteOverallReviewAdmin: async (token, id) => {
+      const res = await fetch(getApiUrl(`/api/reviews/overall/admin/${id}`), {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Failed to delete review');
+      return res.json();
+    },
+    approveProductReviewAdmin: async (token, id) => {
+      const res = await fetch(getApiUrl(`/api/reviews/product/admin/${id}/approve`), {
+        method: 'PATCH',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Failed to approve product review');
+      return res.json();
+    },
+    rejectProductReviewAdmin: async (token, id) => {
+      const res = await fetch(getApiUrl(`/api/reviews/product/admin/${id}/reject`), {
+        method: 'PATCH',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Failed to reject product review');
+      return res.json();
+    },
+    deleteProductReviewAdmin: async (token, id) => {
+      const res = await fetch(getApiUrl(`/api/reviews/product/admin/${id}`), {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Failed to delete product review');
+      return res.json();
     }
   };
 
@@ -2095,6 +2171,9 @@ document.addEventListener('DOMContentLoaded', () => {
         formPreview.classList.remove('hidden');
         if (formPlaceholder) formPlaceholder.style.display = 'none';
       }
+
+      // Load admin reviews counts and stats
+      await loadAdminReviewsDashboard();
 
     } catch (e) {
       showToast('Error displaying dashboard data! ⚠️', 'error');
@@ -6157,6 +6236,421 @@ console.log("images:", inquiryImageFiles);
 
   // Fetch overall reviews on load
   loadOverallReviews();
+
+  // ─── ADMIN REVIEWS MANAGEMENT SYSTEM ───────────────────────────────────────
+
+  let adminOverallReviewsPending = [];
+  let adminOverallReviewsApproved = [];
+  let adminProductReviewsPending = [];
+  let adminProductReviewsApproved = [];
+
+  let currentReviewsTab = 'overall';  // 'overall' | 'product'
+  let currentReviewsSubtab = 'pending'; // 'pending' | 'approved'
+  let adminReviewsSearchVal = '';
+  let adminReviewsFilterStars = 'all';
+  let adminReviewsFilterSort = 'newest';
+  let adminReviewsPage = 1;
+  const ADMIN_REVIEWS_PER_PAGE = 25;
+
+  async function loadAdminReviewsDashboard() {
+    const token = sessionStorage.getItem('admin_token');
+    if (!token) return;
+
+    try {
+      const [pendingOverall, approvedOverall, pendingProduct, approvedProduct] = await Promise.all([
+        BackendAPI.getPendingOverallReviewsAdmin(token),
+        BackendAPI.getApprovedOverallReviewsAdmin(token),
+        BackendAPI.getPendingProductReviewsAdmin(token),
+        BackendAPI.getApprovedProductReviewsAdmin(token)
+      ]);
+
+      adminOverallReviewsPending = pendingOverall;
+      adminOverallReviewsApproved = approvedOverall;
+      adminProductReviewsPending = pendingProduct;
+      adminProductReviewsApproved = approvedProduct;
+
+      // Update Statistic counters
+      const statPending = document.getElementById('stat-pending-reviews');
+      const statApproved = document.getElementById('stat-approved-reviews');
+      const statProduct = document.getElementById('stat-product-reviews');
+      const statOverall = document.getElementById('stat-overall-reviews');
+
+      if (statPending) statPending.textContent = (pendingOverall.length + pendingProduct.length).toString();
+      if (statApproved) statApproved.textContent = (approvedOverall.length + approvedProduct.length).toString();
+      if (statProduct) statProduct.textContent = (pendingProduct.length + approvedProduct.length).toString();
+      if (statOverall) statOverall.textContent = (pendingOverall.length + approvedOverall.length).toString();
+
+      filterAndRenderAdminReviews();
+
+    } catch (e) {
+      console.error('Failed to load admin reviews dashboard:', e);
+      showToast('Failed to load review records! ⚠️', 'error');
+    }
+  }
+
+  function filterAndRenderAdminReviews() {
+    const gridEl = document.getElementById('admin-reviews-grid');
+    const emptyEl = document.getElementById('admin-reviews-empty');
+    const loadMoreContainer = document.getElementById('admin-reviews-loadmore-container');
+    
+    if (!gridEl) return;
+
+    // Select source array
+    let source = [];
+    if (currentReviewsTab === 'overall') {
+      source = (currentReviewsSubtab === 'pending') ? adminOverallReviewsPending : adminOverallReviewsApproved;
+    } else {
+      source = (currentReviewsSubtab === 'pending') ? adminProductReviewsPending : adminProductReviewsApproved;
+    }
+
+    // Apply Search
+    let filtered = [...source];
+    if (adminReviewsSearchVal) {
+      const query = adminReviewsSearchVal.toLowerCase();
+      filtered = filtered.filter(r => {
+        const name = (r.name || '').toLowerCase();
+        const email = (r.email || '').toLowerCase();
+        const review = (r.review || '').toLowerCase();
+        const prodTitle = (r.productTitle || '').toLowerCase();
+        return name.includes(query) || email.includes(query) || review.includes(query) || prodTitle.includes(query);
+      });
+    }
+
+    // Apply Stars Filter
+    if (adminReviewsFilterStars !== 'all') {
+      const starRating = parseInt(adminReviewsFilterStars, 10);
+      filtered = filtered.filter(r => r.rating === starRating);
+    }
+
+    // Apply Sorting
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.createdAt || 0);
+      const dateB = new Date(b.createdAt || 0);
+      return adminReviewsFilterSort === 'newest' ? dateB - dateA : dateA - dateB;
+    });
+
+    const totalFiltered = filtered.length;
+
+    if (totalFiltered === 0) {
+      gridEl.innerHTML = '';
+      gridEl.classList.add('hidden');
+      if (emptyEl) emptyEl.classList.remove('hidden');
+      loadMoreContainer?.classList.add('hidden');
+      return;
+    }
+
+    if (emptyEl) emptyEl.classList.add('hidden');
+    gridEl.classList.remove('hidden');
+
+    // Pagination bounds
+    const endIdx = adminReviewsPage * ADMIN_REVIEWS_PER_PAGE;
+    const paginated = filtered.slice(0, endIdx);
+
+    gridEl.innerHTML = '';
+    paginated.forEach(rev => {
+      gridEl.innerHTML += createAdminReviewCardHTML(rev);
+    });
+
+    // Wire up actions dynamically
+    gridEl.querySelectorAll('.admin-rev-approve-btn').forEach(btn => {
+      btn.addEventListener('click', () => handleApproveReview(btn.getAttribute('data-id')));
+    });
+    gridEl.querySelectorAll('.admin-rev-reject-btn').forEach(btn => {
+      btn.addEventListener('click', () => handleRejectReview(btn.getAttribute('data-id')));
+    });
+    gridEl.querySelectorAll('.admin-rev-delete-btn').forEach(btn => {
+      btn.addEventListener('click', () => handleDeleteReview(btn.getAttribute('data-id')));
+    });
+
+    // Show/hide load more
+    if (totalFiltered > endIdx && loadMoreContainer) {
+      loadMoreContainer.classList.remove('hidden');
+    } else {
+      loadMoreContainer?.classList.add('hidden');
+    }
+  }
+
+  function createAdminReviewCardHTML(rev) {
+    const isApproved = rev.status === 'approved';
+    const isProduct = !!rev.productId;
+    const dateStr = getRelativeTimeString(rev.createdAt);
+    const starsHTML = generateStarsHTML(rev.rating);
+    
+    // Status Badge
+    let statusBadge = '';
+    if (rev.status === 'pending') {
+      statusBadge = `<span class="px-2.5 py-1 text-[10px] font-bold bg-amber-100 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 rounded-full uppercase">Pending</span>`;
+    } else if (rev.status === 'approved') {
+      statusBadge = `<span class="px-2.5 py-1 text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 rounded-full uppercase">Approved</span>`;
+    } else {
+      statusBadge = `<span class="px-2.5 py-1 text-[10px] font-bold bg-red-100 dark:bg-red-950/30 text-red-700 dark:text-red-400 rounded-full uppercase">Rejected</span>`;
+    }
+
+    // Images gallery
+    let galleryHTML = '';
+    if (rev.images && rev.images.length > 0) {
+      galleryHTML = `
+        <div class="flex gap-2 flex-wrap mt-3">
+          ${rev.images.map(img => `
+            <div class="w-14 h-14 rounded-xl overflow-hidden border border-primary/10 cursor-zoom-in hover:scale-105 transition duration-200 shadow-sm relative">
+              <img src="${img.url || img}" class="w-full h-full object-cover review-gallery-img" loading="lazy" alt="Review photo">
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    // Action buttons area
+    let actionsArea = '';
+    if (rev.status === 'pending') {
+      actionsArea = `
+        <div class="flex flex-wrap gap-2 pt-4 border-t border-primary/5 mt-4">
+          <button class="admin-rev-approve-btn flex-1 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition clickable" data-id="${rev._id || rev.id}">
+            Approve
+          </button>
+          <button class="admin-rev-reject-btn flex-1 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs transition clickable" data-id="${rev._id || rev.id}">
+            Reject
+          </button>
+          <button class="admin-rev-delete-btn px-3 py-2 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 font-bold text-xs transition clickable" data-id="${rev._id || rev.id}" title="Delete Review">
+            Delete
+          </button>
+        </div>
+      `;
+    } else {
+      actionsArea = `
+        <div class="flex gap-2 pt-4 border-t border-primary/5 mt-4">
+          <button class="admin-rev-delete-btn w-full py-2.5 rounded-xl border-2 border-red-100 hover:border-red-300 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 font-bold text-xs transition clickable flex items-center justify-center gap-2" data-id="${rev._id || rev.id}">
+            <span class="material-symbols-outlined text-sm">delete</span> Delete Review
+          </button>
+        </div>
+      `;
+    }
+
+    const emailHTML = rev.email ? `<p class="text-[10px] text-primary/60 font-medium lowercase truncate">${escapeHTML(rev.email)}</p>` : '';
+    const prodHTML = isProduct ? `<div class="bg-primary-container/20 text-on-primary-container px-3 py-1.5 rounded-xl text-[10px] font-bold border border-primary/5 mb-3 flex items-center gap-1.5 truncate"><span>🛍️</span> ${escapeHTML(rev.productTitle || 'Product Review')}</div>` : '';
+
+    return `
+      <div class="glass-card p-5 rounded-[2rem] flex flex-col justify-between shadow-sm border border-primary/5 hover:shadow-md transition-shadow duration-300">
+        <div>
+          <!-- Title & Status -->
+          <div class="flex justify-between items-start gap-2 mb-3">
+            <div class="flex items-center text-yellow-400 text-sm gap-0.5">${starsHTML}</div>
+            ${statusBadge}
+          </div>
+
+          <!-- Product Name Context -->
+          ${prodHTML}
+
+          <!-- Review text -->
+          <p class="text-xs text-primary/80 leading-relaxed font-medium mb-4 whitespace-pre-wrap">${escapeHTML(rev.review)}</p>
+
+          <!-- Images -->
+          ${galleryHTML}
+        </div>
+
+        <div>
+          <!-- Reviewer -->
+          <div class="flex items-center gap-3 pt-4 border-t border-primary/5 mt-4">
+            <div class="w-8 h-8 rounded-full bg-primary-container/40 flex items-center justify-center font-bold text-xs text-primary">
+              ${(rev.name || 'C').charAt(0).toUpperCase()}
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs font-bold text-darkbrown dark:text-beige truncate leading-none mb-1">${escapeHTML(rev.name)}</p>
+              ${emailHTML}
+            </div>
+            <span class="text-[9px] text-primary/40 font-semibold shrink-0">${dateStr}</span>
+          </div>
+
+          <!-- Actions -->
+          ${actionsArea}
+        </div>
+      </div>
+    `;
+  }
+
+  // Action Handlers
+  async function handleApproveReview(id) {
+    const token = sessionStorage.getItem('admin_token');
+    if (!token || !id) return;
+
+    const confirmed = await showAdminConfirm('Are you sure you want to approve this review and publish it live?');
+    if (!confirmed) return;
+
+    try {
+      if (currentReviewsTab === 'overall') {
+        await BackendAPI.approveOverallReviewAdmin(token, id);
+      } else {
+        await BackendAPI.approveProductReviewAdmin(token, id);
+      }
+      showToast('Review approved successfully! ✅', 'success');
+      
+      // Update local state without reload
+      loadAdminReviewsDashboard();
+    } catch (err) {
+      console.error(err);
+      showToast(`Failed to approve review: ${err.message} ⚠️`, 'error');
+    }
+  }
+
+  async function handleRejectReview(id) {
+    const token = sessionStorage.getItem('admin_token');
+    if (!token || !id) return;
+
+    const confirmed = await showAdminConfirm('Are you sure you want to reject this review?');
+    if (!confirmed) return;
+
+    try {
+      if (currentReviewsTab === 'overall') {
+        await BackendAPI.rejectOverallReviewAdmin(token, id);
+      } else {
+        await BackendAPI.rejectProductReviewAdmin(token, id);
+      }
+      showToast('Review marked as rejected! ❌', 'success');
+      loadAdminReviewsDashboard();
+    } catch (err) {
+      console.error(err);
+      showToast(`Failed to reject review: ${err.message} ⚠️`, 'error');
+    }
+  }
+
+  async function handleDeleteReview(id) {
+    const token = sessionStorage.getItem('admin_token');
+    if (!token || !id) return;
+
+    const confirmed = await showAdminConfirm('Warning: This action is permanent and will completely delete the review and any associated images. Proceed?');
+    if (!confirmed) return;
+
+    try {
+      if (currentReviewsTab === 'overall') {
+        await BackendAPI.deleteOverallReviewAdmin(token, id);
+      } else {
+        await BackendAPI.deleteProductReviewAdmin(token, id);
+      }
+      showToast('Review deleted permanently! 🗑️', 'success');
+      loadAdminReviewsDashboard();
+    } catch (err) {
+      console.error(err);
+      showToast(`Failed to delete review: ${err.message} ⚠️`, 'error');
+    }
+  }
+
+  function showAdminConfirm(message) {
+    return new Promise((resolve) => {
+      const confirmModal = document.getElementById('admin-confirm-modal');
+      const msgEl = document.getElementById('admin-confirm-message');
+      const okBtn = document.getElementById('admin-confirm-ok');
+      const cancelBtn = document.getElementById('admin-confirm-cancel');
+      
+      if (!confirmModal || !msgEl || !okBtn || !cancelBtn) {
+        resolve(true); // fallback
+        return;
+      }
+      
+      msgEl.textContent = message;
+      confirmModal.classList.remove('hidden');
+      setTimeout(() => {
+        confirmModal.classList.add('active');
+        okBtn.focus();
+      }, 50);
+      
+      // Focus trapping
+      initFocusTrap(confirmModal);
+      
+      const cleanUp = (result) => {
+        confirmModal.classList.remove('active');
+        setTimeout(() => confirmModal.classList.add('hidden'), 400);
+        
+        okBtn.replaceWith(okBtn.cloneNode(true));
+        cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+        
+        resolve(result);
+      };
+      
+      document.getElementById('admin-confirm-ok').addEventListener('click', () => cleanUp(true));
+      document.getElementById('admin-confirm-cancel').addEventListener('click', () => cleanUp(false));
+      
+      // Close on ESC
+      const escHandler = (e) => {
+        if (e.key === 'Escape') {
+          document.removeEventListener('keydown', escHandler);
+          cleanUp(false);
+        }
+      };
+      document.addEventListener('keydown', escHandler);
+    });
+  }
+
+  // Event Listeners for Filters & Tab Switchers
+  const overallTabBtn = document.getElementById('admin-overall-reviews-tab');
+  const productTabBtn = document.getElementById('admin-product-reviews-tab');
+  const subtabPendingBtn = document.getElementById('admin-subtab-pending');
+  const subtabApprovedBtn = document.getElementById('admin-subtab-approved');
+  const searchReviewsInput = document.getElementById('admin-reviews-search');
+  const starsFilterSelect = document.getElementById('admin-reviews-filter-stars');
+  const sortFilterSelect = document.getElementById('admin-reviews-filter-sort');
+  const loadMoreBtn = document.getElementById('admin-reviews-loadmore-btn');
+
+  function togglePrimaryTabs(tab) {
+    currentReviewsTab = tab;
+    adminReviewsPage = 1;
+    if (tab === 'overall') {
+      overallTabBtn?.classList.add('border-primary', 'text-darkbrown');
+      overallTabBtn?.classList.remove('border-transparent', 'text-primary/50');
+      productTabBtn?.classList.remove('border-primary', 'text-darkbrown');
+      productTabBtn?.classList.add('border-transparent', 'text-primary/50');
+    } else {
+      productTabBtn?.classList.add('border-primary', 'text-darkbrown');
+      productTabBtn?.classList.remove('border-transparent', 'text-primary/50');
+      overallTabBtn?.classList.remove('border-primary', 'text-darkbrown');
+      overallTabBtn?.classList.add('border-transparent', 'text-primary/50');
+    }
+    filterAndRenderAdminReviews();
+  }
+
+  function toggleSecondaryTabs(subtab) {
+    currentReviewsSubtab = subtab;
+    adminReviewsPage = 1;
+    if (subtab === 'pending') {
+      subtabPendingBtn?.classList.add('bg-white', 'text-darkbrown', 'shadow-sm');
+      subtabPendingBtn?.classList.remove('text-primary/60');
+      subtabApprovedBtn?.classList.remove('bg-white', 'text-darkbrown', 'shadow-sm');
+      subtabApprovedBtn?.classList.add('text-primary/60');
+    } else {
+      subtabApprovedBtn?.classList.add('bg-white', 'text-darkbrown', 'shadow-sm');
+      subtabApprovedBtn?.classList.remove('text-primary/60');
+      subtabPendingBtn?.classList.remove('bg-white', 'text-darkbrown', 'shadow-sm');
+      subtabPendingBtn?.classList.add('text-primary/60');
+    }
+    filterAndRenderAdminReviews();
+  }
+
+  overallTabBtn?.addEventListener('click', () => togglePrimaryTabs('overall'));
+  productTabBtn?.addEventListener('click', () => togglePrimaryTabs('product'));
+  subtabPendingBtn?.addEventListener('click', () => toggleSecondaryTabs('pending'));
+  subtabApprovedBtn?.addEventListener('click', () => toggleSecondaryTabs('approved'));
+
+  searchReviewsInput?.addEventListener('input', (e) => {
+    adminReviewsSearchVal = e.target.value.trim();
+    adminReviewsPage = 1;
+    filterAndRenderAdminReviews();
+  });
+
+  starsFilterSelect?.addEventListener('change', (e) => {
+    adminReviewsFilterStars = e.target.value;
+    adminReviewsPage = 1;
+    filterAndRenderAdminReviews();
+  });
+
+  sortFilterSelect?.addEventListener('change', (e) => {
+    adminReviewsFilterSort = e.target.value;
+    adminReviewsPage = 1;
+    filterAndRenderAdminReviews();
+  });
+
+  loadMoreBtn?.addEventListener('click', () => {
+    adminReviewsPage++;
+    filterAndRenderAdminReviews();
+  });
 
   // Initialize wishlist states
   updateWishlistUI();
