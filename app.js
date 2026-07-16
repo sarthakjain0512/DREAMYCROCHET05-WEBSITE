@@ -1227,6 +1227,68 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       if (!res.ok) throw new Error('Failed to update settings');
       return res.json();
+    },
+    submitOverallReview: (formData, onProgress) => {
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', getApiUrl('/api/reviews/overall'));
+        
+        if (xhr.upload && onProgress) {
+          xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+              const percent = Math.round((e.loaded / e.total) * 100);
+              onProgress(percent);
+            }
+          };
+        }
+
+        xhr.onload = () => {
+          try {
+            const data = JSON.parse(xhr.responseText);
+            if (xhr.status >= 200 && xhr.status < 300) {
+              resolve(data);
+            } else {
+              reject(new Error(data.error || 'Failed to submit review'));
+            }
+          } catch (err) {
+            reject(new Error('Failed to parse server response'));
+          }
+        };
+
+        xhr.onerror = () => reject(new Error('Network connection failure.'));
+        xhr.send(formData);
+      });
+    },
+    submitProductReview: (formData, onProgress) => {
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', getApiUrl('/api/reviews/product'));
+        
+        if (xhr.upload && onProgress) {
+          xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+              const percent = Math.round((e.loaded / e.total) * 100);
+              onProgress(percent);
+            }
+          };
+        }
+
+        xhr.onload = () => {
+          try {
+            const data = JSON.parse(xhr.responseText);
+            if (xhr.status >= 200 && xhr.status < 300) {
+              resolve(data);
+            } else {
+              reject(new Error(data.error || 'Failed to submit review'));
+            }
+          } catch (err) {
+            reject(new Error('Failed to parse server response'));
+          }
+        };
+
+        xhr.onerror = () => reject(new Error('Network connection failure.'));
+        xhr.send(formData);
+      });
     }
   };
 
@@ -3249,6 +3311,15 @@ console.log("images:", inquiryImageFiles);
   function openMobileProductDetail(p, pushState = true) {
     if (!mobileProductDetail) return;
     currentMobileProduct = p;
+
+    // Collapse reviews accordion by default
+    const mobReviewsToggle = document.getElementById('mob-reviews-toggle-btn');
+    const mobReviewsPanel = document.getElementById('mob-reviews-panel');
+    const mobReviewsArrow = document.getElementById('mob-reviews-arrow');
+    if (mobReviewsToggle) mobReviewsToggle.setAttribute('aria-expanded', 'false');
+    if (mobReviewsPanel) mobReviewsPanel.classList.add('hidden');
+    if (mobReviewsArrow) mobReviewsArrow.textContent = '▼';
+
     saveToRecentlyViewed(p);
     
     mobQvTitle.textContent = p.name;
@@ -3647,12 +3718,24 @@ console.log("images:", inquiryImageFiles);
     }
   });
 
+  let currentDesktopProduct = null;
+
   function openQuickView(p) {
     if (window.innerWidth < 768) {
       openMobileProductDetail(p);
       return;
     }
     if (!quickViewModal) return;
+    currentDesktopProduct = p;
+    
+    // Collapse reviews accordion by default
+    const qvReviewsToggle = document.getElementById('qv-reviews-toggle-btn');
+    const qvReviewsPanel = document.getElementById('qv-reviews-panel');
+    const qvReviewsArrow = document.getElementById('qv-reviews-arrow');
+    if (qvReviewsToggle) qvReviewsToggle.setAttribute('aria-expanded', 'false');
+    if (qvReviewsPanel) qvReviewsPanel.classList.add('hidden');
+    if (qvReviewsArrow) qvReviewsArrow.textContent = '▼';
+
     saveToRecentlyViewed(p);
     qvTitle.textContent = p.name;
     qvPrice.textContent = formatPrice(p.price);
@@ -5224,6 +5307,504 @@ console.log("images:", inquiryImageFiles);
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && searchOverlay && !searchOverlay.classList.contains('hidden')) {
       closeSearchOverlay();
+    }
+  });
+
+  // ─── CUSTOMER REVIEWS (Phase 2 Review Submission UI) ──────────────────────────
+  
+  // Focus trapping helper
+  function initFocusTrap(modalEl) {
+    modalEl.addEventListener('keydown', (e) => {
+      if (e.key !== 'Tab') return;
+      const focusableEls = modalEl.querySelectorAll('button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex="0"]');
+      if (focusableEls.length === 0) return;
+      const first = focusableEls[0];
+      const last = focusableEls[focusableEls.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          last.focus();
+          e.preventDefault();
+        }
+      } else {
+        if (document.activeElement === last) {
+          first.focus();
+          e.preventDefault();
+        }
+      }
+    });
+  }
+
+  // 1. Overall Review UI Setup
+  const overallRevModal = document.getElementById('overall-review-modal');
+  const overallRevForm = document.getElementById('overall-review-form');
+  const overallStarsContainer = document.getElementById('overall-stars-container');
+  const overallRatingVal = document.getElementById('overall-rating-val');
+  const overallRevImagesInput = document.getElementById('overall-rev-images-input');
+  const overallRevImagesPreview = document.getElementById('overall-rev-images-preview');
+  const overallRevDropzone = document.getElementById('overall-rev-dropzone');
+  
+  let overallRevImageFiles = [];
+  const MAX_REV_IMAGES = 5;
+  const MAX_REV_IMG_SIZE_MB = 10;
+  
+  if (overallRevModal) {
+    initFocusTrap(overallRevModal);
+  }
+  
+  function openOverallReviewModal() {
+    if (!overallRevModal) return;
+    resetOverallReviewForm();
+    overallRevModal.classList.remove('hidden');
+    setTimeout(() => {
+      overallRevModal.classList.add('active');
+      document.getElementById('close-overall-review-modal')?.focus();
+    }, 50);
+  }
+  
+  function closeOverallReviewModal() {
+    if (!overallRevModal) return;
+    overallRevModal.classList.remove('active');
+    setTimeout(() => {
+      overallRevModal.classList.add('hidden');
+      resetOverallReviewForm();
+    }, 400);
+  }
+  
+  function resetOverallReviewForm() {
+    overallRevForm?.reset();
+    overallRevImageFiles = [];
+    if (overallRatingVal) overallRatingVal.value = '0';
+    renderOverallStars(0);
+    renderOverallRevPreviews();
+    document.getElementById('overall-review-success')?.classList.add('hidden');
+    overallRevForm?.classList.remove('hidden');
+    const submitBtn = document.getElementById('overall-rev-submit-btn');
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      const textEl = document.getElementById('overall-rev-submit-text');
+      if (textEl) textEl.textContent = 'Submit Review';
+    }
+    const progressContainer = document.getElementById('overall-rev-progress-container');
+    if (progressContainer) progressContainer.classList.add('hidden');
+  }
+  
+  function renderOverallStars(rating) {
+    if (!overallStarsContainer) return;
+    const stars = overallStarsContainer.querySelectorAll('.overall-star-btn');
+    stars.forEach((star, idx) => {
+      if (idx < rating) {
+        star.classList.remove('text-primary/20');
+        star.classList.add('text-yellow-400', 'font-bold');
+        star.setAttribute('aria-checked', 'true');
+      } else {
+        star.classList.remove('text-yellow-400', 'font-bold');
+        star.classList.add('text-primary/20');
+        star.setAttribute('aria-checked', 'false');
+      }
+    });
+  }
+  
+  overallStarsContainer?.addEventListener('click', (e) => {
+    const btn = e.target.closest('.overall-star-btn');
+    if (!btn) return;
+    const val = parseInt(btn.getAttribute('data-value'), 10);
+    if (overallRatingVal) overallRatingVal.value = val.toString();
+    renderOverallStars(val);
+  });
+  
+  function renderOverallRevPreviews() {
+    if (!overallRevImagesPreview) return;
+    overallRevImagesPreview.innerHTML = '';
+    overallRevImageFiles.forEach((file, idx) => {
+      const url = URL.createObjectURL(file);
+      const wrapper = document.createElement('div');
+      wrapper.className = 'relative aspect-square rounded-xl overflow-hidden border-2 border-primary/20 group';
+      wrapper.innerHTML = `
+        <img src="${url}" class="w-full h-full object-contain bg-beige/30" loading="lazy">
+        <button type="button" class="remove-rev-img absolute top-1 right-1 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-bold">
+          ✕
+        </button>`;
+      wrapper.querySelector('.remove-rev-img').addEventListener('click', (e) => {
+        e.stopPropagation();
+        overallRevImageFiles.splice(idx, 1);
+        renderOverallRevPreviews();
+      });
+      overallRevImagesPreview.appendChild(wrapper);
+    });
+  }
+  
+  function handleOverallRevFiles(files) {
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    Array.from(files).forEach(file => {
+      if (!allowedTypes.includes(file.type)) {
+        showToast(`${file.name} format is not supported (JPG/PNG/WEBP only) ⚠️`, 'error');
+        return;
+      }
+      if (file.size > MAX_REV_IMG_SIZE_MB * 1024 * 1024) {
+        showToast(`${file.name} exceeds 10MB limit ⚠️`, 'error');
+        return;
+      }
+      if (overallRevImageFiles.length >= MAX_REV_IMAGES) {
+        showToast('Maximum 5 images allowed 📸', 'error');
+        return;
+      }
+      overallRevImageFiles.push(file);
+    });
+    renderOverallRevPreviews();
+  }
+  
+  overallRevImagesInput?.addEventListener('change', (e) => {
+    handleOverallRevFiles(e.target.files);
+    e.target.value = '';
+  });
+  
+  overallRevDropzone?.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    overallRevDropzone.classList.add('drag-over', 'border-primary/60');
+  });
+  overallRevDropzone?.addEventListener('dragleave', () => {
+    overallRevDropzone.classList.remove('drag-over', 'border-primary/60');
+  });
+  overallRevDropzone?.addEventListener('drop', (e) => {
+    e.preventDefault();
+    overallRevDropzone.classList.remove('drag-over', 'border-primary/60');
+    handleOverallRevFiles(e.dataTransfer.files);
+  });
+  
+  document.getElementById('open-overall-review-btn')?.addEventListener('click', openOverallReviewModal);
+  document.getElementById('close-overall-review-modal')?.addEventListener('click', closeOverallReviewModal);
+  document.getElementById('cancel-overall-review-btn')?.addEventListener('click', closeOverallReviewModal);
+  document.getElementById('success-close-overall-btn')?.addEventListener('click', closeOverallReviewModal);
+  
+  overallRevModal?.addEventListener('click', (e) => {
+    if (e.target === overallRevModal) closeOverallReviewModal();
+  });
+  
+  overallRevForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('overall-rev-name')?.value.trim();
+    const email = document.getElementById('overall-rev-email')?.value.trim();
+    const rating = overallRatingVal ? parseInt(overallRatingVal.value, 10) : 0;
+    const review = document.getElementById('overall-rev-text')?.value.trim();
+    
+    if (rating === 0) { showToast('Please select a rating star 🌟', 'error'); return; }
+    if (!name) { showToast('Please enter your name 👤', 'error'); return; }
+    if (!review) { showToast('Please write your review text 💬', 'error'); return; }
+    
+    const submitBtn = document.getElementById('overall-rev-submit-btn');
+    const submitText = document.getElementById('overall-rev-submit-text');
+    const progressContainer = document.getElementById('overall-rev-progress-container');
+    const progressBar = document.getElementById('overall-rev-progress-bar');
+    const progressPercent = document.getElementById('overall-rev-progress-percent');
+    const progressStatus = document.getElementById('overall-rev-progress-status');
+    
+    if (progressContainer) progressContainer.classList.remove('hidden');
+    if (progressBar) progressBar.style.width = '0%';
+    if (progressPercent) progressPercent.textContent = '0%';
+    if (progressStatus) progressStatus.textContent = 'Uploading review photos...';
+    if (submitBtn) submitBtn.disabled = true;
+    if (submitText) submitText.textContent = 'Submitting...';
+    
+    try {
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('email', email || '');
+      formData.append('rating', rating.toString());
+      formData.append('review', review);
+      overallRevImageFiles.forEach(file => formData.append('images', file));
+      
+      const onProgress = (percent) => {
+        if (progressBar) progressBar.style.width = `${percent}%`;
+        if (progressPercent) progressPercent.textContent = `${percent}%`;
+        if (percent === 100 && progressStatus) {
+          progressStatus.textContent = 'Processing on Cloudinary... ☁️';
+        }
+      };
+      
+      await BackendAPI.submitOverallReview(formData, onProgress);
+      if (progressContainer) progressContainer.classList.add('hidden');
+      
+      if (typeof confetti === 'function') {
+        confetti({ particleCount: 80, spread: 60, origin: { y: 0.75 }, colors: ['#B58A6A', '#FADADD', '#E7D7FF', '#F5E6D3'] });
+      }
+      
+      overallRevForm.classList.add('hidden');
+      document.getElementById('overall-review-success')?.classList.remove('hidden');
+      
+    } catch (err) {
+      if (progressContainer) progressContainer.classList.add('hidden');
+      showToast(`Failed to submit review: ${err.message || 'Please try again'} ⚠️`, 'error');
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
+      if (submitText) submitText.textContent = 'Submit Review';
+    }
+  });
+
+  // 2. Product Review UI Setup
+  const productRevModal = document.getElementById('product-review-modal');
+  const productRevForm = document.getElementById('product-review-form');
+  const productStarsContainer = document.getElementById('product-stars-container');
+  const productRatingVal = document.getElementById('product-rating-val');
+  const productRevImagesInput = document.getElementById('product-rev-images-input');
+  const productRevImagesPreview = document.getElementById('product-rev-images-preview');
+  const productRevDropzone = document.getElementById('product-rev-dropzone');
+  
+  let productRevImageFiles = [];
+  
+  if (productRevModal) {
+    initFocusTrap(productRevModal);
+  }
+  
+  function openProductReviewModal() {
+    if (!productRevModal) return;
+    resetProductReviewForm();
+    
+    // Auto attach product details
+    const activeProd = (window.innerWidth < 768) ? currentMobileProduct : currentDesktopProduct;
+    if (!activeProd) {
+      showToast('No active product found to review ⚠️', 'error');
+      return;
+    }
+    
+    const inputId = document.getElementById('product-rev-id');
+    if (inputId) inputId.value = activeProd._id || activeProd.id || '';
+    const subtitle = document.getElementById('product-rev-subtitle');
+    if (subtitle) subtitle.textContent = `Review for: ${activeProd.title || activeProd.name}`;
+    
+    productRevModal.classList.remove('hidden');
+    setTimeout(() => {
+      productRevModal.classList.add('active');
+      document.getElementById('close-product-review-modal')?.focus();
+    }, 50);
+  }
+  
+  function closeProductReviewModal() {
+    if (!productRevModal) return;
+    productRevModal.classList.remove('active');
+    setTimeout(() => {
+      productRevModal.classList.add('hidden');
+      resetProductReviewForm();
+    }, 400);
+  }
+  
+  function resetProductReviewForm() {
+    productRevForm?.reset();
+    productRevImageFiles = [];
+    if (productRatingVal) productRatingVal.value = '0';
+    renderProductStars(0);
+    renderProductRevPreviews();
+    document.getElementById('product-review-success')?.classList.add('hidden');
+    productRevForm?.classList.remove('hidden');
+    const submitBtn = document.getElementById('product-rev-submit-btn');
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      const textEl = document.getElementById('product-rev-submit-text');
+      if (textEl) textEl.textContent = 'Submit Review';
+    }
+    const progressContainer = document.getElementById('product-rev-progress-container');
+    if (progressContainer) progressContainer.classList.add('hidden');
+  }
+  
+  function renderProductStars(rating) {
+    if (!productStarsContainer) return;
+    const stars = productStarsContainer.querySelectorAll('.product-star-btn');
+    stars.forEach((star, idx) => {
+      if (idx < rating) {
+        star.classList.remove('text-primary/20');
+        star.classList.add('text-yellow-400', 'font-bold');
+        star.setAttribute('aria-checked', 'true');
+      } else {
+        star.classList.remove('text-yellow-400', 'font-bold');
+        star.classList.add('text-primary/20');
+        star.setAttribute('aria-checked', 'false');
+      }
+    });
+  }
+  
+  productStarsContainer?.addEventListener('click', (e) => {
+    const btn = e.target.closest('.product-star-btn');
+    if (!btn) return;
+    const val = parseInt(btn.getAttribute('data-value'), 10);
+    if (productRatingVal) productRatingVal.value = val.toString();
+    renderProductStars(val);
+  });
+  
+  function renderProductRevPreviews() {
+    if (!productRevImagesPreview) return;
+    productRevImagesPreview.innerHTML = '';
+    productRevImageFiles.forEach((file, idx) => {
+      const url = URL.createObjectURL(file);
+      const wrapper = document.createElement('div');
+      wrapper.className = 'relative aspect-square rounded-xl overflow-hidden border-2 border-primary/20 group';
+      wrapper.innerHTML = `
+        <img src="${url}" class="w-full h-full object-contain bg-beige/30" loading="lazy">
+        <button type="button" class="remove-product-rev-img absolute top-1 right-1 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-bold">
+          ✕
+        </button>`;
+      wrapper.querySelector('.remove-product-rev-img').addEventListener('click', (e) => {
+        e.stopPropagation();
+        productRevImageFiles.splice(idx, 1);
+        renderProductRevPreviews();
+      });
+      productRevImagesPreview.appendChild(wrapper);
+    });
+  }
+  
+  function handleProductRevFiles(files) {
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    Array.from(files).forEach(file => {
+      if (!allowedTypes.includes(file.type)) {
+        showToast(`${file.name} format is not supported (JPG/PNG/WEBP only) ⚠️`, 'error');
+        return;
+      }
+      if (file.size > MAX_REV_IMG_SIZE_MB * 1024 * 1024) {
+        showToast(`${file.name} exceeds 10MB limit ⚠️`, 'error');
+        return;
+      }
+      if (productRevImageFiles.length >= MAX_REV_IMAGES) {
+        showToast('Maximum 5 images allowed 📸', 'error');
+        return;
+      }
+      productRevImageFiles.push(file);
+    });
+    renderProductRevPreviews();
+  }
+  
+  productRevImagesInput?.addEventListener('change', (e) => {
+    handleProductRevFiles(e.target.files);
+    e.target.value = '';
+  });
+  
+  productRevDropzone?.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    productRevDropzone.classList.add('drag-over', 'border-primary/60');
+  });
+  productRevDropzone?.addEventListener('dragleave', () => {
+    productRevDropzone.classList.remove('drag-over', 'border-primary/60');
+  });
+  productRevDropzone?.addEventListener('drop', (e) => {
+    e.preventDefault();
+    productRevDropzone.classList.remove('drag-over', 'border-primary/60');
+    handleProductRevFiles(e.dataTransfer.files);
+  });
+  
+  document.getElementById('write-product-review-btn')?.addEventListener('click', openProductReviewModal);
+  document.getElementById('write-product-review-btn-mob')?.addEventListener('click', openProductReviewModal);
+  document.getElementById('close-product-review-modal')?.addEventListener('click', closeProductReviewModal);
+  document.getElementById('cancel-product-review-btn')?.addEventListener('click', closeProductReviewModal);
+  document.getElementById('success-close-product-btn')?.addEventListener('click', closeProductReviewModal);
+  
+  productRevModal?.addEventListener('click', (e) => {
+    if (e.target === productRevModal) closeProductReviewModal();
+  });
+  
+  productRevForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const productId = document.getElementById('product-rev-id')?.value;
+    const name = document.getElementById('product-rev-name')?.value.trim();
+    const email = document.getElementById('product-rev-email')?.value.trim();
+    const rating = productRatingVal ? parseInt(productRatingVal.value, 10) : 0;
+    const review = document.getElementById('product-rev-text')?.value.trim();
+    
+    if (!productId) { showToast('Missing product identification ⚠️', 'error'); return; }
+    if (rating === 0) { showToast('Please select a rating star 🌟', 'error'); return; }
+    if (!name) { showToast('Please enter your name 👤', 'error'); return; }
+    if (!review) { showToast('Please write your review text 💬', 'error'); return; }
+    
+    const submitBtn = document.getElementById('product-rev-submit-btn');
+    const submitText = document.getElementById('product-rev-submit-text');
+    const progressContainer = document.getElementById('product-rev-progress-container');
+    const progressBar = document.getElementById('product-rev-progress-bar');
+    const progressPercent = document.getElementById('product-rev-progress-percent');
+    const progressStatus = document.getElementById('product-rev-progress-status');
+    
+    if (progressContainer) progressContainer.classList.remove('hidden');
+    if (progressBar) progressBar.style.width = '0%';
+    if (progressPercent) progressPercent.textContent = '0%';
+    if (progressStatus) progressStatus.textContent = 'Uploading review photos...';
+    if (submitBtn) submitBtn.disabled = true;
+    if (submitText) submitText.textContent = 'Submitting...';
+    
+    try {
+      const formData = new FormData();
+      formData.append('productId', productId);
+      formData.append('name', name);
+      formData.append('email', email || '');
+      formData.append('rating', rating.toString());
+      formData.append('review', review);
+      productRevImageFiles.forEach(file => formData.append('images', file));
+      
+      const onProgress = (percent) => {
+        if (progressBar) progressBar.style.width = `${percent}%`;
+        if (progressPercent) progressPercent.textContent = `${percent}%`;
+        if (percent === 100 && progressStatus) {
+          progressStatus.textContent = 'Processing on Cloudinary... ☁️';
+        }
+      };
+      
+      await BackendAPI.submitProductReview(formData, onProgress);
+      if (progressContainer) progressContainer.classList.add('hidden');
+      
+      if (typeof confetti === 'function') {
+        confetti({ particleCount: 80, spread: 60, origin: { y: 0.75 }, colors: ['#B58A6A', '#FADADD', '#E7D7FF', '#F5E6D3'] });
+      }
+      
+      productRevForm.classList.add('hidden');
+      document.getElementById('product-review-success')?.classList.remove('hidden');
+      
+    } catch (err) {
+      if (progressContainer) progressContainer.classList.add('hidden');
+      showToast(`Failed to submit review: ${err.message || 'Please try again'} ⚠️`, 'error');
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
+      if (submitText) submitText.textContent = 'Submit Review';
+    }
+  });
+
+  // 3. Accordions toggling logic inside quick view
+  const qvReviewsToggle = document.getElementById('qv-reviews-toggle-btn');
+  const qvReviewsPanel = document.getElementById('qv-reviews-panel');
+  const qvReviewsArrow = document.getElementById('qv-reviews-arrow');
+  
+  qvReviewsToggle?.addEventListener('click', () => {
+    if (!qvReviewsPanel || !qvReviewsArrow) return;
+    const isExpanded = qvReviewsToggle.getAttribute('aria-expanded') === 'true';
+    qvReviewsToggle.setAttribute('aria-expanded', !isExpanded);
+    if (isExpanded) {
+      qvReviewsPanel.classList.add('hidden');
+      qvReviewsArrow.textContent = '▼';
+    } else {
+      qvReviewsPanel.classList.remove('hidden');
+      qvReviewsArrow.textContent = '▲';
+    }
+  });
+
+  const mobReviewsToggle = document.getElementById('mob-reviews-toggle-btn');
+  const mobReviewsPanel = document.getElementById('mob-reviews-panel');
+  const mobReviewsArrow = document.getElementById('mob-reviews-arrow');
+  
+  mobReviewsToggle?.addEventListener('click', () => {
+    if (!mobReviewsPanel || !mobReviewsArrow) return;
+    const isExpanded = mobReviewsToggle.getAttribute('aria-expanded') === 'true';
+    mobReviewsToggle.setAttribute('aria-expanded', !isExpanded);
+    if (isExpanded) {
+      mobReviewsPanel.classList.add('hidden');
+      mobReviewsArrow.textContent = '▼';
+    } else {
+      mobReviewsPanel.classList.remove('hidden');
+      mobReviewsArrow.textContent = '▲';
+    }
+  });
+
+  // ESC key support to close active review modals
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (overallRevModal && !overallRevModal.classList.contains('hidden')) {
+        closeOverallReviewModal();
+      }
+      if (productRevModal && !productRevModal.classList.contains('hidden')) {
+        closeProductReviewModal();
+      }
     }
   });
 
