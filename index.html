@@ -128,8 +128,8 @@
     
     <!-- Premium Navigation Header -->
     <header class="sticky top-0 w-full z-50 bg-cream/70 dark:bg-black/40 backdrop-blur-md border-b border-primary/10 transition-all duration-300">
-      <div class="flex justify-between items-center w-full px-6 md:px-16 py-4 max-w-7xl mx-auto">
-        <a href="#" class="text-2xl font-bold font-heading italic text-primary dark:text-primary-container hover:opacity-80 transition duration-300">
+      <div class="flex justify-between items-center w-full px-3 sm:px-6 md:px-16 py-4 max-w-7xl mx-auto min-w-0">
+        <a href="#" class="text-base sm:text-2xl font-bold font-heading italic text-primary dark:text-primary-container hover:opacity-80 transition duration-300 whitespace-nowrap flex-shrink min-w-0" title="DreamyCrochet05">
           DreamyCrochet05
         </a>
         <nav class="hidden md:flex gap-8">
@@ -140,26 +140,26 @@
           <a href="#founder" class="text-darkbrown dark:text-beige hover:text-primary transition font-medium text-sm">Our Story</a>
         </nav>
         
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-1 sm:gap-3 flex-shrink-0">
           <!-- Search Toggle -->
-          <button id="search-toggle" class="p-2 rounded-full hover:bg-beige/40 text-darkbrown dark:text-beige transition clickable active:scale-90" title="Search">
-            <span class="material-symbols-outlined text-xl">search</span>
+          <button id="search-toggle" class="p-1 sm:p-2 rounded-full hover:bg-beige/40 text-darkbrown dark:text-beige transition clickable active:scale-90" title="Search">
+            <span class="material-symbols-outlined text-lg sm:text-xl">search</span>
           </button>
-
+ 
           <!-- Music Toggle -->
-          <button id="music-toggle" class="p-2 rounded-full hover:bg-beige/40 text-darkbrown dark:text-beige transition clickable active:scale-90" title="Toggle Music">
-            <span id="music-icon" class="material-symbols-outlined text-xl">music_off</span>
+          <button id="music-toggle" class="p-1 sm:p-2 rounded-full hover:bg-beige/40 text-darkbrown dark:text-beige transition clickable active:scale-90" title="Toggle Music">
+            <span id="music-icon" class="material-symbols-outlined text-lg sm:text-xl">music_off</span>
           </button>
-
+ 
           <!-- Wishlist Badge -->
-          <button id="header-wishlist-btn" class="p-2 rounded-full hover:bg-beige/40 text-darkbrown dark:text-beige transition clickable relative active:scale-90" title="Wishlist">
-            <span class="material-symbols-outlined text-xl">favorite</span>
+          <button id="header-wishlist-btn" class="p-1 sm:p-2 rounded-full hover:bg-beige/40 text-darkbrown dark:text-beige transition clickable relative active:scale-90" title="Wishlist">
+            <span class="material-symbols-outlined text-lg sm:text-xl">favorite</span>
             <span id="wishlist-counter" class="absolute -top-1 -right-1 bg-primary-container text-on-primary-container text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center border border-white" style="display:none;">0</span>
           </button>
-
+ 
           <!-- Mobile Hamburger Button -->
-          <button id="mobile-menu-btn" class="md:hidden p-2 rounded-full hover:bg-beige/40 text-darkbrown dark:text-beige transition clickable active:scale-90" title="Menu" aria-label="Open navigation menu" aria-expanded="false">
-            <span id="mobile-menu-icon" class="material-symbols-outlined text-xl">menu</span>
+          <button id="mobile-menu-btn" class="md:hidden p-1 sm:p-2 rounded-full hover:bg-beige/40 text-darkbrown dark:text-beige transition clickable active:scale-90" title="Menu" aria-label="Open navigation menu" aria-expanded="false">
+            <span id="mobile-menu-icon" class="material-symbols-outlined text-lg sm:text-xl">menu</span>
           </button>
         </div>
       </div>
