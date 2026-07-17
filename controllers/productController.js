@@ -395,12 +395,24 @@ const editProduct = async (req, res) => {
       }
       imageUrls = [];
       for (const item of imagesBase64) {
-        const urlObj = await uploadImage(item, 'products');
-        if (urlObj) {
-          imageUrls.push(urlObj);
-          // Track brand new base64 uploads
-          if (typeof item === 'string' && item.startsWith('data:image')) {
-            newlyUploadedImages.push(urlObj);
+        // Strategy B: check if this is an existing image URL from the product
+        let matchedImg = null;
+        if (typeof item === 'string' && !item.startsWith('data:image')) {
+          matchedImg = oldProductObj.images.find(img => getUrl(img) === item);
+        }
+
+        if (matchedImg) {
+          // Reuse the exact existing image object/string (preserving public_id)
+          imageUrls.push(matchedImg);
+        } else {
+          // New upload or string fallback
+          const urlObj = await uploadImage(item, 'products');
+          if (urlObj) {
+            imageUrls.push(urlObj);
+            // Track brand new base64 uploads
+            if (typeof item === 'string' && item.startsWith('data:image')) {
+              newlyUploadedImages.push(urlObj);
+            }
           }
         }
       }
