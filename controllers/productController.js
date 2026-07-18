@@ -16,6 +16,16 @@ const getUrl = (val) => {
   return val || '';
 };
 
+const cleanUrl = (urlStr) => {
+  if (!urlStr || typeof urlStr !== 'string') return '';
+  // Strip version prefixes, query/hash parameters, and normalize Cloudinary transformation segments
+  return urlStr
+    .split('?')[0]
+    .split('#')[0]
+    .replace(/\/f_auto,q_auto\//g, '/image/upload/')
+    .replace(/\/v\d+\//g, '/');
+};
+
 const mapProduct = (p) => {
   const idVal = p._id || p.id || 'prod-' + Math.random().toString(36).substr(2, 9);
   const titleVal = p.title || p.name || '';
@@ -398,7 +408,7 @@ const editProduct = async (req, res) => {
         // Strategy B: check if this is an existing image URL from the product
         let matchedImg = null;
         if (typeof item === 'string' && !item.startsWith('data:image')) {
-          matchedImg = oldProductObj.images.find(img => getUrl(img) === item);
+          matchedImg = oldProductObj.images.find(img => cleanUrl(getUrl(img)) === cleanUrl(item));
         }
 
         if (matchedImg) {
