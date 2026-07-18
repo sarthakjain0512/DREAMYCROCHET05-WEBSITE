@@ -4,6 +4,28 @@
 ## Project Description
 A charming web application for crochet enthusiasts that allows customers to browse, purchase, and customize crochet products, while providing an admin portal for managing inventory, orders, and content.
 
+## 📘 Project Documentation
+This project contains a comprehensive technical documentation file which serves as the **single source of truth** for developers, contributors, and AI coding assistants.
+
+For complete design specifications and project parameters, refer to:
+* **[PROJECT_CONTEXT.md](./PROJECT_CONTEXT.md)**
+
+Key information detailed in the documentation includes:
+- **Project Architecture**: High-level data flows and visual layout models.
+- **Technology Stack**: Libraries, database adapters, rendering, and mailing engines.
+- **Folder Structure**: Direct routing and code module placements.
+- **Development Timeline**: Major milestone histories and releases.
+- **Project Memory**: Rationale and technical breakdowns of key design choices (e.g., fallback databases, layout skeletons, metadata preservation).
+- **Image Management Lifecycle**: Safe deletion checks, URL cleanings, and asset recovery rules.
+- **Authentication & Security**: Rate limit rules, password crypts, and JWT validations.
+- **API Documentation**: Mounted Express pathways and payload details.
+- **Known Issues**: Real issues, bugs traced, and codebase warnings.
+- **Development Rules**: Standards guarding image deletions, schema updates, and scopes.
+- **AI Bootstrap Checklist**: Sequential workflows that assistants must execute before proposing changes.
+- **Future Roadmap**: High-level development goals.
+
+> Reading **PROJECT_CONTEXT.md** before contributing or modifying the codebase is strongly recommended.
+
 ## Features
 - **Customer Portal**: Browse products, view details, place orders, and manage user accounts.
 - **Admin Portal**: Manage products, categories, orders, and users. Secure login with role‑based access.
