@@ -144,6 +144,73 @@
     ]
   }
   </script>
+
+  <!-- FAQPage JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": "https://dreamycrochet05-website.onrender.com/#faq",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Are all your crochet products 100% handmade?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes! 💕 Every DreamyCrochet05 creation is carefully handmade with love using premium-quality yarn. Each piece is crafted with attention to detail, making every gift unique and special."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How can I place an order?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Ordering is easy!\n\nSimply send us a DM on Instagram with:\n• Product Name\n• Quantity\n• Delivery Location\n\nWe'll guide you through the rest of the ordering process."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I customize my crochet order?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Absolutely!\n\nYou can customize:\n• Colors\n• Bouquets\n• Keychains\n• Names\n• Special gifts\n\nYou can also share inspiration photos from Pinterest, Instagram, or Google through our Custom Order form or by sending us a DM."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is delivery free?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Delivery is FREE inside TMU Campus.\n\nFor locations outside TMU, delivery charges apply.\n\nWe'll always inform you of the delivery cost before confirming your order."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How long will delivery take?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Inside TMU:\nSame day or within 24 hours (subject to availability).\n\nOutside TMU:\nUsually 2–5 business days."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How quickly will you respond to my inquiry?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "We usually reply within 24 hours through Instagram, WhatsApp, or Email to confirm your order details, customization requests, and pricing."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I take care of my crochet products?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "To keep your handmade crochet beautiful:\n• Wash gently with cold water.\n• Let it air dry naturally.\n• Avoid pulling the yarn.\n• Store it in a clean and dry place.\n\nWith proper care, your crochet creation will stay beautiful for a long time."
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 <body class="bg-cream text-darkbrown font-sans selection:bg-primary-container selection:text-on-primary-container">
 
@@ -1056,6 +1123,152 @@
 
     </section>
 
+    <!-- Section 13: Frequently Asked Questions (FAQ) - Premium Collapsible -->
+    <section 
+      id="faq" 
+      class="bg-cream dark:bg-black/20 reveal-section relative overflow-hidden transition-all duration-500 ease-in-out hidden opacity-0 max-h-0 border-t-0 pointer-events-none" 
+      aria-expanded="false" 
+      aria-hidden="true"
+    >
+      <!-- Background subtle glows -->
+      <div class="absolute top-1/3 left-1/4 w-96 h-96 bg-primary-container/20 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+      <div class="absolute bottom-1/3 right-1/4 w-96 h-96 bg-secondary/15 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+
+      <!-- Close Button (Top-Right Corner) -->
+      <button 
+        id="close-faq-btn" 
+        type="button" 
+        class="absolute top-6 right-6 w-11 h-11 rounded-full bg-beige/60 dark:bg-white/10 hover:bg-beige/90 dark:hover:bg-white/20 text-darkbrown dark:text-beige flex items-center justify-center transition-all duration-300 clickable z-20 shadow-sm hover:scale-105 active:scale-95 border border-primary/10" 
+        title="Close FAQ" 
+        aria-label="Close FAQ"
+      >
+        <span class="material-symbols-outlined text-xl">close</span>
+      </button>
+
+      <div class="max-w-4xl mx-auto px-6 py-20 md:py-24">
+        <!-- Section Header -->
+        <div class="text-center mb-14 space-y-4">
+          <span class="decorative-badge inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-primary-container/50 dark:bg-primary-container/20 text-on-primary-container dark:text-primary-container font-semibold text-xs tracking-wider uppercase border border-primary/10">
+            💬 Got Questions?
+          </span>
+          <h2 id="faq-heading" tabindex="-1" class="text-4xl md:text-5xl font-heading font-bold text-darkbrown dark:text-beige leading-tight focus:outline-none">
+            Frequently Asked Questions
+          </h2>
+          <p class="text-base md:text-lg text-primary/80 dark:text-beige/80 leading-relaxed font-medium max-w-xl mx-auto">
+            Everything you need to know before placing your order.
+          </p>
+        </div>
+
+        <!-- Accordion Container -->
+        <div class="space-y-4" id="faq-accordion-list">
+          
+          <!-- Item 1 -->
+          <details class="group bg-white/60 dark:bg-darkbrown/40 border border-primary/15 rounded-2xl p-5 md:p-6 shadow-sm transition-all duration-300 open:shadow-md hover:border-primary/30">
+            <summary class="flex items-center justify-between font-heading font-bold text-base md:text-lg text-darkbrown dark:text-beige cursor-pointer list-none select-none gap-4">
+              <span>Are all your crochet products 100% handmade?</span>
+              <span class="w-8 h-8 rounded-full bg-primary-container/40 dark:bg-primary-container/20 flex items-center justify-center text-primary dark:text-beige transition-transform duration-300 group-open:rotate-180 text-xs font-bold shrink-0">▼</span>
+            </summary>
+            <div class="mt-4 pt-4 border-t border-primary/10 text-xs md:text-sm text-primary/90 dark:text-beige/90 leading-relaxed font-medium">
+              <p>Yes! 💕 Every DreamyCrochet05 creation is carefully handmade with love using premium-quality yarn. Each piece is crafted with attention to detail, making every gift unique and special.</p>
+            </div>
+          </details>
+
+          <!-- Item 2 -->
+          <details class="group bg-white/60 dark:bg-darkbrown/40 border border-primary/15 rounded-2xl p-5 md:p-6 shadow-sm transition-all duration-300 open:shadow-md hover:border-primary/30">
+            <summary class="flex items-center justify-between font-heading font-bold text-base md:text-lg text-darkbrown dark:text-beige cursor-pointer list-none select-none gap-4">
+              <span>How can I place an order?</span>
+              <span class="w-8 h-8 rounded-full bg-primary-container/40 dark:bg-primary-container/20 flex items-center justify-center text-primary dark:text-beige transition-transform duration-300 group-open:rotate-180 text-xs font-bold shrink-0">▼</span>
+            </summary>
+            <div class="mt-4 pt-4 border-t border-primary/10 text-xs md:text-sm text-primary/90 dark:text-beige/90 leading-relaxed font-medium space-y-2">
+              <p>Ordering is easy!</p>
+              <p>Simply send us a DM on Instagram with:</p>
+              <ul class="list-disc list-inside pl-2 space-y-1">
+                <li>Product Name</li>
+                <li>Quantity</li>
+                <li>Delivery Location</li>
+              </ul>
+              <p class="pt-1">We'll guide you through the rest of the ordering process.</p>
+            </div>
+          </details>
+
+          <!-- Item 3 -->
+          <details class="group bg-white/60 dark:bg-darkbrown/40 border border-primary/15 rounded-2xl p-5 md:p-6 shadow-sm transition-all duration-300 open:shadow-md hover:border-primary/30">
+            <summary class="flex items-center justify-between font-heading font-bold text-base md:text-lg text-darkbrown dark:text-beige cursor-pointer list-none select-none gap-4">
+              <span>Can I customize my crochet order?</span>
+              <span class="w-8 h-8 rounded-full bg-primary-container/40 dark:bg-primary-container/20 flex items-center justify-center text-primary dark:text-beige transition-transform duration-300 group-open:rotate-180 text-xs font-bold shrink-0">▼</span>
+            </summary>
+            <div class="mt-4 pt-4 border-t border-primary/10 text-xs md:text-sm text-primary/90 dark:text-beige/90 leading-relaxed font-medium space-y-2">
+              <p>Absolutely!</p>
+              <p>You can customize:</p>
+              <ul class="list-disc list-inside pl-2 space-y-1">
+                <li>Colors</li>
+                <li>Bouquets</li>
+                <li>Keychains</li>
+                <li>Names</li>
+                <li>Special gifts</li>
+              </ul>
+              <p class="pt-1">You can also share inspiration photos from Pinterest, Instagram, or Google through our Custom Order form or by sending us a DM.</p>
+            </div>
+          </details>
+
+          <!-- Item 4 -->
+          <details class="group bg-white/60 dark:bg-darkbrown/40 border border-primary/15 rounded-2xl p-5 md:p-6 shadow-sm transition-all duration-300 open:shadow-md hover:border-primary/30">
+            <summary class="flex items-center justify-between font-heading font-bold text-base md:text-lg text-darkbrown dark:text-beige cursor-pointer list-none select-none gap-4">
+              <span>Is delivery free?</span>
+              <span class="w-8 h-8 rounded-full bg-primary-container/40 dark:bg-primary-container/20 flex items-center justify-center text-primary dark:text-beige transition-transform duration-300 group-open:rotate-180 text-xs font-bold shrink-0">▼</span>
+            </summary>
+            <div class="mt-4 pt-4 border-t border-primary/10 text-xs md:text-sm text-primary/90 dark:text-beige/90 leading-relaxed font-medium space-y-2">
+              <p>Delivery is FREE inside TMU Campus.</p>
+              <p>For locations outside TMU, delivery charges apply.</p>
+              <p>We'll always inform you of the delivery cost before confirming your order.</p>
+            </div>
+          </details>
+
+          <!-- Item 5 -->
+          <details class="group bg-white/60 dark:bg-darkbrown/40 border border-primary/15 rounded-2xl p-5 md:p-6 shadow-sm transition-all duration-300 open:shadow-md hover:border-primary/30">
+            <summary class="flex items-center justify-between font-heading font-bold text-base md:text-lg text-darkbrown dark:text-beige cursor-pointer list-none select-none gap-4">
+              <span>How long will delivery take?</span>
+              <span class="w-8 h-8 rounded-full bg-primary-container/40 dark:bg-primary-container/20 flex items-center justify-center text-primary dark:text-beige transition-transform duration-300 group-open:rotate-180 text-xs font-bold shrink-0">▼</span>
+            </summary>
+            <div class="mt-4 pt-4 border-t border-primary/10 text-xs md:text-sm text-primary/90 dark:text-beige/90 leading-relaxed font-medium space-y-2">
+              <p><strong>Inside TMU:</strong><br>Same day or within 24 hours (subject to availability).</p>
+              <p><strong>Outside TMU:</strong><br>Usually 2–5 business days.</p>
+            </div>
+          </details>
+
+          <!-- Item 6 -->
+          <details class="group bg-white/60 dark:bg-darkbrown/40 border border-primary/15 rounded-2xl p-5 md:p-6 shadow-sm transition-all duration-300 open:shadow-md hover:border-primary/30">
+            <summary class="flex items-center justify-between font-heading font-bold text-base md:text-lg text-darkbrown dark:text-beige cursor-pointer list-none select-none gap-4">
+              <span>How quickly will you respond to my inquiry?</span>
+              <span class="w-8 h-8 rounded-full bg-primary-container/40 dark:bg-primary-container/20 flex items-center justify-center text-primary dark:text-beige transition-transform duration-300 group-open:rotate-180 text-xs font-bold shrink-0">▼</span>
+            </summary>
+            <div class="mt-4 pt-4 border-t border-primary/10 text-xs md:text-sm text-primary/90 dark:text-beige/90 leading-relaxed font-medium">
+              <p>We usually reply within 24 hours through Instagram, WhatsApp, or Email to confirm your order details, customization requests, and pricing.</p>
+            </div>
+          </details>
+
+          <!-- Item 7 -->
+          <details class="group bg-white/60 dark:bg-darkbrown/40 border border-primary/15 rounded-2xl p-5 md:p-6 shadow-sm transition-all duration-300 open:shadow-md hover:border-primary/30">
+            <summary class="flex items-center justify-between font-heading font-bold text-base md:text-lg text-darkbrown dark:text-beige cursor-pointer list-none select-none gap-4">
+              <span>How do I take care of my crochet products?</span>
+              <span class="w-8 h-8 rounded-full bg-primary-container/40 dark:bg-primary-container/20 flex items-center justify-center text-primary dark:text-beige transition-transform duration-300 group-open:rotate-180 text-xs font-bold shrink-0">▼</span>
+            </summary>
+            <div class="mt-4 pt-4 border-t border-primary/10 text-xs md:text-sm text-primary/90 dark:text-beige/90 leading-relaxed font-medium space-y-2">
+              <p>To keep your handmade crochet beautiful:</p>
+              <ul class="list-disc list-inside pl-2 space-y-1">
+                <li>Wash gently with cold water.</li>
+                <li>Let it air dry naturally.</li>
+                <li>Avoid pulling the yarn.</li>
+                <li>Store it in a clean and dry place.</li>
+              </ul>
+              <p class="pt-1">With proper care, your crochet creation will stay beautiful for a long time.</p>
+            </div>
+          </details>
+
+        </div>
+      </div>
+    </section>
+
     <footer class="bg-beige dark:bg-darkbrown py-12 px-6 border-t border-primary/10">
       <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
         <div>
@@ -1070,6 +1283,7 @@
         <div class="flex gap-8 text-sm font-semibold">
           <a href="https://www.instagram.com/dreamycrochet05/" target="_blank" class="hover:text-primary transition">Instagram</a>
           <a href="https://www.instagram.com/dreamycrochet05/" target="_blank" class="hover:text-primary transition">Contact</a>
+          <button type="button" id="footer-faq-btn" class="hover:text-primary transition clickable cursor-pointer bg-transparent border-0 p-0 text-sm font-semibold font-sans text-darkbrown dark:text-beige" aria-expanded="false" aria-controls="faq">FAQ</button>
         </div>
         <div>
           <p class="text-xs text-primary/70">&copy; 2026 DreamyCrochet05. Crafted with Love. 🌸</p>
@@ -2852,5 +3066,90 @@
   <!-- Custom Scripts -->
   <script src="config/apiConfig.js"></script>
   <script src="app.js"></script>
+
+  <!-- Collapsible Homepage FAQ Toggle Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const faqSection = document.getElementById('faq');
+      const faqHeading = document.getElementById('faq-heading');
+      const footerFaqBtn = document.getElementById('footer-faq-btn');
+      const closeFaqBtn = document.getElementById('close-faq-btn');
+      const footerEl = document.querySelector('footer');
+
+      function openFaq() {
+        if (!faqSection) return;
+
+        // 1. Expand section smoothly
+        faqSection.classList.remove('hidden', 'max-h-0', 'opacity-0', 'pointer-events-none');
+        faqSection.classList.add('expanded', 'opacity-100', 'max-h-[3500px]', 'border-t', 'border-primary/5', 'pointer-events-auto');
+        faqSection.setAttribute('aria-expanded', 'true');
+        faqSection.setAttribute('aria-hidden', 'false');
+        if (footerFaqBtn) footerFaqBtn.setAttribute('aria-expanded', 'true');
+
+        // 2. Smooth scroll to FAQ section
+        if (typeof lenis !== 'undefined' && lenis && typeof lenis.scrollTo === 'function') {
+          lenis.scrollTo(faqSection, { offset: -20 });
+        } else {
+          faqSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // 3. Focus heading for accessibility
+        setTimeout(() => {
+          if (faqHeading) faqHeading.focus();
+        }, 450);
+      }
+
+      function closeFaq(scrollBack = true) {
+        if (!faqSection || faqSection.classList.contains('hidden')) return;
+
+        // 1. Smooth scroll back to footer
+        if (scrollBack && footerEl) {
+          if (typeof lenis !== 'undefined' && lenis && typeof lenis.scrollTo === 'function') {
+            lenis.scrollTo(footerEl);
+          } else {
+            footerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
+
+        // 2. Collapse section after scroll transition
+        setTimeout(() => {
+          faqSection.classList.remove('expanded', 'opacity-100', 'max-h-[3500px]', 'border-t', 'border-primary/5', 'pointer-events-auto');
+          faqSection.classList.add('hidden', 'max-h-0', 'opacity-0', 'border-t-0', 'pointer-events-none');
+          faqSection.setAttribute('aria-expanded', 'false');
+          faqSection.setAttribute('aria-hidden', 'true');
+          if (footerFaqBtn) {
+            footerFaqBtn.setAttribute('aria-expanded', 'false');
+            footerFaqBtn.focus();
+          }
+        }, scrollBack ? 350 : 0);
+      }
+
+      if (footerFaqBtn) {
+        footerFaqBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (faqSection && (faqSection.classList.contains('hidden') || faqSection.getAttribute('aria-expanded') !== 'true')) {
+            openFaq();
+          } else {
+            closeFaq(true);
+          }
+        });
+      }
+
+      if (closeFaqBtn) {
+        closeFaqBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          closeFaq(true);
+        });
+      }
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          if (faqSection && !faqSection.classList.contains('hidden') && faqSection.getAttribute('aria-expanded') === 'true') {
+            closeFaq(true);
+          }
+        }
+      });
+    });
+  </script>
 </body>
 </html>
