@@ -3540,10 +3540,10 @@ console.log("images:", inquiryImageFiles);
         const isCollapsed = !mobQvDetailsPanel.classList.contains('expanded');
         if (isCollapsed) {
           mobQvDetailsPanel.classList.remove('hidden');
-          // Force reflow
-          mobQvDetailsPanel.offsetHeight;
-          mobQvDetailsPanel.classList.add('expanded');
-          mobQvDetailsAccordion.classList.add('expanded');
+          requestAnimationFrame(() => {
+            mobQvDetailsPanel.classList.add('expanded');
+            mobQvDetailsAccordion.classList.add('expanded');
+          });
           mobQvDetailsToggleBtn.setAttribute('aria-expanded', 'true');
         } else {
           mobQvDetailsPanel.classList.remove('expanded');
@@ -3570,10 +3570,10 @@ console.log("images:", inquiryImageFiles);
         const isCollapsed = !mobFaqPanel.classList.contains('expanded');
         if (isCollapsed) {
           mobFaqPanel.classList.remove('hidden');
-          // Force reflow
-          mobFaqPanel.offsetHeight;
-          mobFaqPanel.classList.add('expanded');
-          mobFaqAccordion.classList.add('expanded');
+          requestAnimationFrame(() => {
+            mobFaqPanel.classList.add('expanded');
+            mobFaqAccordion.classList.add('expanded');
+          });
           mobFaqToggleBtn.setAttribute('aria-expanded', 'true');
         } else {
           mobFaqPanel.classList.remove('expanded');
@@ -3801,9 +3801,9 @@ console.log("images:", inquiryImageFiles);
     preloadGalleryImages(p);
 
     mobileProductDetail.classList.remove('hidden');
-    // Force reflow
-    mobileProductDetail.offsetHeight;
-    mobileProductDetail.classList.add('active');
+    requestAnimationFrame(() => {
+      mobileProductDetail.classList.add('active');
+    });
     document.body.style.overflow = 'hidden';
     playTone(659.25, 0.25, 'sine', 0.1);
   }
@@ -3955,10 +3955,10 @@ console.log("images:", inquiryImageFiles);
         const isCollapsed = !qvDetailsPanel.classList.contains('expanded');
         if (isCollapsed) {
           qvDetailsPanel.classList.remove('hidden');
-          // Force reflow
-          qvDetailsPanel.offsetHeight;
-          qvDetailsPanel.classList.add('expanded');
-          qvDetailsAccordion.classList.add('expanded');
+          requestAnimationFrame(() => {
+            qvDetailsPanel.classList.add('expanded');
+            qvDetailsAccordion.classList.add('expanded');
+          });
           qvDetailsToggleBtn.setAttribute('aria-expanded', 'true');
         } else {
           qvDetailsPanel.classList.remove('expanded');
@@ -3985,10 +3985,10 @@ console.log("images:", inquiryImageFiles);
         const isCollapsed = !qvFaqPanel.classList.contains('expanded');
         if (isCollapsed) {
           qvFaqPanel.classList.remove('hidden');
-          // Force reflow
-          qvFaqPanel.offsetHeight;
-          qvFaqPanel.classList.add('expanded');
-          qvFaqAccordion.classList.add('expanded');
+          requestAnimationFrame(() => {
+            qvFaqPanel.classList.add('expanded');
+            qvFaqAccordion.classList.add('expanded');
+          });
           qvFaqToggleBtn.setAttribute('aria-expanded', 'true');
         } else {
           qvFaqPanel.classList.remove('expanded');
@@ -5268,9 +5268,9 @@ console.log("images:", inquiryImageFiles);
     if (adminAside) adminAside.classList.add('active-drawer');
     if (adminDrawerOverlay) {
       adminDrawerOverlay.classList.remove('hidden');
-      // Force reflow
-      adminDrawerOverlay.offsetHeight;
-      adminDrawerOverlay.style.opacity = '1';
+      requestAnimationFrame(() => {
+        adminDrawerOverlay.style.opacity = '1';
+      });
     }
     // Prevent background scrolling while open
     document.body.style.overflow = 'hidden';
@@ -5324,10 +5324,10 @@ console.log("images:", inquiryImageFiles);
   function openSearchOverlay() {
     if (!searchOverlay) return;
     searchOverlay.classList.remove('hidden');
-    // Force reflow
-    searchOverlay.offsetHeight;
-    searchOverlay.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
-    searchOverlay.classList.add('opacity-100', 'translate-y-0');
+    requestAnimationFrame(() => {
+      searchOverlay.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+      searchOverlay.classList.add('opacity-100', 'translate-y-0');
+    });
     document.body.style.overflow = 'hidden';
     
     if (typeof lenis !== 'undefined' && lenis && typeof lenis.stop === 'function') {
