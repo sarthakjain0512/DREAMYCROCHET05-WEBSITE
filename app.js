@@ -135,8 +135,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Optimize Cloudinary URL format and quality if applicable
     let optimizedUrl = targetUrl;
     if (optimizedUrl.includes('res.cloudinary.com') && optimizedUrl.includes('/image/upload/')) {
-      if (!optimizedUrl.includes('/f_auto,q_auto')) {
-        optimizedUrl = optimizedUrl.replace('/image/upload/', '/image/upload/f_auto,q_auto/');
+      if (options.isFullRes || options.fullRes) {
+        if (!optimizedUrl.includes('/f_auto,q_auto')) {
+          optimizedUrl = optimizedUrl.replace('/image/upload/', '/image/upload/f_auto,q_auto/');
+        }
+      } else {
+        if (!optimizedUrl.includes('/f_auto,q_auto,w_600,c_limit')) {
+          optimizedUrl = optimizedUrl.replace(/\/image\/upload\/(?:f_auto,q_auto\/)?/, '/image/upload/f_auto,q_auto,w_600,c_limit/');
+        }
       }
     }
 
@@ -229,11 +235,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- TOAST NOTIFICATIONS ---
-  const toastContainer = document.getElementById('toast-container');
-  
+  // --- CENTRAL DOM REFERENCE CACHE ---
+  const DOMCache = {
+    get toastContainer() { return this._tc || (this._tc = document.getElementById('toast-container')); },
+    get loadingScreen() { return this._ls || (this._ls = document.getElementById('loading-screen')); },
+    get searchOverlay() { return this._so || (this._so = document.getElementById('search-overlay')); },
+    get searchInput() { return this._si || (this._si = document.getElementById('search-input')); },
+    get wishlistCounter() { return this._wc || (this._wc = document.getElementById('wishlist-counter')); }
+  };
+
   function showToast(message, type = 'success') {
-    if (!toastContainer) return;
+    const container = DOMCache.toastContainer;
+    if (!container) return;
     
     const toast = document.createElement('div');
     toast.className = 'toast';
@@ -294,6 +307,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let mouse = { x: 0, y: 0 };
     let pos = { x: 0, y: 0 };
     const speed = 0.15;
+    let isMouseActive = true;
+    let lastMouseMoveTime = Date.now();
     
     let xSetter = gsap.quickSetter(companion, "x", "px");
     let ySetter = gsap.quickSetter(companion, "y", "px");
@@ -301,9 +316,20 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener("mousemove", (e) => {
       mouse.x = e.clientX;
       mouse.y = e.clientY;
+      isMouseActive = true;
+      lastMouseMoveTime = Date.now();
     });
     
     gsap.ticker.add(() => {
+      if (!isMouseActive) return;
+
+      const dx = Math.abs(mouse.x - pos.x);
+      const dy = Math.abs(mouse.y - pos.y);
+      if (dx < 0.05 && dy < 0.05 && (Date.now() - lastMouseMoveTime > 1500)) {
+        isMouseActive = false;
+        return;
+      }
+
       const dt = 1.0 - Math.pow(1.0 - speed, gsap.ticker.deltaRatio());
       pos.x += (mouse.x - pos.x) * dt;
       pos.y += (mouse.y - pos.y) * dt;
@@ -316,7 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ySetter(pos.y + floatY);
     });
 
-    // Unified Hover Animations
+    // Unified Hover Animations via Event Delegation
     function handleHoverStart() {
       gsap.to(companion, {
         scale: 1.35,
@@ -363,19 +389,27 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    refreshCursorHovers = () => {
-      // Select hoverable elements
-      const targets = document.querySelectorAll('a, button, input, select, textarea, [role="button"], .clickable, .product-card-container, .why-choose-card, img');
-      targets.forEach(el => {
-        el.removeEventListener('mouseenter', handleHoverStart);
-        el.removeEventListener('mouseleave', handleHoverEnd);
-        el.addEventListener('mouseenter', handleHoverStart);
-        el.addEventListener('mouseleave', handleHoverEnd);
-      });
+    const isHoverTarget = (el) => {
+      return el && el.closest && el.closest('a, button, input, select, textarea, [role="button"], .clickable, .product-card-container, .why-choose-card, img');
     };
 
-    // Initial binding
-    refreshCursorHovers();
+    let currentHoverTarget = null;
+    document.body.addEventListener('mouseover', (e) => {
+      const target = isHoverTarget(e.target);
+      if (target && target !== currentHoverTarget) {
+        currentHoverTarget = target;
+        handleHoverStart();
+      }
+    });
+
+    document.body.addEventListener('mouseout', (e) => {
+      if (currentHoverTarget && (!e.relatedTarget || !currentHoverTarget.contains(e.relatedTarget))) {
+        currentHoverTarget = null;
+        handleHoverEnd();
+      }
+    });
+
+    refreshCursorHovers = () => {}; // Event delegation handles all elements dynamically
 
     // Click particles animation
     function spawnClickParticles(x, y) {
@@ -439,6 +473,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loaderDismissed = true;
     
     if (loader) {
+      loader.style.pointerEvents = 'none';
       const tl = gsap.timeline({
         onComplete: () => {
           loader.style.display = 'none';
@@ -448,26 +483,42 @@ document.addEventListener('DOMContentLoaded', () => {
       // Animate loader child elements out first (smooth scale and fade)
       tl.to('#loading-screen > *', {
         opacity: 0,
-        y: -20,
-        scale: 0.95,
-        duration: 0.5,
-        stagger: 0.08,
+        y: -16,
+        scale: 0.96,
+        duration: 0.35,
+        stagger: 0.05,
         ease: "power2.inOut"
       });
       // Fade out the main backdrop
       tl.to(loader, {
         opacity: 0,
-        duration: 0.6,
+        duration: 0.4,
         ease: "power2.out"
-      }, "-=0.25");
+      }, "-=0.2");
     } else {
       initGSAPScrollAnimations();
     }
   }
 
-  // Dismiss on window load or after max 2.5 seconds fallback
+  // Safe Loader Dismissal: Dismiss as soon as Hero image & DOM are ready (eliminates unneeded delay while keeping 0 FOUC)
+  function triggerSafeDismissal() {
+    const heroImg = document.getElementById('hero-bouquet-img');
+    if (!heroImg || heroImg.complete || heroImg.naturalWidth > 0) {
+      dismissLoader();
+    } else {
+      heroImg.addEventListener('load', dismissLoader, { once: true });
+      heroImg.addEventListener('error', dismissLoader, { once: true });
+      setTimeout(dismissLoader, 800);
+    }
+  }
+
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    triggerSafeDismissal();
+  } else {
+    document.addEventListener('DOMContentLoaded', triggerSafeDismissal);
+  }
   window.addEventListener('load', dismissLoader);
-  setTimeout(dismissLoader, 2500);
+  setTimeout(dismissLoader, 1500);
 
   // --- MOBILE NAVIGATION MENU ---
   const mobileMenuBtn = document.getElementById('mobile-menu-btn');
@@ -6234,8 +6285,19 @@ console.log("images:", inquiryImageFiles);
     }
   });
 
-  // Fetch overall reviews on load
-  loadOverallReviews();
+  // Cross-browser idle task runner
+  const runWhenIdle = (fn, fallbackMs = 400) => {
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(fn);
+    } else {
+      setTimeout(fn, fallbackMs);
+    }
+  };
+
+  // Fetch overall reviews when main thread is idle after critical initial render
+  runWhenIdle(() => {
+    loadOverallReviews();
+  });
 
   // ─── ADMIN REVIEWS MANAGEMENT SYSTEM ───────────────────────────────────────
 
