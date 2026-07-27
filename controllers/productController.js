@@ -221,14 +221,47 @@ const incrementViewCount = async (req, res) => {
 const addProduct = async (req, res) => {
   const newlyUploadedImages = [];
   try {
-    const { title, description, category, price, label, featured, isVisible, instagramLink, imageBase64, imagesBase64, coverImageIndex, stock } = req.body;
+    const { title, description, category, price, label, featured, isVisible, instagramLink, imageBase64, imagesBase64, coverImageIndex, stock, mrp, showDiscount } = req.body;
 
     if (!title || !title.trim()) {
       return res.status(400).json({ error: 'Product title is required' });
     }
     if (price === undefined || price === null || price === '') {
-    return res.status(400).json({ error: 'Product price is required' });
-}
+      return res.status(400).json({ error: 'Product price is required' });
+    }
+
+    const cleanPriceVal = String(price).replace(/[^\d.-]/g, '');
+    const priceNum = Number(cleanPriceVal);
+    if (priceNum < 0) {
+      return res.status(400).json({ error: 'Product price cannot be negative' });
+    }
+
+    let parsedMrp = null;
+    let finalShowDiscount = showDiscount === 'true' || showDiscount === true;
+
+    if (mrp !== undefined && mrp !== null && String(mrp).trim() !== '') {
+      parsedMrp = Number(mrp);
+      if (isNaN(parsedMrp)) {
+        return res.status(400).json({ error: 'MRP must be a valid number' });
+      }
+      if (parsedMrp < 0) {
+        return res.status(400).json({ error: 'MRP cannot be negative' });
+      }
+
+      // Rule 2: If mrp <= price
+      if (parsedMrp <= priceNum) {
+        finalShowDiscount = false;
+      }
+    } else {
+      // Rule 1: If mrp is not provided -> mrp = null, showDiscount = false
+      parsedMrp = null;
+      finalShowDiscount = false;
+    }
+
+    // Rule 3: If showDiscount is true but mrp is empty/null -> showDiscount = false
+    if (finalShowDiscount && parsedMrp === null) {
+      finalShowDiscount = false;
+    }
 
     // Duplicate check
     if (isMongoDBConnected()) {
@@ -303,7 +336,9 @@ const addProduct = async (req, res) => {
           featured: featured === 'true' || featured === true,
           isVisible: isVisible === 'false' || isVisible === false ? false : true,
           instagramLink: instagramLink?.trim() || '',
-          stock: stock !== undefined ? Number(stock) : 10
+          stock: stock !== undefined ? Number(stock) : 10,
+          mrp: parsedMrp,
+          showDiscount: finalShowDiscount
         });
         await product.save();
         savedProduct = mapProduct(product);
@@ -323,6 +358,8 @@ const addProduct = async (req, res) => {
           isVisible: isVisible === 'false' || isVisible === false ? false : true,
           instagramLink: instagramLink?.trim() || '',
           stock: stock !== undefined ? Number(stock) : 10,
+          mrp: parsedMrp,
+          showDiscount: finalShowDiscount,
           viewCount: 0,
           createdAt: new Date(),
           updatedAt: new Date()
@@ -360,7 +397,7 @@ const editProduct = async (req, res) => {
   const newlyUploadedImages = [];
   try {
     const { id } = req.params;
-    const { title, description, category, price, label, featured, isVisible, instagramLink, imageBase64, imagesBase64, coverImageIndex, stock } = req.body;
+    const { title, description, category, price, label, featured, isVisible, instagramLink, imageBase64, imagesBase64, coverImageIndex, stock, mrp, showDiscount } = req.body;
 
     // Duplicate check
     if (title) {
@@ -395,6 +432,51 @@ const editProduct = async (req, res) => {
 
     if (!oldProductObj) {
       return res.status(404).json({ error: 'Product not found' });
+    }
+
+    const targetPriceStr = price !== undefined ? price : oldProductObj.price;
+    const cleanPriceVal = String(targetPriceStr).replace(/[^\d.-]/g, '');
+    const currentPrice = Number(cleanPriceVal);
+    if (!isNaN(currentPrice) && currentPrice < 0) {
+      return res.status(400).json({ error: 'Product price cannot be negative' });
+    }
+
+    let parsedMrp = oldProductObj.mrp !== undefined ? oldProductObj.mrp : null;
+    let finalShowDiscount = oldProductObj.showDiscount !== undefined ? !!oldProductObj.showDiscount : false;
+
+    const hasPrice = req.body.hasOwnProperty('price');
+    const hasMrp = req.body.hasOwnProperty('mrp');
+    const hasShowDiscount = req.body.hasOwnProperty('showDiscount');
+
+    if (hasPrice || hasMrp || hasShowDiscount) {
+      const inputMrp = hasMrp ? mrp : parsedMrp;
+      const inputShowDiscount = hasShowDiscount ? (showDiscount === 'true' || showDiscount === true) : finalShowDiscount;
+
+      if (inputMrp !== undefined && inputMrp !== null && String(inputMrp).trim() !== '') {
+        parsedMrp = Number(inputMrp);
+        if (isNaN(parsedMrp)) {
+          return res.status(400).json({ error: 'MRP must be a valid number' });
+        }
+        if (parsedMrp < 0) {
+          return res.status(400).json({ error: 'MRP cannot be negative' });
+        }
+
+        finalShowDiscount = inputShowDiscount;
+
+        // Rule 2: If mrp <= price
+        if (!isNaN(currentPrice) && parsedMrp <= currentPrice) {
+          finalShowDiscount = false;
+        }
+      } else {
+        // Rule 1: If mrp is not provided -> mrp = null, showDiscount = false
+        parsedMrp = null;
+        finalShowDiscount = false;
+      }
+
+      // Rule 3: If showDiscount is true but mrp is empty/null -> showDiscount = false
+      if (finalShowDiscount && parsedMrp === null) {
+        finalShowDiscount = false;
+      }
     }
 
     // Image processing
@@ -468,6 +550,9 @@ const editProduct = async (req, res) => {
         if (instagramLink !== undefined) product.instagramLink = instagramLink.trim();
         if (stock !== undefined) product.stock = Number(stock);
 
+        product.mrp = parsedMrp;
+        product.showDiscount = finalShowDiscount;
+
         product.images = imageUrls;
         product.coverImage = coverImg;
 
@@ -488,6 +573,9 @@ const editProduct = async (req, res) => {
         if (isVisible !== undefined) product.isVisible = !(isVisible === 'false' || isVisible === false);
         if (instagramLink !== undefined) product.instagramLink = instagramLink.trim();
         if (stock !== undefined) product.stock = Number(stock);
+
+        product.mrp = parsedMrp;
+        product.showDiscount = finalShowDiscount;
 
         product.images = imageUrls;
         product.img = coverImg;
