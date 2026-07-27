@@ -99,6 +99,17 @@ const productSchema = new mongoose.Schema(
       type: Number,
       default: 0,
       min: 0
+    },
+
+    // ── Optional Discount Pricing System ──────────────────────────────────────
+    mrp: {
+      type: Number,
+      default: null
+    },
+
+    showDiscount: {
+      type: Boolean,
+      default: false
     }
   },
   {
