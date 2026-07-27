@@ -1581,6 +1581,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const galleryImages = resolveProductGalleryImages(p);
     const showCollectionBtn = !isCustomOrderCard && galleryImages.length > 0;
 
+    let priceHtml = `<span class="text-primary font-semibold shrink-0">${formatPrice(p.price)}</span>`;
+    if (!isCustomOrderCard) {
+      const priceNum = Number(String(p.price).replace(/[^\d.]/g, ''));
+      const mrpNum = Number(p.mrp);
+      if (p.showDiscount && mrpNum && !isNaN(mrpNum) && !isNaN(priceNum) && mrpNum > priceNum) {
+        const discount = Math.round(((mrpNum - priceNum) / mrpNum) * 100);
+        priceHtml = `
+          <div class="flex flex-col items-end shrink-0">
+            <span class="text-primary font-bold">${formatPrice(p.price)}</span>
+            <div class="flex items-center gap-1.5 mt-0.5">
+              <span class="text-xs text-primary/40 line-through">${formatPrice(p.mrp)}</span>
+              <span class="px-1.5 py-0.5 text-[9px] font-bold rounded bg-[#e2ece9] text-[#2e5a44] border border-[#2e5a44]/10 shrink-0 select-none">${discount}% OFF</span>
+            </div>
+          </div>
+        `;
+      }
+    }
+
     card.innerHTML = `
       <div class="relative overflow-hidden rounded-cozy-sm mb-6 aspect-[4/3] image-container ${isCustomOrderCard ? 'loaded' : ''}">
         ${imgHtml}
@@ -1597,7 +1615,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div>
           <div class="flex justify-between items-start mb-2 gap-2">
             <h3 class="font-serif text-xl font-bold text-darkbrown line-clamp-2 leading-snug">${p.name}</h3>
-            <span class="text-primary font-semibold shrink-0">${formatPrice(p.price)}</span>
+            ${priceHtml}
           </div>
         </div>
         <div class="mt-auto">
