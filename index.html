@@ -3100,11 +3100,80 @@
 
       <hr class="border-t border-primary/10 my-6">
 
-      <!-- Discount Placeholder -->
+      <!-- Discount Selector -->
       <div class="mb-6">
-        <h3 class="block text-xs font-semibold uppercase tracking-wider text-primary/70 mb-3">Discount</h3>
-        <div class="p-6 rounded-cozy bg-white/40 border border-primary/10 border-dashed text-sm text-darkbrown/60 italic text-center">
-          Discount options will appear here
+        <h3 class="block text-xs font-semibold uppercase tracking-wider text-primary/70 mb-3 select-none">Discount</h3>
+        
+        <div class="discount-filter-group space-y-2">
+          <!-- Range 1: 0-20% -->
+          <label class="discount-row flex items-center justify-between p-3 rounded-xl bg-white/40 dark:bg-black/10 cursor-pointer select-none" for="discount-0-20">
+            <div class="flex items-center gap-3">
+              <div class="custom-checkbox-wrapper relative flex items-center justify-center">
+                <input type="checkbox" id="discount-0-20" class="sr-only" value="0-20">
+                <div class="custom-checkbox w-5 h-5 rounded border-2 border-primary/30 bg-white/40 dark:bg-black/20 flex items-center justify-center transition-all duration-200">
+                  <span class="material-symbols-outlined text-xs font-bold text-darkbrown scale-0 transition-transform duration-200 select-none">check</span>
+                </div>
+              </div>
+              <span class="text-sm font-medium text-darkbrown dark:text-beige">0–20%</span>
+            </div>
+            <span class="discount-count text-xs text-primary/70 font-semibold pr-1" id="count-0-20">0</span>
+          </label>
+
+          <!-- Range 2: 21-40% -->
+          <label class="discount-row flex items-center justify-between p-3 rounded-xl bg-white/40 dark:bg-black/10 cursor-pointer select-none" for="discount-21-40">
+            <div class="flex items-center gap-3">
+              <div class="custom-checkbox-wrapper relative flex items-center justify-center">
+                <input type="checkbox" id="discount-21-40" class="sr-only" value="21-40">
+                <div class="custom-checkbox w-5 h-5 rounded border-2 border-primary/30 bg-white/40 dark:bg-black/20 flex items-center justify-center transition-all duration-200">
+                  <span class="material-symbols-outlined text-xs font-bold text-darkbrown scale-0 transition-transform duration-200 select-none">check</span>
+                </div>
+              </div>
+              <span class="text-sm font-medium text-darkbrown dark:text-beige">21–40%</span>
+            </div>
+            <span class="discount-count text-xs text-primary/70 font-semibold pr-1" id="count-21-40">0</span>
+          </label>
+
+          <!-- Range 3: 41-60% -->
+          <label class="discount-row flex items-center justify-between p-3 rounded-xl bg-white/40 dark:bg-black/10 cursor-pointer select-none" for="discount-41-60">
+            <div class="flex items-center gap-3">
+              <div class="custom-checkbox-wrapper relative flex items-center justify-center">
+                <input type="checkbox" id="discount-41-60" class="sr-only" value="41-60">
+                <div class="custom-checkbox w-5 h-5 rounded border-2 border-primary/30 bg-white/40 dark:bg-black/20 flex items-center justify-center transition-all duration-200">
+                  <span class="material-symbols-outlined text-xs font-bold text-darkbrown scale-0 transition-transform duration-200 select-none">check</span>
+                </div>
+              </div>
+              <span class="text-sm font-medium text-darkbrown dark:text-beige">41–60%</span>
+            </div>
+            <span class="discount-count text-xs text-primary/70 font-semibold pr-1" id="count-41-60">0</span>
+          </label>
+
+          <!-- Range 4: 61-80% -->
+          <label class="discount-row flex items-center justify-between p-3 rounded-xl bg-white/40 dark:bg-black/10 cursor-pointer select-none" for="discount-61-80">
+            <div class="flex items-center gap-3">
+              <div class="custom-checkbox-wrapper relative flex items-center justify-center">
+                <input type="checkbox" id="discount-61-80" class="sr-only" value="61-80">
+                <div class="custom-checkbox w-5 h-5 rounded border-2 border-primary/30 bg-white/40 dark:bg-black/20 flex items-center justify-center transition-all duration-200">
+                  <span class="material-symbols-outlined text-xs font-bold text-darkbrown scale-0 transition-transform duration-200 select-none">check</span>
+                </div>
+              </div>
+              <span class="text-sm font-medium text-darkbrown dark:text-beige">61–80%</span>
+            </div>
+            <span class="discount-count text-xs text-primary/70 font-semibold pr-1" id="count-61-80">0</span>
+          </label>
+
+          <!-- Range 5: 81-100% -->
+          <label class="discount-row flex items-center justify-between p-3 rounded-xl bg-white/40 dark:bg-black/10 cursor-pointer select-none" for="discount-81-100">
+            <div class="flex items-center gap-3">
+              <div class="custom-checkbox-wrapper relative flex items-center justify-center">
+                <input type="checkbox" id="discount-81-100" class="sr-only" value="81-100">
+                <div class="custom-checkbox w-5 h-5 rounded border-2 border-primary/30 bg-white/40 dark:bg-black/20 flex items-center justify-center transition-all duration-200">
+                  <span class="material-symbols-outlined text-xs font-bold text-darkbrown scale-0 transition-transform duration-200 select-none">check</span>
+                </div>
+              </div>
+              <span class="text-sm font-medium text-darkbrown dark:text-beige">81–100%</span>
+            </div>
+            <span class="discount-count text-xs text-primary/70 font-semibold pr-1" id="count-81-100">0</span>
+          </label>
         </div>
       </div>
     </div>

@@ -2468,4 +2468,48 @@ body:has(#admin-dashboard-overlay:not(.hidden)) #main-boutique {
   background-color: var(--color-pink);
 }
 
+/* --- CUSTOM PREMIUM CHECKBOXES --- */
+.discount-row {
+  outline: none;
+  border: 1px solid rgba(181, 138, 106, 0.1);
+  transition: all 0.2s ease;
+}
+
+/* Focused row accessibility indicator */
+.discount-row:focus-within {
+  border-color: var(--color-warm-brown) !important;
+  box-shadow: 0 0 0 2px rgba(181, 138, 106, 0.15) !important;
+}
+
+/* Custom Checkbox Checked States */
+.discount-row input[type="checkbox"]:checked + .custom-checkbox {
+  background-color: var(--color-pink);
+  border-color: var(--color-warm-brown);
+}
+
+.discount-row input[type="checkbox"]:checked + .custom-checkbox span {
+  transform: scale(1);
+}
+
+/* Subtle background highlight for selected row */
+.discount-row.selected-row {
+  background-color: rgba(250, 218, 221, 0.25) !important; /* light container highlight */
+  border-color: rgba(181, 138, 106, 0.3) !important;
+}
+
+/* Dark mode checkmark color & overrides */
+.dark-mode .custom-checkbox span {
+  color: var(--color-dark-brown) !important;
+}
+
+.dark-mode .discount-row {
+  border-color: rgba(245, 230, 211, 0.05);
+}
+
+.dark-mode .discount-row.selected-row {
+  background-color: rgba(250, 218, 221, 0.08) !important;
+  border-color: rgba(245, 230, 211, 0.2) !important;
+}
+
+
 

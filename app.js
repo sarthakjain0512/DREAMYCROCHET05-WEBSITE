@@ -660,6 +660,7 @@ document.addEventListener('DOMContentLoaded', () => {
     minPrice: MIN_PRICE_LIMIT,
     maxPrice: MAX_PRICE_LIMIT
   };
+  window.filterState = filterState;
 
   const priceMinInput = document.getElementById('price-min-input');
   const priceMaxInput = document.getElementById('price-max-input');
@@ -723,6 +724,83 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initialize track on load
   updatePriceSlider();
+
+  // --- DISCOUNT FILTER STATE & LOGIC ---
+  filterState.discountRanges = [];
+
+  function getProductDiscount(p) {
+    if (!p || p.showDiscount === false || p.showDiscount === 'false') return null;
+    if (p.mrp === undefined || p.mrp === null || p.mrp === '') return null;
+    
+    const mrpVal = parseFloat(p.mrp);
+    if (isNaN(mrpVal) || mrpVal <= 0) return null;
+    
+    // Strip currency symbols and parse
+    const priceVal = parseFloat(String(p.price).replace(/[^0-9.]/g, ''));
+    if (isNaN(priceVal) || priceVal <= 0) return null;
+    
+    if (mrpVal <= priceVal) return null;
+    
+    const discountPercent = ((mrpVal - priceVal) / mrpVal) * 100;
+    return discountPercent;
+  }
+
+  function getDiscountRangeKey(discount) {
+    if (discount === null || discount === undefined) return null;
+    if (discount >= 0 && discount <= 20) return "0-20";
+    if (discount > 20 && discount <= 40) return "21-40";
+    if (discount > 40 && discount <= 60) return "41-60";
+    if (discount > 60 && discount <= 80) return "61-80";
+    if (discount > 80 && discount <= 100) return "81-100";
+    return null;
+  }
+
+  function updateDiscountCounts() {
+    const counts = {
+      "0-20": 0,
+      "21-40": 0,
+      "41-60": 0,
+      "61-80": 0,
+      "81-100": 0
+    };
+
+    const list = (typeof publicProducts !== 'undefined' && Array.isArray(publicProducts)) ? publicProducts : [];
+    list.forEach(p => {
+      const discount = getProductDiscount(p);
+      const range = getDiscountRangeKey(discount);
+      if (range && counts[range] !== undefined) {
+        counts[range]++;
+      }
+    });
+
+    Object.keys(counts).forEach(range => {
+      const el = document.getElementById(`count-${range}`);
+      if (el) el.textContent = counts[range];
+    });
+  }
+
+  function updateDiscountFilterState() {
+    const checkedBoxes = document.querySelectorAll('.discount-row input[type="checkbox"]:checked');
+    filterState.discountRanges = Array.from(checkedBoxes).map(cb => cb.value);
+  }
+
+  // Bind checkbox events
+  const discountRows = document.querySelectorAll('.discount-row');
+  discountRows.forEach(row => {
+    const checkbox = row.querySelector('input[type="checkbox"]');
+    
+    checkbox?.addEventListener('change', () => {
+      if (checkbox.checked) {
+        row.classList.add('selected-row');
+      } else {
+        row.classList.remove('selected-row');
+      }
+      updateDiscountFilterState();
+    });
+  });
+
+  // Run initial calculation
+  updateDiscountCounts();
 
   // --- SCROLL TO TOP BUTTON ---
   const scrollToTopBtn = document.getElementById('scroll-to-top-btn');
@@ -1837,6 +1915,9 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const products = await BackendAPI.getProducts();
       publicProducts = products; // Cache for wishlist/favorites view
+      if (typeof updateDiscountCounts === 'function') {
+        updateDiscountCounts();
+      }
       const token = sessionStorage.getItem('admin_token');
       const isAdmin = token ? await verifyAdminToken(token) : false;
 
