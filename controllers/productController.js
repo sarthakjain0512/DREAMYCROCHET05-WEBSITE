@@ -61,6 +61,8 @@ const mapProduct = (p) => {
     instagramLink: p.instagramLink || '',
     viewCount: p.viewCount || 0,
     stock: p.stock !== undefined ? Number(p.stock) : 10,
+    mrp: p.mrp !== undefined ? p.mrp : null,
+    showDiscount: p.showDiscount !== undefined ? !!p.showDiscount : false,
     createdAt: p.createdAt || new Date(),
     updatedAt: p.updatedAt || new Date()
   };

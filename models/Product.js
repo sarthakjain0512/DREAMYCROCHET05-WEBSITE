@@ -104,6 +104,7 @@ const productSchema = new mongoose.Schema(
     // ── Optional Discount Pricing System ──────────────────────────────────────
     mrp: {
       type: Number,
+      min: [0, 'MRP cannot be negative'],
       default: null
     },
 
