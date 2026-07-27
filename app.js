@@ -2218,6 +2218,7 @@ document.addEventListener('DOMContentLoaded', () => {
       renderAdminOrderCards(orders, token);
 
       // ── Homepage settings ─────────────────────────────────────────────────
+      const settings = await BackendAPI.getHomepageSettings();
       const heroTitleInput = document.getElementById('settings-hero-title');
       const sub1Input = document.getElementById('settings-subtitle-line1');
       const sub2Input = document.getElementById('settings-subtitle-line2');
@@ -2237,6 +2238,7 @@ document.addEventListener('DOMContentLoaded', () => {
       await loadAdminReviewsDashboard();
 
     } catch (e) {
+      console.error('Error rendering admin dashboard:', e);
       showToast('Error displaying dashboard data! ⚠️', 'error');
     }
   }
