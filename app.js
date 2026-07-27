@@ -1591,7 +1591,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="flex flex-col items-end shrink-0">
             <span class="text-primary font-bold">${formatPrice(p.price)}</span>
             <div class="flex items-center gap-1.5 mt-0.5">
-              <span class="text-xs text-primary/45 line-through decoration-[1.5px] decoration-primary/40">${formatPrice(p.mrp)}</span>
+              <del class="text-xs text-primary opacity-80 line-through decoration-2 decoration-current">${formatPrice(p.mrp)}</del>
               <span class="px-1.5 py-0.5 text-[9px] font-bold rounded bg-[#e2ece9] text-[#2e5a44] border border-[#2e5a44]/10 shrink-0 select-none">${discount}% OFF</span>
             </div>
           </div>
@@ -3571,7 +3571,7 @@ console.log("images:", inquiryImageFiles);
         <span class="flex flex-col items-start gap-1">
           <span class="${priceClass}">${formatPrice(p.price)}</span>
           <span class="flex items-center gap-2">
-            <span class="text-xs text-primary/45 line-through decoration-[1.5px] decoration-primary/40">${formatPrice(p.mrp)}</span>
+            <del class="text-xs text-primary opacity-80 line-through decoration-2 decoration-current">${formatPrice(p.mrp)}</del>
             <span class="px-1.5 py-0.5 text-[9px] font-bold rounded bg-[#e2ece9] text-[#2e5a44] border border-[#2e5a44]/10 shrink-0 select-none">${discount}% OFF</span>
           </span>
         </span>
