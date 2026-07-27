@@ -1591,7 +1591,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="flex flex-col items-end shrink-0">
             <span class="text-primary font-bold">${formatPrice(p.price)}</span>
             <div class="flex items-center gap-1.5 mt-0.5">
-              <span class="text-xs text-primary/40 line-through">${formatPrice(p.mrp)}</span>
+              <span class="text-xs text-primary/45 line-through decoration-[1.5px] decoration-primary/40">${formatPrice(p.mrp)}</span>
               <span class="px-1.5 py-0.5 text-[9px] font-bold rounded bg-[#e2ece9] text-[#2e5a44] border border-[#2e5a44]/10 shrink-0 select-none">${discount}% OFF</span>
             </div>
           </div>
@@ -3556,6 +3556,31 @@ console.log("images:", inquiryImageFiles);
     }
   }
 
+  function renderDetailsPriceHtml(p, isMobile = false) {
+    const isCustomOrder = (p._id || p.id) === 'custom-order-card';
+    if (isCustomOrder) {
+      return formatPrice(p.price);
+    }
+    const priceNum = Number(String(p.price).replace(/[^\d.]/g, ''));
+    const mrpNum = Number(p.mrp);
+
+    if (p.showDiscount && mrpNum && !isNaN(mrpNum) && !isNaN(priceNum) && mrpNum > priceNum) {
+      const discount = Math.round(((mrpNum - priceNum) / mrpNum) * 100);
+      const priceClass = isMobile ? 'text-xl font-bold text-primary' : 'text-2xl font-bold text-primary';
+      return `
+        <span class="flex flex-col items-start gap-1">
+          <span class="${priceClass}">${formatPrice(p.price)}</span>
+          <span class="flex items-center gap-2">
+            <span class="text-xs text-primary/45 line-through decoration-[1.5px] decoration-primary/40">${formatPrice(p.mrp)}</span>
+            <span class="px-1.5 py-0.5 text-[9px] font-bold rounded bg-[#e2ece9] text-[#2e5a44] border border-[#2e5a44]/10 shrink-0 select-none">${discount}% OFF</span>
+          </span>
+        </span>
+      `;
+    } else {
+      return formatPrice(p.price);
+    }
+  }
+
   // --- MOBILE PRODUCT DETAIL PAGE LOGIC ---
   let currentMobileProduct = null;
   let openedGalleryFromMobileDetail = false;
@@ -3575,7 +3600,7 @@ console.log("images:", inquiryImageFiles);
     saveToRecentlyViewed(p);
     
     mobQvTitle.textContent = p.name;
-    mobQvPrice.textContent = formatPrice(p.price);
+    mobQvPrice.innerHTML = renderDetailsPriceHtml(p, true);
     mobQvType.textContent = p.badge;
 
     // ── Stock status (below price) ────────────────────────────────────────────
@@ -3990,7 +4015,7 @@ console.log("images:", inquiryImageFiles);
 
     saveToRecentlyViewed(p);
     qvTitle.textContent = p.name;
-    qvPrice.textContent = formatPrice(p.price);
+    qvPrice.innerHTML = renderDetailsPriceHtml(p, false);
     qvType.textContent = p.badge;
 
     // ── Stock status (below price) ────────────────────────────────────────────
