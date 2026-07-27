@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (type === 'error') icon = '⚠️';
     
     toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
-    toastContainer.appendChild(toast);
+    container.appendChild(toast);
     
     // trigger animation
     setTimeout(() => {
@@ -1877,11 +1877,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Show loading state
     setLoginLoading(true);
 
+    let loginSuccess = false;
+
     try {
       const res = await fetch(getApiUrl('/api/admin/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        // Send both email and password to backend
         body: JSON.stringify({ email, password })
       });
 
@@ -1893,16 +1894,13 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast('Portal Access Granted! ✨', 'success');
 
         // Clear sensitive fields
-        adminEmailInput.value = '';
-        adminPasswordInput.value = '';
+        if (adminEmailInput) adminEmailInput.value = '';
+        if (adminPasswordInput) adminPasswordInput.value = '';
         setLoginError('');
-
-        // Route to dashboard and refresh product catalog
-        await handleRouting();
-        await renderCatalog();
+        loginSuccess = true;
       } else {
-        // ❌ Login failed — show inline error + shake animation
-        const errorMsg = data.error || 'Invalid email or password. Please try again.';
+        // ❌ Login failed — show specific server error message or generic invalid credentials
+        const errorMsg = data.error || data.message || (res.status === 401 ? 'Invalid email or password. Please try again.' : 'Authentication failed. Please try again.');
         setLoginError(errorMsg);
 
         // Shake the login card
@@ -1910,13 +1908,23 @@ document.addEventListener('DOMContentLoaded', () => {
         card?.classList.add('error-shake');
         setTimeout(() => card?.classList.remove('error-shake'), 500);
 
-        // Clear password field on failed attempt
-        adminPasswordInput.value = '';
+        if (adminPasswordInput) adminPasswordInput.value = '';
       }
     } catch (err) {
-      setLoginError('Cannot connect to server. Please check your connection.');
+      console.error('❌ Login network request failed:', err);
+      setLoginError(err.message || 'Cannot connect to server. Please check your network connection.');
     } finally {
       setLoginLoading(false);
+    }
+
+    // Execute post-login routing and UI rendering outside the login fetch catch block
+    if (loginSuccess) {
+      try {
+        await handleRouting();
+        await renderCatalog();
+      } catch (postLoginErr) {
+        console.error('❌ Error rendering admin dashboard post-login:', postLoginErr);
+      }
     }
   });
 
@@ -2210,10 +2218,12 @@ document.addEventListener('DOMContentLoaded', () => {
       renderAdminOrderCards(orders, token);
 
       // ── Homepage settings ─────────────────────────────────────────────────
-      const settings = await BackendAPI.getHomepageSettings();
-      document.getElementById('settings-hero-title').value = settings.heroTitle || '';
-      document.getElementById('settings-subtitle-line1').value = settings.heroSubtitleLine1 || '';
-      document.getElementById('settings-subtitle-line2').value = settings.heroSubtitleLine2 || '';
+      const heroTitleInput = document.getElementById('settings-hero-title');
+      const sub1Input = document.getElementById('settings-subtitle-line1');
+      const sub2Input = document.getElementById('settings-subtitle-line2');
+      if (heroTitleInput) heroTitleInput.value = settings.heroTitle || '';
+      if (sub1Input) sub1Input.value = settings.heroSubtitleLine1 || '';
+      if (sub2Input) sub2Input.value = settings.heroSubtitleLine2 || '';
       
       const formPreview = document.getElementById('settings-hero-image-preview');
       const formPlaceholder = document.getElementById('settings-img-placeholder');
