@@ -2594,6 +2594,21 @@ body:has(#admin-dashboard-overlay:not(.hidden)) #main-boutique {
   animation: chipFadeOut 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
+/* --- FOCUS OUTLINE FOR KEYBOARD ACCESSIBILITY --- */
+.discount-row input[type="checkbox"]:focus-visible + .custom-checkbox {
+  outline: 2px solid var(--color-warm-brown, #b58a6a);
+  outline-offset: 2px;
+}
+
+.filter-chip button:focus-visible {
+  outline: 2px solid var(--color-warm-brown, #b58a6a);
+  outline-offset: 1px;
+}
+
+.filter-chip:focus-within {
+  border-color: rgba(181, 138, 106, 0.6);
+}
+
 
 
 
