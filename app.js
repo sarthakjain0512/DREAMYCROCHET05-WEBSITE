@@ -38,6 +38,7 @@ function getStockStatus(stock) {
 
 
 document.addEventListener('DOMContentLoaded', () => {
+  let publicProducts = [];
   // Check touch devices & reduced motion & mobile screen widths
   const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || (window.navigator && window.navigator.msMaxTouchPoints > 0);
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -802,6 +803,39 @@ document.addEventListener('DOMContentLoaded', () => {
   // Run initial calculation
   updateDiscountCounts();
 
+  // --- PRICE FILTER ENGINE & BUTTON HANDLERS ---
+  function applyPriceFilter(productsList) {
+    if (!productsList || !Array.isArray(productsList)) return [];
+    
+    return productsList.filter(p => {
+      // Clean and parse product price
+      const priceVal = parseFloat(String(p.price).replace(/[^0-9.]/g, ''));
+      if (isNaN(priceVal)) return false;
+      return priceVal >= filterState.minPrice && priceVal <= filterState.maxPrice;
+    });
+  }
+
+  // Expose filtering engine globally so future discount filtering can reuse it
+  window.applyPriceFilter = applyPriceFilter;
+
+  const filterApplyBtn = document.getElementById('filter-apply-btn');
+  filterApplyBtn?.addEventListener('click', () => {
+    const filteredProducts = applyPriceFilter(publicProducts);
+    renderCatalog(filteredProducts);
+    closeFilterDrawer();
+    playTone(440, 0.1, 'sine', 0.1);
+  });
+
+  const filterResetBtn = document.getElementById('filter-reset-btn');
+  filterResetBtn?.addEventListener('click', () => {
+    if (priceMinInput) priceMinInput.value = MIN_PRICE_LIMIT;
+    if (priceMaxInput) priceMaxInput.value = MAX_PRICE_LIMIT;
+    updatePriceSlider();
+    handleZIndex();
+    renderCatalog(publicProducts);
+    playTone(330, 0.15, 'sine', 0.1);
+  });
+
   // --- SCROLL TO TOP BUTTON ---
   const scrollToTopBtn = document.getElementById('scroll-to-top-btn');
   if (scrollToTopBtn) {
@@ -992,7 +1026,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- WISHLIST FUNCTIONALITY ---
   let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-  let publicProducts = [];
   const wishlistCounter = document.getElementById('wishlist-counter');
   const wishlistModal = document.getElementById('wishlist-modal');
   const wishlistItemsContainer = document.getElementById('wishlist-items-container');
@@ -1909,15 +1942,21 @@ document.addEventListener('DOMContentLoaded', () => {
     return card;
   }
 
-  async function renderCatalog() {
+  async function renderCatalog(productsToRender) {
     if (!productsGrid) return;
     
     try {
-      const products = await BackendAPI.getProducts();
-      publicProducts = products; // Cache for wishlist/favorites view
-      if (typeof updateDiscountCounts === 'function') {
-        updateDiscountCounts();
+      let products = productsToRender;
+      const isFiltered = Array.isArray(productsToRender);
+
+      if (!isFiltered) {
+        products = await BackendAPI.getProducts();
+        publicProducts = products; // Cache for wishlist/favorites view
+        if (typeof updateDiscountCounts === 'function') {
+          updateDiscountCounts();
+        }
       }
+
       const token = sessionStorage.getItem('admin_token');
       const isAdmin = token ? await verifyAdminToken(token) : false;
 
@@ -1962,6 +2001,11 @@ document.addEventListener('DOMContentLoaded', () => {
           openAddProductModal();
         });
         productsGrid.appendChild(addCard);
+      }
+
+      // Smooth fade-in animation of grid elements
+      if (typeof gsap !== 'undefined') {
+        gsap.fromTo(productsGrid, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' });
       }
 
       // Refresh custom cursor hovers
