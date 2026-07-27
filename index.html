@@ -431,6 +431,21 @@
         </div>
       </div>
 
+      <!-- Empty State Container -->
+      <div id="filter-empty-state" class="hidden flex-col items-center justify-center text-center py-16 px-6 glass-card rounded-cozy max-w-xl mx-auto my-8 select-none transition-all duration-300">
+        <div class="w-20 h-20 rounded-full bg-primary-container/30 flex items-center justify-center mb-6 text-primary animate-fade-in shadow-inner">
+          <span class="material-symbols-outlined text-4xl" style="font-size: 40px;">search_off</span>
+        </div>
+        <h3 class="font-serif text-2xl font-bold text-darkbrown mb-3">No Products Found</h3>
+        <p class="text-sm text-primary/70 max-w-md mb-8 leading-relaxed">
+          We couldn't find any products matching your current filters. Try adjusting your filters or reset them to see all products.
+        </p>
+        <button id="empty-state-reset-btn" class="px-6 py-3 rounded-full bg-primary text-white font-bold hover:bg-darkbrown shadow-md hover:scale-105 active:scale-95 transition-all duration-200 clickable flex items-center gap-2" type="button" aria-label="Reset all applied filters">
+          <span class="material-symbols-outlined text-lg">restart_alt</span>
+          Reset Filters
+        </button>
+      </div>
+
       <!-- Products Grid (dynamic layout via JS) -->
       <div id="products-grid" class="grid grid-cols-1 md:grid-cols-3 gap-10 transition-all duration-500">
 

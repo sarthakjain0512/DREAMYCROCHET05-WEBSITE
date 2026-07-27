@@ -994,6 +994,42 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 240);
   });
 
+  // Empty State Reset Filters button listener
+  const emptyStateResetBtn = document.getElementById('empty-state-reset-btn');
+  emptyStateResetBtn?.addEventListener('click', () => {
+    const emptyStateEl = document.getElementById('filter-empty-state');
+    if (emptyStateEl) {
+      emptyStateEl.classList.remove('animate-fade-in');
+      emptyStateEl.classList.add('animate-fade-out');
+    }
+    
+    setTimeout(() => {
+      // 1. Reset Price Range inputs
+      if (priceMinInput) priceMinInput.value = MIN_PRICE_LIMIT;
+      if (priceMaxInput) priceMaxInput.value = MAX_PRICE_LIMIT;
+      updatePriceSlider();
+      handleZIndex();
+      
+      // 2. Clear all selected Discount checkboxes & row classes
+      const checkboxes = document.querySelectorAll('.discount-row input[type="checkbox"]');
+      checkboxes.forEach(cb => {
+        cb.checked = false;
+      });
+      const discountRows = document.querySelectorAll('.discount-row');
+      discountRows.forEach(row => {
+        row.classList.remove('selected-row');
+      });
+      
+      // 3. Clear state values
+      filterState.discountRanges = [];
+      
+      // 4. Re-render all products
+      renderCatalog(publicProducts);
+      
+      playTone(330, 0.15, 'sine', 0.1);
+    }, 240);
+  });
+
   // --- SCROLL TO TOP BUTTON ---
   const scrollToTopBtn = document.getElementById('scroll-to-top-btn');
   if (scrollToTopBtn) {
@@ -2119,6 +2155,26 @@ document.addEventListener('DOMContentLoaded', () => {
       const isAdmin = token ? await verifyAdminToken(token) : false;
 
       productsGrid.innerHTML = '';
+
+      const isPriceActive = (filterState.minPrice !== MIN_PRICE_LIMIT || filterState.maxPrice !== MAX_PRICE_LIMIT);
+      const isDiscountActive = (filterState.discountRanges && filterState.discountRanges.length > 0);
+      const isAnyFilterActive = isPriceActive || isDiscountActive;
+      const emptyStateEl = document.getElementById('filter-empty-state');
+
+      if (products.length === 0 && isAnyFilterActive) {
+        if (emptyStateEl) {
+          emptyStateEl.classList.remove('hidden');
+          emptyStateEl.classList.remove('animate-fade-out');
+          emptyStateEl.classList.add('animate-fade-in');
+        }
+        productsGrid.classList.add('hidden');
+      } else {
+        if (emptyStateEl) {
+          emptyStateEl.classList.add('hidden');
+          emptyStateEl.classList.remove('animate-fade-in');
+        }
+        productsGrid.classList.remove('hidden');
+      }
 
       products.forEach((p, index) => {
         productsGrid.appendChild(renderProductCard(p, isAdmin, index));
