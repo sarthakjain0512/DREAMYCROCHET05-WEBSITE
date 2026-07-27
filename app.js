@@ -2274,6 +2274,72 @@ document.addEventListener('DOMContentLoaded', () => {
   const uploadBadgeInput = document.getElementById('upload-badge');
   const uploadLabelInput = document.getElementById('upload-label');
   const uploadStockInput = document.getElementById('upload-stock');
+  const uploadMrpInput   = document.getElementById('upload-mrp');
+  const uploadShowDiscountInput = document.getElementById('upload-show-discount');
+
+  function validateDiscountFields() {
+    if (!uploadPriceInput || !uploadMrpInput || !uploadShowDiscountInput) return;
+
+    const priceRaw = uploadPriceInput.value || '';
+    const mrpRaw = uploadMrpInput.value || '';
+
+    // Clean price (e.g. ₹250 -> 250)
+    const cleanedPrice = priceRaw.replace(/[^\d.]/g, '');
+    const priceNum = Number(cleanedPrice);
+
+    const helperText = document.getElementById('mrp-helper-text');
+
+    if (mrpRaw.trim() === '') {
+      // MRP is empty: Disable and uncheck show discount
+      uploadShowDiscountInput.disabled = true;
+      uploadShowDiscountInput.checked = false;
+      if (helperText) {
+        helperText.textContent = 'Leave empty to display only the selling price.';
+        helperText.className = 'text-xs text-primary/60 mt-1';
+      }
+      return;
+    }
+
+    const mrpNum = Number(mrpRaw);
+    if (isNaN(mrpNum) || mrpNum < 0) {
+      uploadShowDiscountInput.disabled = true;
+      uploadShowDiscountInput.checked = false;
+      if (helperText) {
+        helperText.textContent = 'MRP must be a non-negative number.';
+        helperText.className = 'text-xs text-primary/60 mt-1';
+      }
+      return;
+    }
+
+    if (isNaN(priceNum) || priceNum <= 0) {
+      uploadShowDiscountInput.disabled = true;
+      uploadShowDiscountInput.checked = false;
+      if (helperText) {
+        helperText.textContent = 'Enter a valid selling price first.';
+        helperText.className = 'text-xs text-primary/60 mt-1';
+      }
+      return;
+    }
+
+    if (mrpNum <= priceNum) {
+      uploadShowDiscountInput.disabled = true;
+      uploadShowDiscountInput.checked = false;
+      if (helperText) {
+        helperText.textContent = 'MRP must be greater than the selling price to enable discounts.';
+        helperText.className = 'text-xs text-primary font-medium mt-1';
+      }
+    } else {
+      uploadShowDiscountInput.disabled = false;
+      if (helperText) {
+        helperText.textContent = 'Leave empty to display only the selling price.';
+        helperText.className = 'text-xs text-primary/60 mt-1';
+      }
+    }
+  }
+
+  // Bind input listeners
+  uploadPriceInput?.addEventListener('input', validateDiscountFields);
+  uploadMrpInput?.addEventListener('input', validateDiscountFields);
 
   function openUploadModal() {
     if (!uploadModal) return;
@@ -2300,6 +2366,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (uploadBadgeInput)  uploadBadgeInput.value = '';
     if (uploadLabelInput)  uploadLabelInput.value = '';
     if (uploadStockInput)  uploadStockInput.value = '10';
+    if (uploadMrpInput)    uploadMrpInput.value = '';
+    if (uploadShowDiscountInput) {
+      uploadShowDiscountInput.checked = false;
+      uploadShowDiscountInput.disabled = true;
+    }
+    const helperText = document.getElementById('mrp-helper-text');
+    if (helperText) {
+      helperText.textContent = 'Leave empty to display only the selling price.';
+      helperText.className = 'text-xs text-primary/60 mt-1';
+    }
     
     const featuredInput = document.getElementById('upload-featured');
     if (featuredInput) featuredInput.checked = false;
@@ -2434,6 +2510,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const instagramInput = document.getElementById('upload-instagram');
     if (instagramInput) instagramInput.value = p.instagramLink || '';
+    
+    if (uploadMrpInput) uploadMrpInput.value = (p.mrp !== undefined && p.mrp !== null) ? p.mrp : '';
+    if (uploadShowDiscountInput) uploadShowDiscountInput.checked = !!p.showDiscount;
+    validateDiscountFields();
 
     document.querySelectorAll('.badge-preset').forEach(btn => {
       if (btn.getAttribute('data-badge') === p.badge) {
@@ -2880,7 +2960,9 @@ document.addEventListener('DOMContentLoaded', () => {
       stock: parseInt(uploadStockInput?.value, 10) >= 0 ? parseInt(uploadStockInput?.value, 10) : 10,
       featured: document.getElementById('upload-featured')?.checked || false,
       isVisible: document.getElementById('upload-visible')?.checked !== false,
-      instagramLink: document.getElementById('upload-instagram')?.value.trim() || ''
+      instagramLink: document.getElementById('upload-instagram')?.value.trim() || '',
+      mrp: uploadMrpInput?.value.trim() || '',
+      showDiscount: uploadShowDiscountInput?.checked || false
     };
 
     const progressContainer = document.getElementById('admin-upload-progress-container');

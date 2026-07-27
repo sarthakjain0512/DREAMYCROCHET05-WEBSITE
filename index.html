@@ -2848,10 +2848,28 @@
           <input type="text" id="upload-name" placeholder="e.g. Pink Tulip Bouquet" class="w-full px-4 py-3 rounded-2xl border border-primary/20 bg-white/60 text-darkbrown placeholder-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition text-sm">
         </div>
 
-        <!-- Price -->
+        <!-- Selling Price -->
         <div>
-          <label for="upload-price" class="block text-sm font-semibold text-darkbrown mb-2">Price</label>
+          <label for="upload-price" class="block text-sm font-semibold text-darkbrown mb-2">Selling Price *</label>
           <input type="text" id="upload-price" placeholder="e.g. ₹250" class="w-full px-4 py-3 rounded-2xl border border-primary/20 bg-white/60 text-darkbrown placeholder-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition text-sm">
+        </div>
+
+        <!-- MRP & Show Discount -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="upload-mrp" class="block text-sm font-semibold text-darkbrown mb-2">MRP (Optional)</label>
+            <input type="number" id="upload-mrp" placeholder="e.g. 350" min="0" step="1" class="w-full px-4 py-3 rounded-2xl border border-primary/20 bg-white/60 text-darkbrown placeholder-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition text-sm">
+            <p id="mrp-helper-text" class="text-xs text-primary/60 mt-1">Leave empty to display only the selling price.</p>
+          </div>
+          <div class="flex items-center justify-between md:justify-start md:gap-4 md:pt-8">
+            <span class="text-sm font-semibold text-darkbrown flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-primary text-lg">percent</span> Show Discount
+            </span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="upload-show-discount" class="sr-only peer" disabled>
+              <div class="w-11 h-6 bg-primary/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary peer-disabled:opacity-50"></div>
+            </label>
+          </div>
         </div>
 
         <!-- Current Stock -->
