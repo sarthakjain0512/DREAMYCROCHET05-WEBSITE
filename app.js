@@ -563,6 +563,94 @@ document.addEventListener('DOMContentLoaded', () => {
     link.addEventListener('click', closeMobileMenu);
   });
 
+  // --- PREMIUM FILTER DRAWER SYSTEM ---
+  const filterToggleBtn = document.getElementById('filter-toggle-btn');
+  const filterDrawerCloseBtn = document.getElementById('filter-drawer-close-btn');
+  const filterDrawerOverlay = document.getElementById('filter-drawer-overlay');
+  const filterDrawer = document.getElementById('filter-drawer');
+  let previouslyFocusedFilterElement = null;
+
+  function openFilterDrawer() {
+    if (!filterDrawer || !filterDrawerOverlay) return;
+
+    previouslyFocusedFilterElement = document.activeElement;
+
+    filterDrawerOverlay.classList.remove('hidden');
+    filterDrawer.classList.remove('hidden');
+
+    setTimeout(() => {
+      filterDrawerOverlay.classList.add('active');
+      filterDrawer.classList.add('active');
+      filterToggleBtn?.setAttribute('aria-expanded', 'true');
+      filterDrawer.setAttribute('aria-hidden', 'false');
+      filterDrawerCloseBtn?.focus();
+    }, 10);
+
+    if (lenis) lenis.stop(); // Disable Lenis scroll
+    document.body.classList.add('overflow-hidden'); // Fallback scroll lock
+
+    filterDrawer.addEventListener('keydown', trapFilterFocus);
+  }
+
+  function closeFilterDrawer() {
+    if (!filterDrawer || !filterDrawerOverlay) return;
+
+    filterDrawerOverlay.classList.remove('active');
+    filterDrawer.classList.remove('active');
+    filterToggleBtn?.setAttribute('aria-expanded', 'false');
+    filterDrawer.setAttribute('aria-hidden', 'true');
+
+    setTimeout(() => {
+      filterDrawerOverlay.classList.add('hidden');
+      filterDrawer.classList.add('hidden');
+
+      if (previouslyFocusedFilterElement && typeof previouslyFocusedFilterElement.focus === 'function') {
+        previouslyFocusedFilterElement.focus();
+      }
+    }, 400);
+
+    if (lenis) lenis.start(); // Enable Lenis scroll
+    document.body.classList.remove('overflow-hidden'); // Restore scroll
+
+    filterDrawer.removeEventListener('keydown', trapFilterFocus);
+  }
+
+  function trapFilterFocus(e) {
+    if (!filterDrawer) return;
+
+    const focusables = filterDrawer.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (focusables.length === 0) return;
+
+    const firstFocusable = focusables[0];
+    const lastFocusable = focusables[focusables.length - 1];
+
+    if (e.key === 'Tab') {
+      if (e.shiftKey) { // Shift + Tab
+        if (document.activeElement === firstFocusable) {
+          lastFocusable.focus();
+          e.preventDefault();
+        }
+      } else { // Tab
+        if (document.activeElement === lastFocusable) {
+          firstFocusable.focus();
+          e.preventDefault();
+        }
+      }
+    }
+  }
+
+  filterToggleBtn?.addEventListener('click', openFilterDrawer);
+  filterDrawerCloseBtn?.addEventListener('click', closeFilterDrawer);
+  filterDrawerOverlay?.addEventListener('click', closeFilterDrawer);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (filterDrawer && filterDrawer.classList.contains('active')) {
+        closeFilterDrawer();
+      }
+    }
+  });
+
   // --- SCROLL TO TOP BUTTON ---
   const scrollToTopBtn = document.getElementById('scroll-to-top-btn');
   if (scrollToTopBtn) {

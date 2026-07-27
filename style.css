@@ -2337,3 +2337,63 @@ body:has(#admin-dashboard-overlay:not(.hidden)) #main-boutique {
     animation: none !important;
   }
 }
+
+/* --- PREMIUM FILTER DRAWER SYSTEM --- */
+.filter-drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(74, 51, 33, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.filter-drawer-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.filter-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 100%;
+  max-width: 420px; /* Responsive desktop width */
+  background-color: var(--bg-surface-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-left: 1px solid var(--border-glass);
+  box-shadow: -8px 0 32px rgba(74, 51, 33, 0.12);
+  z-index: 1000;
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-drawer.active {
+  transform: translateX(0);
+}
+
+.filter-drawer .overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Dark mode overrides */
+.dark-mode .filter-drawer-overlay {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.dark-mode .filter-drawer {
+  background-color: rgba(45, 30, 21, 0.95);
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.4);
+}
+

@@ -385,8 +385,8 @@
         <p class="text-sm text-primary/70 mt-2">Finely detailed, premium pieces made with absolute care.</p>
       </div>
 
-      <!-- Layout Controls & Upload Button Bar -->
-      <div class="flex flex-wrap items-center justify-between gap-4 mb-10 px-1">
+      <!-- Layout Controls & Filter Bar -->
+      <div class="flex items-center justify-between gap-4 mb-10 px-1">
         <!-- Layout Toggle Buttons -->
         <div class="flex items-center gap-2 bg-white/60 backdrop-blur-sm border border-primary/10 rounded-2xl p-1.5 shadow-sm">
           <button id="layout-1col" class="layout-btn active-layout p-2 rounded-xl transition-all" title="Single Column">
@@ -400,6 +400,14 @@
           </button>
           <button id="layout-list" class="layout-btn p-2 rounded-xl transition-all" title="List View">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="2" rx="1"/><rect x="3" y="11" width="18" height="2" rx="1"/><rect x="3" y="17" width="18" height="2" rx="1"/></svg>
+          </button>
+        </div>
+
+        <!-- Filter Button -->
+        <div class="flex items-center bg-white/60 backdrop-blur-sm border border-primary/10 rounded-2xl p-1.5 shadow-sm">
+          <button id="filter-toggle-btn" class="flex items-center gap-2 px-4 py-2 rounded-xl text-primary hover:text-darkbrown hover:bg-primary-container/20 transition-all duration-200 active:scale-95 font-medium clickable" aria-label="Open Filters" aria-expanded="false" aria-controls="filter-drawer">
+            <span class="material-symbols-outlined text-lg">tune</span>
+            <span class="text-sm">Filter</span>
           </button>
         </div>
       </div>
@@ -3042,6 +3050,52 @@
 
   <!-- Toast Container -->
   <div id="toast-container" class="toast-container"></div>
+
+  <!-- Premium Filter Drawer -->
+  <div id="filter-drawer-overlay" class="filter-drawer-overlay hidden" aria-hidden="true"></div>
+  <aside id="filter-drawer" class="filter-drawer hidden" aria-label="Product Filters" aria-hidden="true" role="dialog" tabindex="-1">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6 pb-4 border-b border-primary/10">
+      <div class="flex items-center gap-2">
+        <span class="text-primary text-xl">✨</span>
+        <h2 class="text-xl font-heading font-bold text-darkbrown">Filters</h2>
+      </div>
+      <button id="filter-drawer-close-btn" class="p-2 rounded-full hover:bg-beige/40 text-darkbrown transition clickable active:scale-90" aria-label="Close filters">
+        <span class="material-symbols-outlined text-xl">close</span>
+      </button>
+    </div>
+
+    <!-- Content Area (Scrollable) -->
+    <div class="flex-grow overflow-y-auto pr-1" data-lenis-prevent>
+      <!-- Price Range Placeholder -->
+      <div class="mb-6">
+        <h3 class="block text-xs font-semibold uppercase tracking-wider text-primary/70 mb-3">Price Range</h3>
+        <div class="p-6 rounded-cozy bg-white/40 border border-primary/10 border-dashed text-sm text-darkbrown/60 italic text-center">
+          Price range options will appear here
+        </div>
+      </div>
+
+      <hr class="border-t border-primary/10 my-6">
+
+      <!-- Discount Placeholder -->
+      <div class="mb-6">
+        <h3 class="block text-xs font-semibold uppercase tracking-wider text-primary/70 mb-3">Discount</h3>
+        <div class="p-6 rounded-cozy bg-white/40 border border-primary/10 border-dashed text-sm text-darkbrown/60 italic text-center">
+          Discount options will appear here
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Buttons -->
+    <div class="pt-4 border-t border-primary/10 flex gap-4 mt-auto">
+      <button id="filter-reset-btn" class="px-6 py-3 rounded-full border border-primary/30 text-primary font-bold text-sm hover:bg-primary-container/20 hover:scale-105 active:scale-95 duration-300 shadow-sm transition-all flex-1" type="button" aria-label="Reset filters">
+        Reset
+      </button>
+      <button id="filter-apply-btn" class="px-6 py-3 rounded-full bg-primary text-white font-bold text-sm hover:bg-primary/90 hover:scale-105 active:scale-95 duration-300 shadow-lg transition-all flex-1" type="button" aria-label="Apply filters">
+        Apply Filters
+      </button>
+    </div>
+  </aside>
 
   <!-- Custom Scripts -->
   <script src="config/apiConfig.js" defer></script>
