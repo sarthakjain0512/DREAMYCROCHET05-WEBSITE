@@ -872,6 +872,128 @@ document.addEventListener('DOMContentLoaded', () => {
     playTone(330, 0.15, 'sine', 0.1);
   });
 
+  // --- ACTIVE FILTER CHIPS & SUMMARY LOGIC ---
+  function animateAndRemovePriceFilter(chipEl) {
+    chipEl.classList.add('animate-fade-out');
+    setTimeout(() => {
+      if (priceMinInput) priceMinInput.value = MIN_PRICE_LIMIT;
+      if (priceMaxInput) priceMaxInput.value = MAX_PRICE_LIMIT;
+      updatePriceSlider();
+      handleZIndex();
+      
+      let filtered = applyPriceFilter(publicProducts);
+      filtered = applyDiscountFilter(filtered);
+      renderCatalog(filtered);
+    }, 240);
+  }
+
+  function animateAndRemoveDiscountFilter(chipEl, range) {
+    chipEl.classList.add('animate-fade-out');
+    setTimeout(() => {
+      const cb = document.getElementById(`discount-${range}`);
+      if (cb) {
+        cb.checked = false;
+      }
+      document.querySelector(`label[for="discount-${range}"]`)?.classList.remove('selected-row');
+      
+      filterState.discountRanges = filterState.discountRanges.filter(r => r !== range);
+      
+      let filtered = applyPriceFilter(publicProducts);
+      filtered = applyDiscountFilter(filtered);
+      renderCatalog(filtered);
+    }, 240);
+  }
+
+  function updateFilterSummaryAndChips(renderedCount) {
+    const container = document.getElementById('active-filters-container');
+    const summaryText = document.getElementById('filter-summary-text');
+    const chipsList = document.getElementById('active-chips-list');
+    
+    if (!container || !summaryText || !chipsList) return;
+    
+    const isPriceActive = (filterState.minPrice !== MIN_PRICE_LIMIT || filterState.maxPrice !== MAX_PRICE_LIMIT);
+    const isDiscountActive = (filterState.discountRanges && filterState.discountRanges.length > 0);
+    const isAnyFilterActive = isPriceActive || isDiscountActive;
+    
+    const totalCount = (typeof publicProducts !== 'undefined' && Array.isArray(publicProducts)) ? publicProducts.length : renderedCount;
+    
+    if (!isAnyFilterActive) {
+      container.classList.add('hidden');
+      chipsList.innerHTML = '';
+      return;
+    }
+    
+    container.classList.remove('hidden');
+    summaryText.textContent = `Showing ${renderedCount} ${renderedCount === 1 ? 'Product' : 'Products'} Filtered from ${totalCount} ${totalCount === 1 ? 'Product' : 'Products'}`;
+    
+    chipsList.innerHTML = '';
+    
+    if (isPriceActive) {
+      const priceChip = document.createElement('div');
+      priceChip.className = 'filter-chip select-none animate-fade-in';
+      priceChip.innerHTML = `
+        <span>₹${filterState.minPrice}–₹${filterState.maxPrice}</span>
+        <button type="button" aria-label="Remove price filter" class="clickable">
+          <span class="material-symbols-outlined text-xs" style="font-size: 14px;">close</span>
+        </button>
+      `;
+      priceChip.querySelector('button').addEventListener('click', () => {
+        animateAndRemovePriceFilter(priceChip);
+      });
+      chipsList.appendChild(priceChip);
+    }
+    
+    if (isDiscountActive) {
+      filterState.discountRanges.forEach(range => {
+        const discountChip = document.createElement('div');
+        discountChip.className = 'filter-chip select-none animate-fade-in';
+        discountChip.innerHTML = `
+          <span>${range}%</span>
+          <button type="button" aria-label="Remove ${range}% discount filter" class="clickable">
+            <span class="material-symbols-outlined text-xs" style="font-size: 14px;">close</span>
+          </button>
+        `;
+        discountChip.querySelector('button').addEventListener('click', () => {
+          animateAndRemoveDiscountFilter(discountChip, range);
+        });
+        chipsList.appendChild(discountChip);
+      });
+    }
+  }
+
+  // Clear All button inside chips section
+  const filterClearAllBtn = document.getElementById('filter-clear-all-btn');
+  filterClearAllBtn?.addEventListener('click', () => {
+    const chips = document.querySelectorAll('.filter-chip');
+    chips.forEach(chip => chip.classList.add('animate-fade-out'));
+    
+    setTimeout(() => {
+      // 1. Reset Price Range inputs
+      if (priceMinInput) priceMinInput.value = MIN_PRICE_LIMIT;
+      if (priceMaxInput) priceMaxInput.value = MAX_PRICE_LIMIT;
+      updatePriceSlider();
+      handleZIndex();
+      
+      // 2. Clear all selected Discount checkboxes & row classes
+      const checkboxes = document.querySelectorAll('.discount-row input[type="checkbox"]');
+      checkboxes.forEach(cb => {
+        cb.checked = false;
+      });
+      const discountRows = document.querySelectorAll('.discount-row');
+      discountRows.forEach(row => {
+        row.classList.remove('selected-row');
+      });
+      
+      // 3. Clear state values
+      filterState.discountRanges = [];
+      
+      // 4. Re-render all products
+      renderCatalog(publicProducts);
+      
+      playTone(330, 0.15, 'sine', 0.1);
+    }, 240);
+  });
+
   // --- SCROLL TO TOP BUTTON ---
   const scrollToTopBtn = document.getElementById('scroll-to-top-btn');
   if (scrollToTopBtn) {
@@ -2051,6 +2173,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       updateWishlistUI();
       renderRecentlyViewed();
+      if (typeof updateFilterSummaryAndChips === 'function') {
+        updateFilterSummaryAndChips(products.length);
+      }
     } catch (err) {
       console.error('Failed to render catalog:', err);
     }

@@ -412,6 +412,25 @@
         </div>
       </div>
 
+      <!-- Active Filters Summary & Chips Container -->
+      <div id="active-filters-container" class="mb-8 hidden transition-all duration-300">
+        <!-- Filter Summary -->
+        <div class="flex items-center justify-between mb-4 border-b border-primary/10 pb-3 flex-wrap gap-2 select-none">
+          <h4 class="text-xs font-semibold uppercase tracking-wider text-primary/70">Active Filters</h4>
+          <span id="filter-summary-text" class="text-xs font-semibold text-darkbrown/80 dark:text-beige/80">
+            Showing 45 Products Filtered from 45 Products
+          </span>
+        </div>
+        
+        <!-- Chips Wrapper -->
+        <div class="flex flex-wrap gap-2.5 items-center">
+          <div id="active-chips-list" class="flex flex-wrap gap-2"></div>
+          <button id="filter-clear-all-btn" class="text-xs font-bold text-primary hover:text-darkbrown hover:underline px-3 py-1.5 rounded-full transition-colors duration-200" type="button" aria-label="Clear all active filters">
+            Clear All
+          </button>
+        </div>
+      </div>
+
       <!-- Products Grid (dynamic layout via JS) -->
       <div id="products-grid" class="grid grid-cols-1 md:grid-cols-3 gap-10 transition-all duration-500">
 

@@ -2511,5 +2511,89 @@ body:has(#admin-dashboard-overlay:not(.hidden)) #main-boutique {
   border-color: rgba(245, 230, 211, 0.2) !important;
 }
 
+/* --- FILTER CHIPS STYLING --- */
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: rgba(250, 218, 221, 0.4);
+  border: 1px solid rgba(181, 138, 106, 0.2);
+  color: var(--color-warm-brown);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(74, 51, 33, 0.05);
+}
+
+.filter-chip:hover {
+  background-color: rgba(250, 218, 221, 0.6);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(74, 51, 33, 0.1);
+}
+
+.filter-chip button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  color: var(--color-warm-brown);
+  opacity: 0.6;
+  transition: all 0.2s ease;
+}
+
+.filter-chip button:hover {
+  opacity: 1;
+  background-color: rgba(74, 51, 33, 0.1);
+}
+
+.dark-mode .filter-chip {
+  background-color: rgba(250, 218, 221, 0.1);
+  border-color: rgba(245, 230, 211, 0.15);
+  color: var(--color-beige);
+}
+
+.dark-mode .filter-chip button {
+  color: var(--color-beige);
+}
+
+.dark-mode .filter-chip button:hover {
+  background-color: rgba(245, 230, 211, 0.15);
+}
+
+@keyframes chipFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: chipFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes chipFadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9) translateY(4px);
+  }
+}
+
+.animate-fade-out {
+  animation: chipFadeOut 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+
 
 
