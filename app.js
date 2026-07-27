@@ -742,7 +742,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (mrpVal <= priceVal) return null;
     
-    const discountPercent = ((mrpVal - priceVal) / mrpVal) * 100;
+    const discountPercent = Math.round(((mrpVal - priceVal) / mrpVal) * 100);
     return discountPercent;
   }
 
@@ -803,7 +803,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Run initial calculation
   updateDiscountCounts();
 
-  // --- PRICE FILTER ENGINE & BUTTON HANDLERS ---
+  // --- PRICE & DISCOUNT FILTER ENGINES & BUTTON HANDLERS ---
   function applyPriceFilter(productsList) {
     if (!productsList || !Array.isArray(productsList)) return [];
     
@@ -815,12 +815,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Expose filtering engine globally so future discount filtering can reuse it
+  function applyDiscountFilter(productsList) {
+    if (!productsList || !Array.isArray(productsList)) return [];
+    
+    // If no discount ranges are selected, don't filter (return all)
+    if (!filterState.discountRanges || filterState.discountRanges.length === 0) {
+      return productsList;
+    }
+    
+    return productsList.filter(p => {
+      const discount = getProductDiscount(p);
+      const range = getDiscountRangeKey(discount);
+      return range && filterState.discountRanges.includes(range);
+    });
+  }
+
+  // Expose filtering engines globally so other components can reuse them
   window.applyPriceFilter = applyPriceFilter;
+  window.applyDiscountFilter = applyDiscountFilter;
 
   const filterApplyBtn = document.getElementById('filter-apply-btn');
   filterApplyBtn?.addEventListener('click', () => {
-    const filteredProducts = applyPriceFilter(publicProducts);
+    // Combined filtering: Price first, then Discount
+    let filteredProducts = applyPriceFilter(publicProducts);
+    filteredProducts = applyDiscountFilter(filteredProducts);
+    
     renderCatalog(filteredProducts);
     closeFilterDrawer();
     playTone(440, 0.1, 'sine', 0.1);
@@ -828,11 +847,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const filterResetBtn = document.getElementById('filter-reset-btn');
   filterResetBtn?.addEventListener('click', () => {
+    // 1. Reset Price Range inputs
     if (priceMinInput) priceMinInput.value = MIN_PRICE_LIMIT;
     if (priceMaxInput) priceMaxInput.value = MAX_PRICE_LIMIT;
     updatePriceSlider();
     handleZIndex();
+    
+    // 2. Clear all selected Discount checkboxes & row classes
+    const checkboxes = document.querySelectorAll('.discount-row input[type="checkbox"]');
+    checkboxes.forEach(cb => {
+      cb.checked = false;
+    });
+    const discountRows = document.querySelectorAll('.discount-row');
+    discountRows.forEach(row => {
+      row.classList.remove('selected-row');
+    });
+    
+    // 3. Clear state values
+    filterState.discountRanges = [];
+    
+    // 4. Re-render all products
     renderCatalog(publicProducts);
+    
     playTone(330, 0.15, 'sine', 0.1);
   });
 
