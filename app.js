@@ -651,6 +651,79 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // --- PRICE RANGE SELECTOR STATE & LOGIC ---
+  const MIN_PRICE_LIMIT = 49;
+  const MAX_PRICE_LIMIT = 3999;
+  const MIN_PRICE_GAP = 100; // Rs. 100 gap
+
+  let filterState = {
+    minPrice: MIN_PRICE_LIMIT,
+    maxPrice: MAX_PRICE_LIMIT
+  };
+
+  const priceMinInput = document.getElementById('price-min-input');
+  const priceMaxInput = document.getElementById('price-max-input');
+  const priceSliderTrack = document.getElementById('price-slider-track');
+  const priceRangeDisplay = document.getElementById('price-range-display');
+
+  function updatePriceSlider() {
+    if (!priceMinInput || !priceMaxInput || !priceSliderTrack || !priceRangeDisplay) return;
+
+    let minVal = parseInt(priceMinInput.value);
+    let maxVal = parseInt(priceMaxInput.value);
+
+    // Prevent handles from crossing
+    if (maxVal - minVal < MIN_PRICE_GAP) {
+      if (document.activeElement === priceMinInput) {
+        minVal = maxVal - MIN_PRICE_GAP;
+        priceMinInput.value = minVal;
+      } else {
+        maxVal = minVal + MIN_PRICE_GAP;
+        priceMaxInput.value = maxVal;
+      }
+    }
+
+    // Store selected values in state
+    filterState.minPrice = minVal;
+    filterState.maxPrice = maxVal;
+
+    // Calculate percentages for visual track highlighting
+    const totalRange = MAX_PRICE_LIMIT - MIN_PRICE_LIMIT;
+    const minPercent = ((minVal - MIN_PRICE_LIMIT) / totalRange) * 100;
+    const maxPercent = ((maxVal - MIN_PRICE_LIMIT) / totalRange) * 100;
+
+    priceSliderTrack.style.left = `${minPercent}%`;
+    priceSliderTrack.style.right = `${100 - maxPercent}%`;
+
+    // Live display values update
+    priceRangeDisplay.textContent = `₹${minVal} – ₹${maxVal}`;
+  }
+
+  // Adjust z-index dynamically so user can always drag overlapping handles
+  function handleZIndex() {
+    if (!priceMinInput || !priceMaxInput) return;
+    if (parseInt(priceMinInput.value) > (MAX_PRICE_LIMIT - MIN_PRICE_LIMIT) / 2) {
+      priceMinInput.style.zIndex = '20';
+      priceMaxInput.style.zIndex = '10';
+    } else {
+      priceMinInput.style.zIndex = '10';
+      priceMaxInput.style.zIndex = '20';
+    }
+  }
+
+  // Bind events for live value updates and z-indexing
+  priceMinInput?.addEventListener('input', () => {
+    updatePriceSlider();
+    handleZIndex();
+  });
+  priceMaxInput?.addEventListener('input', () => {
+    updatePriceSlider();
+    handleZIndex();
+  });
+
+  // Initialize track on load
+  updatePriceSlider();
+
   // --- SCROLL TO TOP BUTTON ---
   const scrollToTopBtn = document.getElementById('scroll-to-top-btn');
   if (scrollToTopBtn) {

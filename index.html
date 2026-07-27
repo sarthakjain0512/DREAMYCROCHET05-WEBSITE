@@ -3067,11 +3067,34 @@
 
     <!-- Content Area (Scrollable) -->
     <div class="flex-grow overflow-y-auto pr-1" data-lenis-prevent>
-      <!-- Price Range Placeholder -->
+      <!-- Price Range Selector -->
       <div class="mb-6">
-        <h3 class="block text-xs font-semibold uppercase tracking-wider text-primary/70 mb-3">Price Range</h3>
-        <div class="p-6 rounded-cozy bg-white/40 border border-primary/10 border-dashed text-sm text-darkbrown/60 italic text-center">
-          Price range options will appear here
+        <h3 class="block text-xs font-semibold uppercase tracking-wider text-primary/70 mb-2">Price Range</h3>
+        
+        <div class="price-range-slider-container px-2">
+          <!-- Limit Labels -->
+          <div class="flex justify-between text-xs text-primary/70 mb-1 font-medium select-none">
+            <span>₹49</span>
+            <span>₹3999</span>
+          </div>
+
+          <!-- Dual Slider Inputs & Visual Tracks -->
+          <div class="relative w-full h-6 flex items-center mb-4">
+            <!-- Background track (unselected) -->
+            <div class="absolute w-full h-1.5 bg-beige/50 dark:bg-beige/10 rounded-full"></div>
+            <!-- Active range track (filled) -->
+            <div id="price-slider-track" class="absolute h-1.5 bg-primary rounded-full" style="left: 0%; right: 0%;"></div>
+            
+            <!-- Hidden inputs mapped together -->
+            <input type="range" id="price-min-input" min="49" max="3999" value="49" class="absolute w-full pointer-events-none appearance-none bg-transparent h-6 outline-none z-10" aria-label="Minimum Price">
+            <input type="range" id="price-max-input" min="49" max="3999" value="3999" class="absolute w-full pointer-events-none appearance-none bg-transparent h-6 outline-none z-10" aria-label="Maximum Price">
+          </div>
+
+          <!-- Selected Range Indicator -->
+          <div class="flex justify-between items-center text-sm font-medium text-darkbrown">
+            <span class="text-xs text-primary/70 uppercase tracking-wider font-semibold">Selected Range</span>
+            <span id="price-range-display" class="text-primary font-bold dark:text-beige">₹49 – ₹3999</span>
+          </div>
         </div>
       </div>
 
