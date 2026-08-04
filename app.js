@@ -7360,5 +7360,25 @@ console.log("images:", inquiryImageFiles);
   updateWishlistUI();
 });
 
+// Register Service Worker
+if ('serviceWorker' in navigator && !window.__swRegistered) {
+  window.__swRegistered = true;
+  const registerSW = () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(registration => {
+        console.log('DreamyCrochet PWA: Service Worker registered successfully with scope:', registration.scope);
+      })
+      .catch(error => {
+        console.error('DreamyCrochet PWA: Service Worker registration failed:', error);
+      });
+  };
+
+  if (document.readyState === 'complete') {
+    registerSW();
+  } else {
+    window.addEventListener('load', registerSW, { once: true });
+  }
+}
+
 
 
