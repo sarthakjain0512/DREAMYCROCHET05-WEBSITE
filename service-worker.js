@@ -1,4 +1,5 @@
-const CACHE_NAME = 'dreamycrochet-v1'; // Update trigger version 1.0.1
+const APP_VERSION = '1.0.2';
+const CACHE_NAME = `dreamycrochet-${APP_VERSION}`;
 
 const PRECACHE_ASSETS = [
   '/',
@@ -39,7 +40,6 @@ self.addEventListener('install', event => {
         console.log('[Service Worker] Pre-caching core assets');
         return cache.addAll(PRECACHE_ASSETS);
       })
-      .then(() => self.skipWaiting())
   );
 });
 
@@ -61,6 +61,16 @@ self.addEventListener('activate', event => {
 
 // Fetch Event - Dynamic routing and caching strategy
 self.addEventListener('fetch', event => {
+  // 1. Caching & size optimizations: only handle GET requests
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  // 2. Protocol checks: only handle http/https requests (skip chrome-extension://, etc.)
+  if (!event.request.url.startsWith('http://') && !event.request.url.startsWith('https://')) {
+    return;
+  }
+
   const url = new URL(event.request.url);
 
   // 1. API Requests -> Network Only
