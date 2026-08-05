@@ -2782,6 +2782,13 @@ body:has(#admin-dashboard-overlay:not(.hidden)) #main-boutique {
   }
 }
 
+/* Unique selectors for both banners (reusing the pwa-banner style) */
+#pwa-install-banner,
+#pwa-update-banner {
+  /* Inherits from .pwa-banner */
+}
+
+
 
 
 

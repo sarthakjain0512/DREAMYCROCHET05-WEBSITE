@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dreamycrochet-v1';
+const CACHE_NAME = 'dreamycrochet-v1'; // Update trigger version 1.0.1
 
 const PRECACHE_ASSETS = [
   '/',
@@ -143,3 +143,11 @@ self.addEventListener('fetch', event => {
       })
   );
 });
+
+// Listen for message events from client (to skip waiting)
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
