@@ -2609,6 +2609,179 @@ body:has(#admin-dashboard-overlay:not(.hidden)) #main-boutique {
   border-color: rgba(181, 138, 106, 0.6);
 }
 
+/* ================================================
+   PWA INSTALL BANNER STYLES
+   ================================================ */
+.pwa-banner {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  max-width: 400px;
+  width: calc(100% - 48px);
+  background: rgba(255, 248, 238, 0.85); /* Cream background with glassmorphism */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(181, 138, 106, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(74, 51, 33, 0.15);
+  padding: 24px;
+  opacity: 0;
+  transform: translateY(30px) scale(0.95);
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.pwa-banner:focus-visible {
+  outline: 2px solid var(--color-warm-brown, #b58a6a);
+  outline-offset: 2px;
+}
+
+.pwa-banner.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.pwa-banner.dismissing {
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+  pointer-events: none;
+}
+
+.pwa-banner.hidden {
+  display: none !important;
+}
+
+.pwa-banner-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+
+.pwa-banner-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pwa-banner-icon {
+  font-size: 1.3rem;
+}
+
+.pwa-banner-header h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-dark-brown, #4A3321);
+  margin: 0;
+}
+
+.pwa-banner-card p {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-muted, #6D5440);
+  margin: 0;
+}
+
+.pwa-banner-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.pwa-btn {
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  text-decoration: none;
+}
+
+.pwa-btn:focus-visible {
+  outline: 2px solid var(--color-warm-brown, #b58a6a);
+  outline-offset: 2px;
+}
+
+.pwa-btn-install {
+  background-color: var(--color-warm-brown, #B58A6A);
+  color: var(--color-soft-white, #FFFFFF);
+  box-shadow: 0 4px 10px rgba(181, 138, 106, 0.15);
+}
+
+.pwa-btn-install:hover {
+  background-color: var(--color-dark-brown, #4A3321);
+  box-shadow: 0 6px 14px rgba(74, 51, 33, 0.2);
+  transform: translateY(-1px);
+}
+
+.pwa-btn-install:active {
+  transform: translateY(0);
+}
+
+.pwa-btn-later {
+  background-color: transparent;
+  border: 1.5px solid var(--color-warm-brown, #B58A6A);
+  color: var(--color-warm-brown, #B58A6A);
+}
+
+.pwa-btn-later:hover {
+  background-color: var(--color-beige, #F5E6D3);
+  color: var(--color-dark-brown, #4A3321);
+  border-color: var(--color-dark-brown, #4A3321);
+  transform: translateY(-1px);
+}
+
+.pwa-btn-later:active {
+  transform: translateY(0);
+}
+
+/* Dark mode overrides */
+.dark-mode .pwa-banner {
+  background: rgba(45, 30, 21, 0.85); /* Dark brown surface background with glassmorphic look */
+  border-color: rgba(245, 230, 211, 0.15);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+.dark-mode .pwa-banner-header h2 {
+  color: var(--color-cream, #FFF8EE);
+}
+
+.dark-mode .pwa-banner-card p {
+  color: var(--text-muted, #CDBEB0);
+}
+
+.dark-mode .pwa-btn-later {
+  border-color: var(--color-pink, #E8B4B8);
+  color: var(--color-pink, #E8B4B8);
+}
+
+.dark-mode .pwa-btn-later:hover {
+  background-color: rgba(250, 218, 221, 0.15);
+  color: var(--color-cream, #FFF8EE);
+  border-color: var(--color-pink, #E8B4B8);
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 480px) {
+  .pwa-banner {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    width: calc(100% - 32px);
+    max-width: none;
+    padding: 20px;
+  }
+}
+
 
 
 

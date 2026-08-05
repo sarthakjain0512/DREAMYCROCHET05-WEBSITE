@@ -7380,5 +7380,119 @@ if ('serviceWorker' in navigator && !window.__swRegistered) {
   }
 }
 
+// PWA Install Prompt Logic
+let deferredPrompt = null;
+
+window.addEventListener('load', () => {
+  const installBanner = document.getElementById('pwa-install-banner');
+  const installBtn = document.getElementById('pwa-install-btn');
+  const laterBtn = document.getElementById('pwa-later-btn');
+
+  if (!installBanner) return;
+
+  const showInstallBanner = () => {
+    // Check if permanently installed
+    if (localStorage.getItem('dreamycrochet-installed') === 'true') {
+      return;
+    }
+    
+    // Check if user clicked "Later" in the last 24 hours
+    const laterTimestamp = localStorage.getItem('dreamycrochet-later-timestamp');
+    if (laterTimestamp) {
+      const hoursElapsed = (Date.now() - parseInt(laterTimestamp, 10)) / (1000 * 60 * 60);
+      if (hoursElapsed < 24) {
+        console.log('DreamyCrochet PWA: Install banner suppressed (later button clicked < 24h ago).');
+        return;
+      }
+    }
+
+    // Show banner with animation
+    installBanner.classList.remove('hidden');
+    requestAnimationFrame(() => {
+      installBanner.classList.add('active');
+      installBanner.focus();
+    });
+  };
+
+  const hideInstallBanner = (permanently = false) => {
+    installBanner.classList.remove('active');
+    installBanner.classList.add('dismissing');
+    
+    if (permanently) {
+      localStorage.setItem('dreamycrochet-installed', 'true');
+    }
+
+    setTimeout(() => {
+      installBanner.classList.add('hidden');
+      installBanner.classList.remove('dismissing');
+    }, 400);
+  };
+
+  // 1. Capture beforeinstallprompt event
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    showInstallBanner();
+  });
+
+  // 2. Install Button handler
+  if (installBtn) {
+    installBtn.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`DreamyCrochet PWA: User installation choice: ${outcome}`);
+      if (outcome === 'accepted') {
+        hideInstallBanner(true);
+      } else {
+        hideInstallBanner(false);
+      }
+      deferredPrompt = null;
+    });
+  }
+
+  // 3. Later Button handler
+  if (laterBtn) {
+    laterBtn.addEventListener('click', () => {
+      localStorage.setItem('dreamycrochet-later-timestamp', Date.now().toString());
+      hideInstallBanner(false);
+    });
+  }
+
+  // 4. App Installed listener
+  window.addEventListener('appinstalled', () => {
+    hideInstallBanner(true);
+    deferredPrompt = null;
+    console.log('DreamyCrochet installed successfully.');
+  });
+
+  // Keyboard navigation & accessibility
+  installBanner.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (laterBtn) laterBtn.click();
+    }
+    
+    if (e.key === 'Tab') {
+      const focusableElements = installBanner.querySelectorAll('button');
+      if (focusableElements.length === 0) return;
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+      
+      if (e.shiftKey) { // Shift + Tab
+        if (document.activeElement === firstElement) {
+          lastElement.focus();
+          e.preventDefault();
+        }
+      } else { // Tab
+        if (document.activeElement === lastElement) {
+          firstElement.focus();
+          e.preventDefault();
+        }
+      }
+    }
+  });
+});
+
+
 
 
