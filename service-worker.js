@@ -27,7 +27,8 @@ const PRECACHE_ASSETS = [
   '/public/icons/icon-256x256.png',
   '/public/icons/icon-384x384.png',
   '/public/icons/icon-512x512.png',
-  '/public/icons/icon-512x512-maskable.png'
+  '/public/icons/icon-512x512-maskable.png',
+  '/offline.html'
 ];
 
 // Install Event - Pre-cache core static assets
@@ -112,9 +113,7 @@ self.addEventListener('fetch', event => {
           return response;
         })
         .catch(() => {
-          return caches.match(event.request).then(cachedResponse => {
-            return cachedResponse || caches.match('/index.html') || caches.match('/');
-          });
+          return caches.match('/offline.html');
         })
     );
     return;

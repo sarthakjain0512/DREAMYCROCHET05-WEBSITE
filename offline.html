@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You're Offline - DreamyCrochet05</title>
+  <style>
+    /* CSS Variables matching main design system colors */
+    :root {
+      --color-cream: #FFF8EE;
+      --color-beige: #F5E6D3;
+      --color-pink: #FADADD;
+      --color-warm-brown: #B58A6A;
+      --color-dark-brown: #4A3321;
+      --color-soft-white: #FFFFFF;
+      --text-muted: #6D5440;
+      --border-light: rgba(181, 138, 106, 0.1);
+      --shadow-color: rgba(74, 51, 33, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: var(--color-cream);
+      color: var(--color-dark-brown);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    /* Decorative background shapes for premium look */
+    .bg-circle {
+      position: absolute;
+      border-radius: 50%;
+      z-index: 1;
+      filter: blur(50px);
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    .circle-pink {
+      width: 300px;
+      height: 300px;
+      background-color: var(--color-pink);
+      top: -100px;
+      left: -100px;
+    }
+    .circle-beige {
+      width: 400px;
+      height: 400px;
+      background-color: var(--color-beige);
+      bottom: -150px;
+      right: -150px;
+    }
+
+    /* Main Container Card */
+    .offline-card {
+      position: relative;
+      z-index: 2;
+      background-color: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-light);
+      border-radius: 24px;
+      padding: 40px 30px;
+      text-align: center;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 20px 40px var(--shadow-color);
+      transform: translateY(0);
+      animation: float 6s ease-in-out infinite;
+    }
+
+    /* Logo Styling */
+    .logo-container {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      margin: 0 auto 24px;
+      overflow: hidden;
+      border: 3px solid var(--color-beige);
+      box-shadow: 0 8px 16px var(--shadow-color);
+      background-color: var(--color-soft-white);
+      transition: transform 0.3s ease;
+    }
+    .logo-container:hover {
+      transform: scale(1.05) rotate(5deg);
+    }
+    .logo-container img {
+      width: 100%;
+      height: 100%;
+      object-cover: cover;
+    }
+
+    /* Content Styling */
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--color-dark-brown);
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      color: var(--color-warm-brown);
+      font-weight: 500;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    .message {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    /* Buttons Container */
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn {
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 14px 24px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background-color: var(--color-warm-brown);
+      color: var(--color-soft-white);
+      box-shadow: 0 4px 12px rgba(181, 138, 106, 0.2);
+    }
+    .btn-primary:hover {
+      background-color: var(--color-dark-brown);
+      box-shadow: 0 6px 16px rgba(74, 51, 33, 0.25);
+      transform: translateY(-2px);
+    }
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      border: 1.5px solid var(--color-warm-brown);
+      color: var(--color-warm-brown);
+    }
+    .btn-secondary:hover {
+      background-color: var(--color-beige);
+      color: var(--color-dark-brown);
+      border-color: var(--color-dark-brown);
+      transform: translateY(-2px);
+    }
+    .btn-secondary:active {
+      transform: translateY(0);
+    }
+
+    /* Icon styling */
+    .btn svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    /* Subtle Float Animation */
+    @keyframes float {
+      0% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+      100% {
+        transform: translateY(0px);
+      }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 480px) {
+      .offline-card {
+        padding: 30px 20px;
+        border-radius: 20px;
+      }
+      h1 {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-circle circle-pink"></div>
+  <div class="bg-circle circle-beige"></div>
+
+  <main class="offline-card" id="offline-content">
+    <div class="logo-container">
+      <img src="/logo.jpg" alt="DreamyCrochet05 Logo" decoding="async">
+    </div>
+
+    <h1>You're Offline</h1>
+    <div class="subtitle">Looks like your internet connection is unavailable.</div>
+    <p class="message">Don't worry. Your handmade favourites are waiting for you.</p>
+
+    <div class="button-group">
+      <button class="btn btn-primary" onclick="location.reload()">
+        <svg viewBox="0 0 24 24">
+          <path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+        </svg>
+        Retry Connection
+      </button>
+      
+      <button class="btn btn-secondary" onclick="window.location='/'">
+        <svg viewBox="0 0 24 24">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+        Back to Home
+      </button>
+    </div>
+  </main>
+</body>
+</html>
