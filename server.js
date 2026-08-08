@@ -62,6 +62,12 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 // Serve local upload fallback files (products go in /uploads/products/)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Serve service-worker.js with specific Cache-Control headers to ensure fast PWA updates detection
+app.get('/service-worker.js', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+  res.sendFile(path.join(__dirname, 'service-worker.js'));
+});
+
 // Serve frontend static assets from current directory
 app.use(express.static(__dirname));
 

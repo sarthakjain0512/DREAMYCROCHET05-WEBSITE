@@ -1,4 +1,4 @@
-const APP_VERSION = '1.0.2';
+const APP_VERSION = 'b897b13';
 const CACHE_NAME = `dreamycrochet-${APP_VERSION}`;
 
 const PRECACHE_ASSETS = [
@@ -32,18 +32,19 @@ const PRECACHE_ASSETS = [
   '/offline.html'
 ];
 
-// Install Event - Pre-cache core static assets
+// Install Event - Pre-cache core static assets with cache bypassing
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('[Service Worker] Pre-caching core assets');
-        return cache.addAll(PRECACHE_ASSETS);
+        const requests = PRECACHE_ASSETS.map(url => new Request(url, { cache: 'reload' }));
+        return cache.addAll(requests);
       })
   );
 });
 
-// Activate Event - Clean up old caches
+// Activate Event - Clean up old caches safely
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
@@ -52,10 +53,17 @@ self.addEventListener('activate', event => {
           .filter(cache => cache !== CACHE_NAME)
           .map(cache => {
             console.log('[Service Worker] Deleting old cache:', cache);
-            return caches.delete(cache);
+            return caches.delete(cache).catch(err => {
+              console.error('[Service Worker] Failed to delete old cache:', cache, err);
+              return true; // Resolve anyway to prevent blocking
+            });
           })
       );
-    }).then(() => self.clients.claim())
+    })
+    .catch(err => {
+      console.error('[Service Worker] Error during cache keys retrieval:', err);
+    })
+    .then(() => self.clients.claim())
   );
 });
 

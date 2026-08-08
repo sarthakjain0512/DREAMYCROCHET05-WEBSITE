@@ -4,8 +4,9 @@
   "description": "Premium Handmade Crochet Showcase Website & Admin Portal",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js",
+    "build": "node scripts/version-service-worker.js",
+    "start": "node scripts/version-service-worker.js && node server.js",
+    "dev": "node scripts/version-service-worker.js && node server.js",
     "test:e2e": "jest --testTimeout=300000"
   },
   "dependencies": {
