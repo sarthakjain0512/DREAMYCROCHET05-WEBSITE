@@ -753,6 +753,7 @@ html, body {
 }
 #products-grid.layout-list .product-card-container > div:first-child span.absolute {
   bottom: 4px !important;
+  z-index: 30 !important;
 }
 #products-grid.layout-list .product-card-container > div.flex-grow {
   padding: 2px 4px 2px 12px;
