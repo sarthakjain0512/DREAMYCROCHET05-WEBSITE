@@ -839,6 +839,13 @@ html, body {
   #products-grid.layout-3 {
     grid-template-columns: 1fr;
   }
+  #products-grid.layout-list .product-card-container > div:first-child span.absolute {
+    white-space: nowrap !important;
+    font-size: 9px !important;
+    padding: 3px 7px !important;
+    bottom: 4px !important;
+    left: 4px !important;
+  }
 }
 
 /* ================================================
