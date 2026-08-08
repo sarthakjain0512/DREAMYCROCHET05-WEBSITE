@@ -845,6 +845,9 @@ html, body {
     padding: 3px 7px !important;
     bottom: 4px !important;
     left: 4px !important;
+    max-width: calc(100% - 8px) !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 }
 
