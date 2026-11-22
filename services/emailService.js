@@ -16,8 +16,8 @@ const fs = require('fs');
 // ─── Brevo REST API Configuration ───────────────────────────────────────────
 const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
 const SENDER_NAME = 'DreamyCrochet05';
-const SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL || process.env.EMAIL_USER || process.env.ADMIN_EMAIL || 'exploringindia0512@gmail.com';
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || process.env.EMAIL_USER || 'exploringindia0512@gmail.com';
+const SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL || 'exploringindia0512@gmail.com';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'exploringindia0512@gmail.com';
 
 if (process.env.BREVO_API_KEY) {
   console.log('📧 [EmailService] Brevo REST API configured successfully.');
