@@ -14,7 +14,6 @@
 // 📌 Gmail App Password (NOT your regular password):
 //   Google Account → Security → 2-Step Verification → App Passwords
 // ─────────────────────────────────────────────────────────────────────────────
-const axios = require("axios");
 const nodemailer = require('nodemailer');
 const path = require('path');
 const fs = require('fs');
@@ -23,25 +22,22 @@ const fs = require('fs');
 let transporter = null;
 let emailEnabled = false;
 
-const emailAddress = process.env.EMAIL || process.env.EMAIL_USER;
+const emailAddress = process.env.EMAIL_USER || process.env.EMAIL;
 const emailPassword = process.env.EMAIL_PASSWORD;
 
 if (emailAddress && emailPassword && !emailAddress.includes('your_email@gmail.com') && !emailPassword.includes('your_gmail_app_password')) {
   transporter = nodemailer.createTransport({
-  host: "smtp-relay.brevo.com",
-  port: 587,
-  secure: false,
-  auth: {
-    user: emailAddress,
-    pass: emailPassword
-  }
-});
-
+    service: "gmail",
+    auth: {
+      user: emailAddress,
+      pass: emailPassword
+    }
+  });
 
   emailEnabled = true;
-  console.log('📧 [EmailService] Brevo SMTP configured successfully.');
+  console.log('📧 [EmailService] Gmail Nodemailer configured successfully.');
 } else {
-  console.log('⚠️  [EmailService] EMAIL/EMAIL_USER or EMAIL_PASSWORD not configured in .env — emails will be logged locally to inbox_logs.txt.');
+  console.warn('⚠️  [EmailService] EMAIL_USER or EMAIL_PASSWORD not configured in .env — emails will be logged locally to inbox_logs.txt.');
 }
 
 // ─── Helper: Format Date for India Timezone ──────────────────────────────────
@@ -158,59 +154,146 @@ function buildEmailHTML(order, imageUrls) {
  * @param {string[]} imageUrls - Array of Cloudinary image URLs for reference images
  */
 async function sendInquiryEmail(order, imageUrls = []) {
+  console.log("🚀 sendInquiryEmail() called");
 
-    console.log("🚀 sendInquiryEmail() called");
+  const htmlBody = buildEmailHTML(order, imageUrls);
 
-    const htmlBody = buildEmailHTML(order, imageUrls);
+  if (!emailEnabled || !transporter) {
+    console.warn("⚠️ [EmailService] Gmail SMTP not configured — logging inquiry to file.");
+    return logToFile(order, imageUrls);
+  }
 
-    try {
+  const mailOptions = {
+    from: `"DreamyCrochet05 Inquiries" <${emailAddress}>`,
+    to: emailAddress,
+    subject: "🌷 New Crochet Inquiry — DreamyCrochet05",
+    html: htmlBody
+  };
 
-        const response = await axios.post(
-            "https://api.brevo.com/v3/smtp/email",
-            {
-                sender: {
-                    name: "DreamyCrochet05",
-                    email: "exploringindia0512@gmail.com"
-                },
+  try {
+    console.log("📨 Sending admin notification email via Gmail SMTP...");
+    const info = await transporter.sendMail(mailOptions);
+    console.log("==================================");
+    console.log("✅ ADMIN EMAIL SENT VIA GMAIL SMTP");
+    console.log("Message ID:", info.messageId);
+    console.log("Accepted:", info.accepted);
+    console.log("==================================");
+  } catch (err) {
+    console.error("❌ Gmail SMTP admin notification failed:", err.message);
+    logToFile(order, imageUrls);
+  }
+}
 
-                to: [
-                    {
-                        email: "exploringindia0512@gmail.com",
-                        name: "DreamyCrochet05"
-                    }
-                ],
+// ─── Build Customer Acknowledgement HTML Email Body ──────────────────────────
+function buildCustomerAcknowledgementHTML(order) {
+  const customerName = (order.customerName || 'there').trim();
 
-                subject: "🌷 New Crochet Inquiry — DreamyCrochet05",
+  return `
+  <div style="font-family: 'Georgia', serif; line-height: 1.8; color: #4A3321; max-width: 600px; margin: 0 auto; border: 1px solid #FADADD; border-radius: 20px; overflow: hidden; background: #FFF8EE;">
 
-                htmlContent: htmlBody
-            },
+    <!-- Header -->
+    <div style="background: linear-gradient(135deg, #B58A6A 0%, #FADADD 100%); padding: 32px 24px 24px; text-align: center;">
+      <p style="font-size: 34px; margin: 0; line-height: 1;">🌸</p>
+      <h1 style="margin: 10px 0 4px; font-size: 22px; color: #ffffff; font-weight: bold; letter-spacing: 0.5px;">DreamyCrochet05</h1>
+      <p style="margin: 0; color: rgba(255, 255, 255, 0.9); font-size: 13px; font-style: italic;">Handcrafted by Mom, Stitched with Love</p>
+    </div>
 
-            {
-                headers: {
-                    "accept": "application/json",
-                    "api-key": process.env.BREVO_API_KEY,
-                    "content-type": "application/json"
-                }
-            }
-        );
+    <!-- Body -->
+    <div style="padding: 32px 28px; background: #ffffff;">
+      <p style="font-size: 16px; font-weight: bold; color: #4A3321; margin: 0 0 16px;">
+        Hi ${customerName}! 💗
+      </p>
 
-        console.log("==================================");
-        console.log("✅ EMAIL SENT USING BREVO API");
-        console.log(response.data);
-        console.log("==================================");
+      <p style="font-size: 14px; color: #4A3321; margin: 0 0 16px; line-height: 1.7;">
+        Thank you so much for reaching out to <strong>DreamyCrochet05</strong>!
+      </p>
 
-    }
+      <div style="background: #FFF8EE; border-left: 4px solid #B58A6A; border-radius: 4px 12px 12px 4px; padding: 16px 20px; margin: 20px 0;">
+        <p style="font-size: 14px; color: #4A3321; margin: 0; line-height: 1.7;">
+          We've successfully received your custom crochet inquiry and are excited to bring your creative idea to life. 🌷
+        </p>
+      </div>
 
-    catch(err){
+      <p style="font-size: 14px; color: #4A3321; margin: 0 0 16px; line-height: 1.7;">
+        Our team will review your requirements and get back to you within 24 hours to discuss the design, colors, pricing, and other details.
+      </p>
 
-        console.log("❌ BREVO EMAIL FAILED");
+      <p style="font-size: 14px; color: #4A3321; margin: 0 0 24px; line-height: 1.7;">
+        Thank you for supporting handmade creations. Every stitch is made with love! 🧶
+      </p>
 
-        console.error(err.response?.data || err.message);
+      <div style="border-top: 1px dashed #FADADD; padding-top: 18px; margin-top: 24px;">
+        <p style="margin: 0; font-size: 14px; color: #4A3321; font-weight: bold;">
+          With love,<br>
+          <span style="color: #B58A6A;">Team DreamyCrochet05 🌸</span>
+        </p>
+      </div>
+    </div>
 
-        logToFile(order,imageUrls);
+    <!-- Footer -->
+    <div style="background: #F5E6D3; padding: 18px 24px; text-align: center; border-top: 1px solid #FADADD;">
+      <p style="margin: 0; font-size: 11px; color: #B58A6A; font-weight: 600;">
+        🌷 DreamyCrochet05 — Handcrafted by Mom, Stitched with Love 🌷
+      </p>
+      <p style="margin: 4px 0 0; font-size: 10px; color: #8A6D55;">
+        This is an automated confirmation sent to ${order.email || 'your email'}.
+      </p>
+    </div>
+  </div>`;
+}
 
-    }
+// ─── Customer Acknowledgement Email ──────────────────────────────────────────
+/**
+ * Sends a customer acknowledgement email confirming their custom order inquiry.
+ * @param {Object} order - The mapped CustomOrder object containing customer details
+ */
+async function sendCustomerAcknowledgementEmail(order) {
+  console.log("💌 sendCustomerAcknowledgementEmail() called for:", order?.email);
 
+  if (!order || !order.email) {
+    console.warn("⚠️ [EmailService] Cannot send acknowledgement: missing customer email.");
+    return;
+  }
+
+  if (!emailEnabled || !transporter) {
+    console.warn("⚠️ [EmailService] Gmail SMTP not configured — skipping customer acknowledgement email.");
+    return;
+  }
+
+  const customerName = (order.customerName || 'there').trim();
+  const htmlBody = buildCustomerAcknowledgementHTML(order);
+  const textBody = `Hi ${customerName}! 💗
+
+Thank you so much for reaching out to DreamyCrochet05!
+
+We've successfully received your custom crochet inquiry and are excited to bring your creative idea to life. 🌷
+
+Our team will review your requirements and get back to you within 24 hours to discuss the design, colors, pricing, and other details.
+
+Thank you for supporting handmade creations. Every stitch is made with love! 🧶
+
+With love,
+Team DreamyCrochet05 🌸`;
+
+  const mailOptions = {
+    from: `"DreamyCrochet05" <${emailAddress}>`,
+    to: order.email,
+    subject: "🌸 Thank You for Choosing DreamyCrochet05!",
+    html: htmlBody,
+    text: textBody
+  };
+
+  try {
+    console.log("📨 Sending customer acknowledgement email via Gmail SMTP...");
+    const info = await transporter.sendMail(mailOptions);
+    console.log("==================================");
+    console.log("✅ CUSTOMER ACKNOWLEDGEMENT SENT VIA GMAIL SMTP");
+    console.log("Message ID:", info.messageId);
+    console.log("Accepted:", info.accepted);
+    console.log("==================================");
+  } catch (err) {
+    console.error("❌ Gmail SMTP customer acknowledgement failed:", err.message);
+  }
 }
 
 
@@ -242,4 +325,7 @@ ${separator}
   }
 }
 
-module.exports = { sendInquiryEmail };
+module.exports = {
+  sendInquiryEmail,
+  sendCustomerAcknowledgementEmail
+};

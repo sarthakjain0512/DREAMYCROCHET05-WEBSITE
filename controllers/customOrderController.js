@@ -6,7 +6,7 @@
 const path = require('path');
 const fs = require('fs');
 const CustomOrder = require('../models/CustomOrder');
-const { sendInquiryEmail } = require('../services/emailService');
+const { sendInquiryEmail, sendCustomerAcknowledgementEmail } = require('../services/emailService');
 const { getLocalDB, saveLocalDB, isMongoDBConnected } = require('../utils/localDbHelper');
 const { uploadBufferToCloudinary } = require('../services/cloudinaryService');
 const { deleteCloudinaryImage } = require('../utils/deleteCloudinaryImage');
@@ -131,11 +131,19 @@ console.log("==================================");
     // Passes the mapped plain urls to the email service
     const mappedOrder = mapOrder(newOrder);
     try {
-  await sendInquiryEmail(mappedOrder, mappedOrder.referenceImages);
-  console.log("✅ sendInquiryEmail() finished");
-} catch (err) {
-  console.error("❌ sendInquiryEmail() failed:", err);
-}
+      await sendInquiryEmail(mappedOrder, mappedOrder.referenceImages);
+      console.log("✅ sendInquiryEmail() finished");
+    } catch (err) {
+      console.error("❌ sendInquiryEmail() failed:", err);
+    }
+
+    // ── Send acknowledgement email to customer ────────────────────────────────
+    try {
+      await sendCustomerAcknowledgementEmail(mappedOrder);
+      console.log("✅ sendCustomerAcknowledgementEmail() finished");
+    } catch (err) {
+      console.error("❌ sendCustomerAcknowledgementEmail() failed:", err);
+    }
     return res.status(201).json({
       success: true,
       message: 'Inquiry submitted successfully! We will contact you within 24 hours.',
