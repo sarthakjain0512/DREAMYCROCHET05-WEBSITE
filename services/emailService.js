@@ -1,43 +1,28 @@
 // services/emailService.js
 // ─────────────────────────────────────────────────────────────────────────────
-// DreamyCrochet05 — Email Notification Service (Nodemailer)
+// DreamyCrochet05 — Email Notification Service (Brevo REST API)
 //
-// Sends a beautifully formatted Gmail notification to the shop owner
-// whenever a customer submits a new custom crochet inquiry.
+// Sends transactional emails using Brevo REST API:
+// 1. Admin notifications for new custom order inquiries.
+// 2. Customer thank-you acknowledgement emails.
 //
-// Subject: 🌷 New Crochet Inquiry — DreamyCrochet05
-//
-// ⚙️ Setup: Add these to your .env file:
-//   EMAIL=your_gmail@gmail.com
-//   EMAIL_PASSWORD=your_16_char_gmail_app_password
-//
-// 📌 Gmail App Password (NOT your regular password):
-//   Google Account → Security → 2-Step Verification → App Passwords
+// ⚙️ Setup: Add this to your .env file:
+//   BREVO_API_KEY=your_brevo_v3_api_key
 // ─────────────────────────────────────────────────────────────────────────────
-const nodemailer = require('nodemailer');
+const axios = require('axios');
 const path = require('path');
 const fs = require('fs');
 
-// ─── Initialize Nodemailer Transporter ───────────────────────────────────────
-let transporter = null;
-let emailEnabled = false;
+// ─── Brevo REST API Configuration ───────────────────────────────────────────
+const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
+const SENDER_NAME = 'DreamyCrochet05';
+const SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL || process.env.EMAIL_USER || process.env.ADMIN_EMAIL || 'exploringindia0512@gmail.com';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || process.env.EMAIL_USER || 'exploringindia0512@gmail.com';
 
-const emailAddress = process.env.EMAIL_USER || process.env.EMAIL;
-const emailPassword = process.env.EMAIL_PASSWORD;
-
-if (emailAddress && emailPassword && !emailAddress.includes('your_email@gmail.com') && !emailPassword.includes('your_gmail_app_password')) {
-  transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: emailAddress,
-      pass: emailPassword
-    }
-  });
-
-  emailEnabled = true;
-  console.log('📧 [EmailService] Gmail Nodemailer configured successfully.');
+if (process.env.BREVO_API_KEY) {
+  console.log('📧 [EmailService] Brevo REST API configured successfully.');
 } else {
-  console.warn('⚠️  [EmailService] EMAIL_USER or EMAIL_PASSWORD not configured in .env — emails will be logged locally to inbox_logs.txt.');
+  console.warn('⚠️  [EmailService] BREVO_API_KEY not configured in .env — emails will be logged locally to inbox_logs.txt.');
 }
 
 // ─── Helper: Format Date for India Timezone ──────────────────────────────────
@@ -149,38 +134,74 @@ function buildEmailHTML(order, imageUrls) {
 
 // ─── Main: Send Email Function ────────────────────────────────────────────────
 /**
- * Sends a notification email to the admin for a new custom order inquiry.
+ * Sends a notification email to the admin for a new custom order inquiry via Brevo REST API.
  * @param {Object} order - The saved CustomOrder document from MongoDB
  * @param {string[]} imageUrls - Array of Cloudinary image URLs for reference images
+ * @returns {Promise<{success: boolean, messageId?: string, error?: string}>}
  */
 async function sendInquiryEmail(order, imageUrls = []) {
   console.log("🚀 sendInquiryEmail() called");
 
   const htmlBody = buildEmailHTML(order, imageUrls);
 
-  if (!emailEnabled || !transporter) {
-    console.warn("⚠️ [EmailService] Gmail SMTP not configured — logging inquiry to file.");
-    return logToFile(order, imageUrls);
+  if (!process.env.BREVO_API_KEY) {
+    console.warn("⚠️ [EmailService] BREVO_API_KEY not configured — logging inquiry to file.");
+    logToFile(order, imageUrls);
+    return { success: false, error: 'BREVO_API_KEY not configured' };
   }
 
-  const mailOptions = {
-    from: `"DreamyCrochet05 Inquiries" <${emailAddress}>`,
-    to: emailAddress,
+  const payload = {
+    sender: {
+      name: SENDER_NAME,
+      email: SENDER_EMAIL
+    },
+    to: [
+      {
+        email: ADMIN_EMAIL,
+        name: "DreamyCrochet05 Admin"
+      }
+    ],
     subject: "🌷 New Crochet Inquiry — DreamyCrochet05",
-    html: htmlBody
+    htmlContent: htmlBody
   };
 
+  if (order.email) {
+    payload.replyTo = {
+      email: order.email,
+      name: order.customerName || "Customer"
+    };
+  }
+
   try {
-    console.log("📨 Sending admin notification email via Gmail SMTP...");
-    const info = await transporter.sendMail(mailOptions);
+    console.log("📨 Sending admin notification email via Brevo REST API...");
+    const response = await axios.post(
+      BREVO_API_URL,
+      payload,
+      {
+        headers: {
+          'accept': 'application/json',
+          'api-key': process.env.BREVO_API_KEY,
+          'content-type': 'application/json'
+        },
+        timeout: 10000
+      }
+    );
+
     console.log("==================================");
-    console.log("✅ ADMIN EMAIL SENT VIA GMAIL SMTP");
-    console.log("Message ID:", info.messageId);
-    console.log("Accepted:", info.accepted);
+    console.log("✅ ADMIN EMAIL SENT VIA BREVO API");
+    if (response.data && response.data.messageId) {
+      console.log("Message ID:", response.data.messageId);
+    }
     console.log("==================================");
+
+    return { success: true, messageId: response.data?.messageId };
   } catch (err) {
-    console.error("❌ Gmail SMTP admin notification failed:", err.message);
+    const errorDetails = err.response
+      ? { status: err.response.status, data: err.response.data }
+      : { message: err.message };
+    console.error("❌ Brevo API admin notification failed:", JSON.stringify(errorDetails));
     logToFile(order, imageUrls);
+    return { success: false, error: err.response?.data?.message || err.message };
   }
 }
 
@@ -244,20 +265,21 @@ function buildCustomerAcknowledgementHTML(order) {
 
 // ─── Customer Acknowledgement Email ──────────────────────────────────────────
 /**
- * Sends a customer acknowledgement email confirming their custom order inquiry.
+ * Sends a customer acknowledgement email confirming their custom order inquiry via Brevo REST API.
  * @param {Object} order - The mapped CustomOrder object containing customer details
+ * @returns {Promise<{success: boolean, messageId?: string, error?: string}>}
  */
 async function sendCustomerAcknowledgementEmail(order) {
   console.log("💌 sendCustomerAcknowledgementEmail() called for:", order?.email);
 
   if (!order || !order.email) {
     console.warn("⚠️ [EmailService] Cannot send acknowledgement: missing customer email.");
-    return;
+    return { success: false, error: 'Missing customer email' };
   }
 
-  if (!emailEnabled || !transporter) {
-    console.warn("⚠️ [EmailService] Gmail SMTP not configured — skipping customer acknowledgement email.");
-    return;
+  if (!process.env.BREVO_API_KEY) {
+    console.warn("⚠️ [EmailService] BREVO_API_KEY not configured — skipping customer acknowledgement email.");
+    return { success: false, error: 'BREVO_API_KEY not configured' };
   }
 
   const customerName = (order.customerName || 'there').trim();
@@ -275,24 +297,51 @@ Thank you for supporting handmade creations. Every stitch is made with love! �
 With love,
 Team DreamyCrochet05 🌸`;
 
-  const mailOptions = {
-    from: `"DreamyCrochet05" <${emailAddress}>`,
-    to: order.email,
+  const payload = {
+    sender: {
+      name: SENDER_NAME,
+      email: SENDER_EMAIL
+    },
+    to: [
+      {
+        email: order.email,
+        name: customerName
+      }
+    ],
     subject: "🌸 Thank You for Choosing DreamyCrochet05!",
-    html: htmlBody,
-    text: textBody
+    htmlContent: htmlBody,
+    textContent: textBody
   };
 
   try {
-    console.log("📨 Sending customer acknowledgement email via Gmail SMTP...");
-    const info = await transporter.sendMail(mailOptions);
+    console.log("📨 Sending customer acknowledgement email via Brevo REST API...");
+    const response = await axios.post(
+      BREVO_API_URL,
+      payload,
+      {
+        headers: {
+          'accept': 'application/json',
+          'api-key': process.env.BREVO_API_KEY,
+          'content-type': 'application/json'
+        },
+        timeout: 10000
+      }
+    );
+
     console.log("==================================");
-    console.log("✅ CUSTOMER ACKNOWLEDGEMENT SENT VIA GMAIL SMTP");
-    console.log("Message ID:", info.messageId);
-    console.log("Accepted:", info.accepted);
+    console.log("✅ CUSTOMER ACKNOWLEDGEMENT SENT VIA BREVO API");
+    if (response.data && response.data.messageId) {
+      console.log("Message ID:", response.data.messageId);
+    }
     console.log("==================================");
+
+    return { success: true, messageId: response.data?.messageId };
   } catch (err) {
-    console.error("❌ Gmail SMTP customer acknowledgement failed:", err.message);
+    const errorDetails = err.response
+      ? { status: err.response.status, data: err.response.data }
+      : { message: err.message };
+    console.error("❌ Brevo API customer acknowledgement failed:", JSON.stringify(errorDetails));
+    return { success: false, error: err.response?.data?.message || err.message };
   }
 }
 
